@@ -29,10 +29,7 @@
         .sidebar.collapsed .btn-sair-mini .nav-text { display: none; }
 
         .nav-menu { padding: 10px 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto;}
-        
-        /* CORRIGIDO: O ERRO ESTAVA AQUI! REMOVIDO O "display: flex" DUPLICADO QUE BURLAVA O SISTEMA */
-        .nav-btn { display: none; width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; align-items: center; white-space: nowrap;}
-        
+        .nav-btn { display: none; width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; display: flex; align-items: center; white-space: nowrap;}
         .nav-icon { font-size: 20px; min-width: 35px; text-align: center; margin-right: 10px; }
         .sidebar.collapsed .nav-text { display: none; }
         .sidebar.collapsed .nav-btn { justify-content: center; padding: 16px 0; border-left: 4px solid transparent; }
@@ -61,7 +58,6 @@
         th { position: sticky; top: 0; background: #0f172a; padding: 14px; text-align: left; border-bottom: 1px solid #334155; color: #94a3b8; z-index: 2; font-weight: 600; font-size: 13px; text-transform: uppercase;}
         td { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
-        /* GRID ATENDIMENTO (EM L) */
         .mesas-grid { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: 1fr 320px; gap: 20px; flex-grow: 1; min-height: 0; margin-top: 10px; }
         .card-radar { grid-column: 1 / 2; grid-row: 1 / 3; display: flex; flex-direction: column; min-height: 0; }
         .card-decor { grid-column: 2 / 3; grid-row: 1 / 2; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #1e293b; border-radius: 8px; color: #cbd5e1; text-align: center; padding: 20px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -81,7 +77,6 @@
         .log-ok { color: #10b981; }
         .log-erro { color: #ef4444; }
 
-        /* TV DESIGN ORIGINAL PRESERVADO */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative;}
         .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; }
@@ -188,7 +183,7 @@
                 <div class="tv-layout">
                     <div class="tv-main">
                         <button id="btnAtivarVoz" onclick="ativarVozTV()" style="padding:10px; background:#38bdf8; border:none; cursor:pointer; border-radius:4px; font-weight:bold; position:absolute; top:20px; left:20px; z-index:100;">Ligar Áudio da TV</button>
-                        <div class="alerta-tv" id="textoAlerta" style="font-family: 'Segoe UI'; font-weight:bold; letter-spacing: 2px; font-size: 35px; color: #f59e0b; margin-bottom: 20px;">STANDBY</div>
+                        <div class="alerta-tv" id="textoAlerta">PAINEL STANDBY</div>
                         <div class="placa-tv" id="displayPlaca">---</div>
                         <div class="nome-mtr" id="displayNomeMotorista">AGUARDANDO...</div>
                         <div id="displayBancadaContainer" style="display:none;">
@@ -241,9 +236,6 @@
 
         const bA=document.getElementById('btnTabAdmin'), bC=document.getElementById('btnTabCheckin'), bT=document.getElementById('btnTabTv'), bM=document.getElementById('btnTabMesas'), bR=document.getElementById('btnTabRadar'), bF=document.getElementById('btnTabFinalFila');
 
-        // ========================================================
-        // A TRAVA ABSOLUTA: IMPEDE QUE MESA VEJA OUTRAS ABAS
-        // ========================================================
         if(lAtu === 'Admin') { 
             [bA, bC, bT, bM, bR, bF].forEach(b => { if(b) b.style.display = 'flex'; }); 
             if(bA) bA.click(); 
@@ -253,7 +245,6 @@
             let dNome = document.getElementById('displayNomeMesaGrande');
             if(dNome && lAtu) dNome.innerText = lAtu.toUpperCase(); 
 
-            // EXCLUI OS BOTÕES DO HTML PARA O OPERADOR (GARANTIA 100%)
             if(bA) bA.remove();
             if(bC) bC.remove();
             if(bT) bT.remove();
@@ -271,7 +262,27 @@
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
         function mudarAba(id, b) { document.querySelectorAll('.aba').forEach(a=>a.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(btn=>btn.classList.remove('active')); document.getElementById(id).classList.add('active'); b.classList.add('active'); if(id==='abaCheckin') setTimeout(()=>document.getElementById('coletor').focus(),100); }
-        function fazerLogout() { window.location.href = "index.html"; }
+        
+        // =======================================================
+        // FUNÇÃO DE LOGOUT ATUALIZADA: LIBERA A MESA NO FIREBASE
+        // =======================================================
+        function fazerLogout() { 
+            if(lAtu && lAtu !== 'Admin') {
+                db.ref('mesasOcupadas').once('value').then((snapshot) => {
+                    let ocupadas = snapshot.val() || [];
+                    // Remove a mesa atual da lista
+                    ocupadas = ocupadas.filter(m => m !== lAtu);
+                    // Atualiza a lista na nuvem e redireciona
+                    db.ref('mesasOcupadas').set(ocupadas).then(() => {
+                        localStorage.clear(); 
+                        window.location.href = "index.html"; 
+                    });
+                });
+            } else {
+                localStorage.clear(); 
+                window.location.href = "index.html"; 
+            }
+        }
 
         function processarFilaAudio() {
             if (estaFalando || audioFila.length === 0) return;
