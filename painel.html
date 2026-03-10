@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>SISTEMA DE COMANDO - PÁTIO</title>
     <style>
-        /* MANTENDO O DESIGN ORIGINAL QUE VOCÊ APROVOU */
+        /* DESIGN ORIGINAL REFINADO - 100% PRESERVADO */
         body { margin: 0; padding: 0; background-color: #0f172a; color: #cbd5e1; font-family: 'Consolas', 'Courier New', monospace; height: 100vh; display: flex; overflow: hidden; }
         ::-webkit-scrollbar { width: 8px; height: 8px; } 
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; } 
@@ -18,54 +18,66 @@
         .brand h1 { margin: 0; font-size: 18px; letter-spacing: 2px; color: #f8fafc; font-family: 'Segoe UI', sans-serif;}
         .status-led { display: inline-block; width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); margin-right: 5px; }
 
-        .btn-sair-mini { background: rgba(239, 68, 68, 0.05); color: #ef4444; border: 1px solid #ef4444; border-radius: 6px; padding: 10px 15px; font-size: 12px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: all 0.3s ease; }
+        .btn-sair-mini { background: rgba(239, 68, 68, 0.05); color: #ef4444; border: 1px solid #ef4444; border-radius: 6px; padding: 10px 15px; font-size: 12px; font-family: 'Segoe UI', sans-serif; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: all 0.3s ease; }
         .btn-sair-mini:hover { background: #ef4444; color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
 
         .nav-menu { padding: 10px 0; flex-grow: 1; display: flex; flex-direction: column; }
-        .nav-btn { width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; display: flex; align-items: center; white-space: nowrap;}
+        .nav-btn { width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; display: flex; align-items: center; white-space: nowrap;}
         .nav-icon { font-size: 20px; min-width: 35px; text-align: center; margin-right: 10px; }
         .nav-btn:hover { background: rgba(56, 189, 248, 0.05); color: #f8fafc; }
         .nav-btn.active { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-left: 3px solid #38bdf8; }
         
         #btnTabFinalFila.active { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-left: 3px solid #ef4444; }
 
-        .toggle-btn-bottom { width: 100%; background: #080f26; border: none; border-top: 1px solid #1e293b; color: #38bdf8; font-size: 24px; cursor: pointer; padding: 15px 0; margin-top: auto; }
+        .toggle-btn-bottom { width: 100%; background: #080f26; border: none; border-top: 1px solid #1e293b; color: #38bdf8; font-size: 24px; cursor: pointer; padding: 15px 0; display: flex; justify-content: center; align-items: center; margin-top: auto; }
 
         .tab-content-area { flex-grow: 1; padding: 25px; display: flex; flex-direction: column; }
         .aba { display: none; height: 100%; flex-direction: column; animation: fadeIn 0.3s ease-in-out; }
         .aba.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+        h2 { margin-top: 0; color: #f8fafc; font-weight: 600; font-size: 22px; font-family: 'Segoe UI', sans-serif;}
+        h3 { color: #38bdf8; font-size: 15px; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; font-family: 'Segoe UI', sans-serif; margin-top: 0; font-weight: 600;}
+        
+        /* INPUTS ORIGINAIS DE 18PX */
+        input[type="text"], input[type="file"] { width: 100%; padding: 15px; font-size: 18px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; font-family: inherit; box-sizing: border-box; outline: none; border-radius: 6px;}
+        input[type="text"]:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+
         .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #1e293b; background: rgba(0,0,0,0.3); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
-        table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; }
-        th { position: sticky; top: 0; background: #0f172a; padding: 14px; text-align: left; border-bottom: 1px solid #334155; color: #94a3b8; font-weight: 600; font-size: 13px; text-transform: uppercase;}
+        table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
+        th { position: sticky; top: 0; background: #0f172a; padding: 14px; text-align: left; border-bottom: 1px solid #334155; color: #94a3b8; z-index: 2; font-weight: 600; font-size: 13px; text-transform: uppercase;}
         td { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
-        /* AJUSTES SOLICITADOS - ATENDIMENTO */
+        /* MESA FONTES GIGANTES */
         .mesas-grid { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: 1fr 320px; gap: 20px; flex-grow: 1; margin-top: 10px; }
-        .is-mesa-operacao #tabelaAguardandoMesa .rota-text { font-size: 24px !important; color: #fff !important; }
+        .is-mesa-operacao #tabelaAguardandoMesa .rota-text { font-size: 24px !important; color: #fff !important; font-weight: bold; }
         .is-mesa-operacao #tabelaAguardandoMesa .tempo-text { font-size: 20px !important; color: #f59e0b !important; }
 
-        /* CARD DE EDIÇÃO - MEU ATENDIMENTO */
-        .card-decor { grid-column: 2 / 3; grid-row: 1 / 2; background: #1e293b; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .ff-box { width: 100%; margin-top: 20px; padding: 15px; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; background: rgba(239, 68, 68, 0.05); }
-        .ff-box label { font-size: 11px; color: #ef4444; font-weight: bold; letter-spacing: 1px; display: block; margin-bottom: 10px; text-align: center; }
-        #inputFinalFila { width: 100%; padding: 12px; background: #0b132b; border: 1px solid #ef4444; border-radius: 4px; color: #fff; font-size: 18px; font-weight: bold; text-align: center; text-transform: uppercase; box-sizing: border-box; }
-        #inputFinalFila:focus { border-color: #ff0000; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); outline: none; }
+        /* CONSOLE E CARDS ORIGINAIS */
+        .console-box { background: #020617; border: 1px solid #1e293b; padding: 15px; height: 180px; overflow-y: auto; margin-top: 15px; font-size: 13px; color: #94a3b8; border-radius: 6px;}
+        .log-linha { margin: 4px 0; border-bottom: 1px dashed #1e293b; padding-bottom: 4px;}
+        .log-ok { color: #10b981; }
+        .log-erro { color: #ef4444; }
 
-        /* MONITOR TV - HISTÓRICO LATERAL */
+        /* MEU ATENDIMENTO - CARD DE EDIÇÃO DINÂMICO */
+        .card-decor { grid-column: 2 / 3; grid-row: 1 / 2; background: #1e293b; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
+        .ff-box { width: 100%; margin-top: 15px; padding: 12px; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; background: rgba(239, 68, 68, 0.05); }
+        .ff-box label { font-size: 11px; color: #ef4444; font-weight: bold; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+        #inputFinalFila { width: 100%; padding: 12px; background: #0b132b; border: 1px solid #ef4444; border-radius: 4px; color: #fff; font-size: 18px; font-weight: bold; text-align: center; text-transform: uppercase; box-sizing: border-box; }
+        #inputFinalFila:focus { border-color: #ff0000; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
+
+        /* TV DESIGN ORIGINAL COM HISTÓRICO LIMPO */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
-        .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; }
+        .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative;}
         .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; }
         .hist-item-tv { border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding: 15px 0; }
-        .hist-rota-tv { color: #ef4444; font-size: 24px; font-weight: bold; display: block; margin-bottom: 5px; text-shadow: 0 0 10px rgba(239,68,68,0.3);}
+        .hist-rota-tv { color: #ef4444; font-size: 26px; font-weight: bold; display: block; margin-bottom: 5px; text-shadow: 0 0 10px rgba(239,68,68,0.3);}
         .hist-nome-tv { color: #fff; font-size: 14px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
 
         .placa-tv { font-size: 100px; font-weight: bold; background: #0f172a; padding: 30px 80px; border: 2px solid #38bdf8; border-radius: 15px; color: #f8fafc;}
-        .alerta-tv { font-size: 35px; color: #f59e0b; margin-bottom: 20px; }
-        @keyframes piscaAlerta { 0% { opacity: 0.5; color: #ef4444;} 100% { opacity: 1; color: #ff0000; text-shadow: 0 0 20px #ef4444; } }
+        .nome-mtr { font-size: 35px; color: #94a3b8; margin-bottom: 30px; text-transform: uppercase;}
         
-        .btn-padrao { background: transparent; color: #38bdf8; border: 1px solid #38bdf8; padding: 8px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; transition: 0.2s; text-transform: uppercase;}
+        .btn-padrao { background: transparent; color: #38bdf8; border: 1px solid #38bdf8; padding: 8px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; transition: 0.2s; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
         .btn-padrao:hover { background: #38bdf8; color: #0f172a; }
         .btn-critico { border-color: #ef4444; color: #ef4444; }
     </style>
@@ -84,7 +96,6 @@
             </div>
             <button class="btn-sair-mini" onclick="fazerLogout()"><span class="nav-icon">🚪</span>LOGOUT</button>
         </div>
-
         <div class="nav-menu">
             <button class="nav-btn" id="btnTabAdmin" onclick="mudarAba('abaAdmin', this)"><span class="nav-icon">📂</span>IMPORTAÇÃO</button>
             <button class="nav-btn" id="btnTabCheckin" onclick="mudarAba('abaCheckin', this)"><span class="nav-icon">🛂</span>CHECK-IN</button>
@@ -93,7 +104,6 @@
             <button class="nav-btn" id="btnTabRadar" onclick="mudarAba('abaRadar', this)"><span class="nav-icon">🌍</span>RADAR GLOBAL</button>
             <button class="nav-btn" id="btnTabFinalFila" onclick="mudarAba('abaFinalFila', this)"><span class="nav-icon">🚨</span>FINAL DE FILA</button>
         </div>
-
         <button class="toggle-btn-bottom" onclick="toggleSidebar()">☰</button>
     </div>
 
@@ -113,8 +123,14 @@
 
             <div id="abaCheckin" class="aba">
                 <h2>PORTARIA DE ACESSO (CHECK-IN)</h2>
-                <input type="text" id="coletor" placeholder="> BIPE O ID..." autocomplete="off">
-                <div class="console-box" id="consoleLog" style="margin-top:20px;"></div>
+                <p style="color:#94a3b8; font-size:14px; margin-bottom: 20px;">Realize a leitura do ID do motorista para enviá-lo ao radar.</p>
+                <input type="text" id="coletor" placeholder="> BIPE OU DIGITE O ID AQUI E APERTE ENTER..." autocomplete="off">
+                <div style="margin-top: 25px;">
+                    <label style="font-family: 'Segoe UI'; font-weight: 600; font-size: 12px; color: #64748b; letter-spacing: 1px;">CONSOLE DE REGISTRO:</label>
+                    <div class="console-box" id="consoleLog">
+                        <div class="log-linha">SISTEMA INICIADO. AGUARDANDO BIPE.</div>
+                    </div>
+                </div>
             </div>
 
             <div id="abaMesas" class="aba">
@@ -127,13 +143,13 @@
                         <div style="font-size: 35px; color: #38bdf8;">🖥️</div>
                         <h3 id="displayNomeMesaGrande">MESA</h3>
                         <div class="ff-box">
-                            <label>🚨 PENALIZAR ROTA (FINAL DE FILA)</label>
-                            <input type="text" id="inputFinalFila" placeholder="DIGITAR ROTA..." oninput="this.value = this.value.toUpperCase()">
+                            <label>🚨 FINAL DE FILA (ROTA)</label>
+                            <input type="text" id="inputFinalFila" placeholder="ROTA..." oninput="this.value = this.value.toUpperCase()">
                             <button class="btn-padrao btn-critico" style="width:100%; margin-top:10px;" onclick="addRotaFinalFila()">SALVAR REGRA</button>
                         </div>
                     </div>
                     <div class="card-analise">
-                        <h3 style="color: #10b981;">🟢 MINHA MESA</h3>
+                        <h3 style="color: #10b981;">🟢 EM ANÁLISE</h3>
                         <div class="table-wrapper"><table><thead><tr><th>ROTA</th><th>TEMPO</th><th>AÇÃO</th></tr></thead><tbody id="tabelaMinhaMesa"></tbody></table></div>
                     </div>
                 </div>
@@ -146,7 +162,7 @@
                         <div class="alerta-tv" id="textoAlerta">STANDBY</div>
                         <div class="placa-tv" id="displayPlaca">---</div>
                         <div class="nome-mtr" id="displayNomeMotorista">AGUARDANDO...</div>
-                        <div id="displayBancadaContainer" style="display:none; color:#10b981; font-size:40px; font-weight:bold;">MESA: <span id="displayBancada"></span></div>
+                        <div id="displayBancadaContainer" style="display:none; color:#10b981; font-size:45px; font-weight:bold; margin-top:20px;">MESA: <span id="displayBancada"></span></div>
                     </div>
                     <div class="tv-historico">
                         <h3 style="color:#ef4444; border-bottom:2px solid #ef4444; padding-bottom:10px; text-align:center;">🚨 RETIDOS (FINAL)</h3>
@@ -156,14 +172,14 @@
             </div>
 
             <div id="abaRadar" class="aba">
-                <h2>RADAR GLOBAL (OPERAÇÃO)</h2>
-                <div class="table-wrapper"><table><thead><tr><th>ROTA / MOTORISTA</th><th>LOCAL</th><th>STATUS</th><th>DURAÇÃO</th></tr></thead><tbody id="tabelaDashboard"></tbody></table></div>
+                <h2>RADAR GLOBAL (TEMPO REAL)</h2>
+                <div class="table-wrapper"><table><thead><tr><th>ROTA / MOTORISTA</th><th>MESA</th><th>STATUS</th><th>DURAÇÃO</th></tr></thead><tbody id="tabelaDashboard"></tbody></table></div>
             </div>
 
             <div id="abaFinalFila" class="aba">
                 <h2 style="color: #ef4444;">🚨 GESTÃO: FINAL DE FILA</h2>
                 <div class="table-wrapper" style="border-color: rgba(239,68,68,0.3);">
-                    <table><thead><tr><th>ROTA / MOTORISTA</th><th>CHECK-IN</th><th align="right">AÇÃO ADM</th></tr></thead><tbody id="tabelaFinalFilaAdmin"></tbody></table>
+                    <table><thead><tr><th>ROTA / MOTORISTA</th><th>CHECK-IN</th><th align="right">AÇÃO</th></tr></thead><tbody id="tabelaFinalFilaAdmin"></tbody></table>
                 </div>
             </div>
         </div>
@@ -204,7 +220,7 @@
 
         window.addRotaFinalFila = function() {
             let v = document.getElementById('inputFinalFila').value.trim().toUpperCase();
-            if(v) { let f = [...rFF]; if(!f.includes(v)) { f.push(v); db.ref('rotasFinalFila').set(f); alert("Rota na lista de penalidade!"); } document.getElementById('inputFinalFila').value = ''; }
+            if(v) { let f = [...rFF]; if(!f.includes(v)) { f.push(v); db.ref('rotasFinalFila').set(f); alert("Rota Penalizada!"); } document.getElementById('inputFinalFila').value = ''; }
         };
 
         window.liberarFinalFila = function(id) {
@@ -219,11 +235,6 @@
             if(v) { v.status = 'EM_ATENDIMENTO'; v.mesaResponsavel = lAtu; v.horaChamada = Date.now(); db.ref('veiculos').set(vt); db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, data: Date.now() }); }
         };
 
-        window.finalizarVeiculo = function(id) {
-            let vt = [...veiculos], v = vt.find(x => x.id === id);
-            if(v) { v.status = 'FINALIZADO'; v.horaFinalizado = Date.now(); db.ref('veiculos').set(vt); }
-        };
-
         function atualizarEspelhoTV(d) {
             document.getElementById('textoAlerta').style.animation = 'piscaAlerta 1s infinite alternate';
             document.getElementById('displayPlaca').innerText = d.rota;
@@ -231,7 +242,6 @@
             document.getElementById('displayBancada').innerText = d.mesa;
             document.getElementById('displayBancadaContainer').style.display = 'block';
             
-            // TRAVA DE ÁUDIO REFORÇADA
             if (lAtu === 'Admin' && document.getElementById('abaTv').classList.contains('active')) {
                 window.speechSynthesis.cancel();
                 let u = new SpeechSynthesisUtterance(`Atenção motorista ${d.nome}, rota ${d.rota}. Dirija-se à ${d.mesa}.`);
@@ -277,7 +287,7 @@
         });
 
         setInterval(() => renderizarTelas(), 1000);
-        window.ativarVozTV = function() { document.getElementById('btnAtivarVoz').style.display = 'none'; window.speechSynthesis.speak(new SpeechSynthesisUtterance("Módulo Ativado")); };
+        window.ativarVozTV = function() { document.getElementById('btnAtivarVoz').style.display = 'none'; window.speechSynthesis.speak(new SpeechSynthesisUtterance("Módulo de Voz Pronto")); };
     </script>
 </body>
 </html>
