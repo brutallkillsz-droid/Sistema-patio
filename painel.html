@@ -29,7 +29,8 @@
         .sidebar.collapsed .btn-sair-mini .nav-text { display: none; }
 
         .nav-menu { padding: 10px 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto;}
-        .nav-btn { display: none; width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; display: flex; align-items: center; white-space: nowrap;}
+        .nav-btn { display: none; width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; align-items: center; white-space: nowrap;}
+        
         .nav-icon { font-size: 20px; min-width: 35px; text-align: center; margin-right: 10px; }
         .sidebar.collapsed .nav-text { display: none; }
         .sidebar.collapsed .nav-btn { justify-content: center; padding: 16px 0; border-left: 4px solid transparent; }
@@ -78,18 +79,24 @@
         .log-erro { color: #ef4444; }
 
         /* ============================================================
-           TV DESIGN - PROPORÇÕES ORIGINAIS E FONTES MAIORES
+           TV DESIGN - COM 2 HISTÓRICOS LIMITADOS
            ============================================================ */
-        /* Flex 2.5 e 1 mantidos, border e radius originais */
+        /* Ajuste do layout para comportar 3 colunas harmoniosas */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
+        
+        /* Centro focado sem apertar as laterais */
         .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative;}
+        
+        /* As duas barras laterais idênticas em tamanho (Original) */
         .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; }
         
-        .hist-item-tv { border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding: 15px 0; text-align: center; }
+        .hist-item-tv { border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding: 12px 0; text-align: center; }
+        .hist-item-tv.atend { border-bottom-color: rgba(16, 185, 129, 0.2); } /* Borda verde pro histórico esquerdo */
+
         .hist-rota-tv { color: #ef4444; font-size: 26px; font-weight: bold; display: block; margin-bottom: 5px; text-shadow: 0 0 10px rgba(239,68,68,0.3);}
         .hist-nome-tv { color: #fff; font-size: 14px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
 
-        /* Elementos da TV central aumentados conforme solicitado */
+        /* Fontes gigantes no centro, conforme pedido */
         .alerta-tv { font-size: 45px; color: #f59e0b; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; font-weight: bold; letter-spacing: 4px; text-transform: uppercase;}
         @keyframes piscaAlerta { 0% { opacity: 0.5; color: #ef4444;} 100% { opacity: 1; color: #ff0000; text-shadow: 0 0 20px #ef4444; } }
         
@@ -220,6 +227,12 @@
 
             <div id="abaTv" class="aba" style="padding: 0;">
                 <div class="tv-layout">
+                    
+                    <div class="tv-historico">
+                        <h3 style="color:#10b981; border-bottom:1px dashed rgba(16, 185, 129, 0.5); padding-bottom:10px; text-align:center;">🟢 EM ATENDIMENTO</h3>
+                        <div id="tvEmAtendimentoLista" style="overflow-y: auto; flex-grow: 1;"></div>
+                    </div>
+
                     <div class="tv-main">
                         <button id="btnAtivarVoz" onclick="ativarVozTV()" style="padding:10px; background:#38bdf8; border:none; cursor:pointer; border-radius:4px; font-weight:bold; position:absolute; top:20px; left:20px; z-index:100;">Ligar Áudio da TV</button>
                         <div class="alerta-tv" id="textoAlerta">PAINEL STANDBY</div>
@@ -230,10 +243,12 @@
                             <span id="displayBancada"></span>
                         </div>
                     </div>
+
                     <div class="tv-historico">
-                        <h3 style="color:#ef4444; border-bottom:1px dashed rgba(239,68,68,0.5); padding-bottom:10px; text-align:center;">🚨 RETIDOS (FINAL)</h3>
-                        <div id="tvFinalFilaLista" style="overflow-y: auto;"></div>
+                        <h3 style="color:#ef4444; border-bottom:1px dashed rgba(239, 68, 68, 0.5); padding-bottom:10px; text-align:center;">🚨 RETIDOS (FINAL)</h3>
+                        <div id="tvFinalFilaLista" style="overflow-y: auto; flex-grow: 1;"></div>
                     </div>
+
                 </div>
             </div>
 
@@ -415,24 +430,58 @@
 
         function renderizarTelas() {
             const tD = document.getElementById('tabelaDashboard'), tA = document.querySelector('#tabelaAguardandoMesa tbody'), 
-                  tM = document.getElementById('tabelaMinhaMesa'), tF = document.getElementById('tabelaFinalFilaAdmin'), lF = document.getElementById('tvFinalFilaLista');
+                  tM = document.getElementById('tabelaMinhaMesa'), tF = document.getElementById('tabelaFinalFilaAdmin');
+            
+            // Variáveis dos novos Históricos na TV
+            const lAtendTV = document.getElementById('tvEmAtendimentoLista');
+            const lFilaTV = document.getElementById('tvFinalFilaLista');
+
             [tD, tA, tM, tF].forEach(t => { if(t) t.innerHTML = ''; });
-            let hF = '', ag = Date.now();
+            let ag = Date.now();
+            
             let aguardando = ordenarAlfanumerica(veiculos.filter(v => v.status === 'AGUARDANDO'));
             
+            // Popula Tabelas de Admin/Operador (Sem limites)
             veiculos.forEach(v => {
                 if(v.status === 'NO_PERÍMETRO') return;
                 let dur = (v.status === 'FINALIZADO') ? (v.horaFinalizado - v.horaChamada) : (ag - (v.horaChamada || v.chegada));
+                
                 if(tD) tD.innerHTML += `<tr><td>${v.rota}<br><small>${v.nome}</small></td><td>${v.mesaResponsavel || '-'}</td><td>${v.status}</td><td>${formatarTempoLive(dur)}</td></tr>`;
                 if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lAtu && tM) tM.innerHTML += `<tr><td>${v.rota}</td><td>${formatarTempoLive(ag - v.horaChamada)}</td><td><button class="btn-padrao btn-critico" onclick="finalizarVeiculo('${v.id}')">FIM</button></td></tr>`;
-                if(v.status === 'FINAL_FILA') {
-                    if(tF) tF.innerHTML += `<tr><td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td><td>${new Date(v.chegada).toLocaleTimeString()}</td><td align="right"><button class="btn-padrao" onclick="liberarFinalFila('${v.id}')">LIBERAR</button></td></tr>`;
-                    hF += `<div class="hist-item-tv"><span class="hist-rota-tv">${v.rota}</span><span class="hist-nome-tv">${v.nome}</span></div>`;
-                }
+                if(v.status === 'FINAL_FILA' && tF) tF.innerHTML += `<tr><td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td><td>${new Date(v.chegada).toLocaleTimeString()}</td><td align="right"><button class="btn-padrao" onclick="liberarFinalFila('${v.id}')">LIBERAR</button></td></tr>`;
             });
 
             aguardando.forEach(v => { if(tA) tA.innerHTML += `<tr><td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td><td><button class="btn-padrao" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td></tr>`; });
-            if(lF) lF.innerHTML = hF || '<center style="color:#4a5568; margin-top:20px;">NENHUM RETIDO</center>';
+
+            // ========================================================
+            // GERENCIAMENTO DA TV (Limites de 14 e 10 respeitados)
+            // ========================================================
+            if(lAtendTV) {
+                // FILTRA, ORDENA PELO MAIS RECENTE E LIMITA A 14
+                let atendTV = veiculos.filter(v => v.status === 'EM_ATENDIMENTO').sort((a, b) => b.horaChamada - a.horaChamada).slice(0, 14);
+                let hAtend = '';
+                atendTV.forEach(v => {
+                    hAtend += `<div class="hist-item-tv atend">
+                                  <span class="hist-rota-tv" style="color:#10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">${v.rota}</span>
+                                  <span class="hist-nome-tv">${v.nome}</span>
+                                  <span style="color:#10b981; font-size:12px; font-weight:bold; display:block; margin-top:3px; letter-spacing:1px;">${v.mesaResponsavel.toUpperCase()}</span>
+                               </div>`;
+                });
+                lAtendTV.innerHTML = hAtend || '<center style="color:#4a5568; margin-top:20px;">NENHUM EM ATENDIMENTO</center>';
+            }
+
+            if(lFilaTV) {
+                // FILTRA, ORDENA POR CHEGADA E LIMITA A 10
+                let finalTV = veiculos.filter(v => v.status === 'FINAL_FILA').sort((a, b) => a.chegada - b.chegada).slice(0, 10);
+                let hFim = '';
+                finalTV.forEach(v => {
+                    hFim += `<div class="hist-item-tv">
+                               <span class="hist-rota-tv">${v.rota}</span>
+                               <span class="hist-nome-tv">${v.nome}</span>
+                             </div>`;
+                });
+                lFilaTV.innerHTML = hFim || '<center style="color:#4a5568; margin-top:20px;">NENHUM RETIDO</center>';
+            }
         }
 
         document.getElementById('coletor')?.addEventListener('keypress', function(e) {
