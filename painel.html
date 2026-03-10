@@ -13,7 +13,6 @@
         /* MOLDURA PRINCIPAL & SIDEBAR RETRÁTIL */
         .sidebar { width: 260px; background: #0b132b; border-right: 1px solid #1e293b; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 10; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
         .sidebar.collapsed { width: 80px; }
-        
         .main-panel { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; background: radial-gradient(circle at top right, #0d1424 0%, #07090f 100%); transition: margin-left 0.4s ease; }
 
         /* HEADER DO MENU LATERAL (TOPO) */
@@ -31,32 +30,30 @@
         .sidebar.collapsed .btn-sair-mini .nav-text { display: none; }
         .sidebar.collapsed .btn-sair-mini .nav-icon { margin: 0; font-size: 18px; }
 
-        /* ABAS DE NAVEGAÇÃO JOGADAS PARA CIMA */
+        /* ABAS DE NAVEGAÇÃO */
         .nav-menu { padding: 10px 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto;}
         .nav-btn { display: none; width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; display: flex; align-items: center; white-space: nowrap;}
-        
         .nav-icon { font-size: 20px; min-width: 35px; text-align: center; margin-right: 10px; transition: 0.3s;}
         .sidebar.collapsed .nav-icon { margin-right: 0; font-size: 24px; }
         .sidebar.collapsed .nav-text { display: none; }
         .sidebar.collapsed .nav-btn { justify-content: center; padding: 16px 0; }
-
         .nav-btn:hover { background: rgba(56, 189, 248, 0.05); color: #f8fafc; }
         .nav-btn.active { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-left: 3px solid #38bdf8; }
 
-        /* BOTÃO TOGGLE (NO FUNDO DA SIDEBAR) */
+        /* BOTÃO TOGGLE */
         .toggle-btn-bottom { width: 100%; background: #080f26; border: none; border-top: 1px solid #1e293b; color: #38bdf8; font-size: 24px; cursor: pointer; transition: 0.3s; padding: 15px 0; display: flex; justify-content: center; align-items: center; margin-top: auto; }
         .toggle-btn-bottom:hover { color: #fff; text-shadow: 0 0 10px #38bdf8; background: rgba(56, 189, 248, 0.05); }
 
-        /* ÁREA DINÂMICA DE VISUALIZAÇÃO */
-        .tab-content-area { flex-grow: 1; padding: 25px; position: relative; overflow: hidden; background: transparent; display: flex; flex-direction: column; }
-        .aba { display: none; height: 100%; flex-direction: column; animation: fadeIn 0.3s ease-in-out; }
+        /* ÁREA DINÂMICA */
+        .tab-content-area { flex-grow: 1; padding: 25px; position: relative; overflow-y: auto; background: transparent; display: flex; flex-direction: column; }
+        .aba { display: none; min-height: 100%; flex-direction: column; animation: fadeIn 0.3s ease-in-out; }
         .aba.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* TÍTULOS E CAMPOS */
+        /* TEXTOS E CAMPOS */
         h2 { margin-top: 0; color: #f8fafc; font-weight: 600; font-size: 22px; font-family: 'Segoe UI', sans-serif;}
         h3 { color: #38bdf8; font-size: 15px; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; font-family: 'Segoe UI', sans-serif; margin-top: 0; font-weight: 600;}
-        input[type="text"], input[type="file"] { width: 100%; padding: 15px; font-size: 18px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; font-family: inherit; box-sizing: border-box; outline: none; transition: 0.3s; border-radius: 6px;}
+        input[type="text"], input[type="file"] { width: 100%; padding: 15px; font-size: 16px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; font-family: inherit; box-sizing: border-box; outline: none; transition: 0.3s; border-radius: 6px;}
         input[type="text"]:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
         
         /* TABELAS */
@@ -66,7 +63,7 @@
         td { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
         tr:hover td { background: rgba(255,255,255,0.02); }
         
-        /* REGRAS EXCLUSIVAS PARA MESA (FONTE GIGANTE) */
+        /* REGRAS EXCLUSIVAS PARA MESA (FONTE GIGANTE NO RADAR) */
         .is-mesa-operacao #tabelaAguardandoMesa .rota-text { font-size: 24px !important; color: #fff !important; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
         .is-mesa-operacao #tabelaAguardandoMesa .nome-text { font-size: 16px !important; color: #cbd5e1 !important; }
         .is-mesa-operacao #tabelaAguardandoMesa .tempo-text { font-size: 20px !important; font-weight: bold !important; }
@@ -80,21 +77,26 @@
         .btn-acao { border-color: #10b981; color: #10b981; }
         .btn-acao:hover { background: #10b981; color: #fff; }
 
-        /* CONSOLE ADMIN E OUTROS */
+        /* CONSOLE ADMIN */
         .console-box { background: #020617; border: 1px solid #1e293b; padding: 15px; height: 180px; overflow-y: auto; margin-top: 15px; font-size: 13px; color: #94a3b8; border-radius: 6px;}
         .log-linha { margin: 4px 0; border-bottom: 1px dashed #1e293b; padding-bottom: 4px;}
         .log-erro { color: #ef4444; }
         .log-ok { color: #10b981; }
 
+        /* GRID ATENDIMENTO (EM L) */
         .mesas-grid { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: 1fr 320px; gap: 20px; flex-grow: 1; min-height: 0; margin-top: 10px; }
         .card-radar { grid-column: 1 / 2; grid-row: 1 / 3; display: flex; flex-direction: column; min-height: 0; }
-        .card-decor { grid-column: 2 / 3; grid-row: 1 / 2; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #1e293b; border-radius: 8px; color: #cbd5e1; text-align: center; padding: 20px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
+        .card-decor { grid-column: 2 / 3; grid-row: 1 / 2; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; background: #1e293b; border-radius: 8px; color: #cbd5e1; text-align: center; padding: 20px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow-y: auto;}
         .card-analise { grid-column: 2 / 3; grid-row: 2 / 3; display: flex; flex-direction: column; background: transparent; min-height: 0; }
 
+        /* TV TELA CHEIA */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative;}
-        .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; }
-        .tv-historico h3 { color: #f8fafc; font-size: 18px; border-bottom: 1px dashed #334155; padding-bottom: 10px; margin-top: 0; text-align: center;}
+        
+        .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; gap: 15px;}
+        .tv-hist-box { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+        .tv-hist-box h3 { color: #f8fafc; font-size: 16px; border-bottom: 1px dashed #334155; padding-bottom: 10px; margin-top: 0; text-align: center;}
+        
         .hist-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #1e293b; font-family: 'Segoe UI', sans-serif;}
         .hist-time { color: #64748b; font-size: 12px; }
         .hist-rota { color: #38bdf8; font-weight: bold; font-size: 14px;}
@@ -102,10 +104,11 @@
         .alerta-tv { font-size: 40px; color: #f59e0b; margin-bottom: 20px; letter-spacing: 4px; text-transform: uppercase;}
         @keyframes piscaAlerta { 0% { opacity: 0.5; color: #ef4444;} 100% { opacity: 1; color: #ff0000; text-shadow: 0 0 20px #ef4444; } }
         .placa-tv { font-size: 100px; font-weight: bold; background: #0f172a; padding: 30px 80px; border: 2px solid #38bdf8; border-radius: 15px; margin-bottom: 15px; color: #f8fafc; font-family: 'Segoe UI', sans-serif;}
-        .nome-mtr { font-size: 35px; color: #94a3b8; margin-bottom: 30px; text-transform: uppercase;}
-        .bancada-letra { color: #10b981; font-size: 80px; font-weight: bold; display: block;}
+        .nome-mtr { font-size: 35px; color: #94a3b8; margin-bottom: 30px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
+        .bancada-letra { color: #10b981; font-size: 80px; font-weight: bold; display: block; font-family: 'Segoe UI', sans-serif;}
         #btnAtivarVoz { position: absolute; top: 20px; left: 20px; padding: 10px 20px; background: #38bdf8; color: #0f172a; border: none; font-weight: bold; cursor: pointer; border-radius: 6px; font-size: 12px; text-transform: uppercase; }
 
+        /* CARD DE MÉDIA (RADAR GLOBAL) */
         .card-media { display: flex; align-items: center; justify-content: center; padding: 8px 25px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid transparent; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .media-verde { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.05); box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.1); }
         .media-amarelo { border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.05); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2), 0 0 10px rgba(245, 158, 11, 0.3); }
@@ -122,7 +125,7 @@
         <div class="brand">
             <div class="brand-text">
                 <h1>SYS.OPERAÇÃO</h1>
-                <p><span class="status-led"></span><span id="txtServidor">CONECTANDO...</span></p>
+                <p><span class="status-led"></span><span id="txtServidor">CONECTANDO NUVEM...</span></p>
                 <p style="color:#38bdf8; font-weight:bold; margin-top:15px; font-size: 14px;">OP: <span id="dispUser" style="font-weight:bold;"></span></p>
                 <p style="color:#94a3b8; font-size: 11px;" id="dispLocal">[LOCAL]</p>
             </div>
@@ -132,24 +135,24 @@
         </div>
 
         <div class="nav-menu">
-            <button class="nav-btn" id="btnTabAdmin" onclick="mudarAba('abaAdmin', this)" title="Importação">
+            <button class="nav-btn" id="btnTabAdmin" onclick="mudarAba('abaAdmin', this)">
                 <span class="nav-icon">📂</span><span class="nav-text">IMPORTAÇÃO</span>
             </button>
-            <button class="nav-btn" id="btnTabCheckin" onclick="mudarAba('abaCheckin', this)" title="Check-in Portaria">
+            <button class="nav-btn" id="btnTabCheckin" onclick="mudarAba('abaCheckin', this)">
                 <span class="nav-icon">🛂</span><span class="nav-text">CHECK-IN PORTARIA</span>
             </button>
-            <button class="nav-btn" id="btnTabTv" onclick="mudarAba('abaTv', this)" title="Monitor TV">
+            <button class="nav-btn" id="btnTabTv" onclick="mudarAba('abaTv', this)">
                 <span class="nav-icon">📺</span><span class="nav-text">MONITOR TV</span>
             </button>
-            <button class="nav-btn" id="btnTabMesas" onclick="mudarAba('abaMesas', this)" title="Meu Atendimento">
+            <button class="nav-btn" id="btnTabMesas" onclick="mudarAba('abaMesas', this)">
                 <span class="nav-icon">🎯</span><span class="nav-text">MEU ATENDIMENTO</span>
             </button>
-            <button class="nav-btn" id="btnTabRadar" onclick="mudarAba('abaRadar', this)" title="Radar Global">
+            <button class="nav-btn" id="btnTabRadar" onclick="mudarAba('abaRadar', this)">
                 <span class="nav-icon">🌍</span><span class="nav-text">RADAR GLOBAL</span>
             </button>
         </div>
 
-        <button class="toggle-btn-bottom" onclick="toggleSidebar()" title="Recolher/Expandir Menu">☰</button>
+        <button class="toggle-btn-bottom" onclick="toggleSidebar()">☰</button>
     </div>
 
     <div class="main-panel">
@@ -161,7 +164,7 @@
                     <label style="font-family: 'Segoe UI'; font-weight: 600; font-size: 14px;">SELECIONAR ARQUIVO DE CARGA:</label><br><br>
                     <input type="file" id="importArquivo" accept=".csv">
                 </div>
-                <div style="margin-top:auto; padding-top:20px; border-top:1px solid #1e293b; display: flex; justify-content: space-between;">
+                <div style="margin-top:20px; border-top:1px solid #1e293b; display: flex; justify-content: space-between; padding-top: 20px;">
                     <button class="btn-padrao btn-critico" onclick="limparDados()">ZERAR DADOS DO DIA</button>
                     <button class="btn-padrao" style="border-color: #f59e0b; color: #f59e0b;" onclick="destravarMesas()">🔓 DESTRAVAR MESAS PRESAS</button>
                 </div>
@@ -180,6 +183,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
                     <h2>CONTROLE DE ATENDIMENTO</h2>
                 </div>
+                
                 <div class="mesas-grid">
                     <div class="card-radar">
                         <h3 style="color: #f59e0b; border-color: rgba(245,158,11,0.3);">📡 FILA DE ESPERA</h3>
@@ -190,11 +194,21 @@
                             </table>
                         </div>
                     </div>
+
                     <div class="card-decor">
-                        <div style="font-size: 45px; margin-bottom: 10px; color: #38bdf8;">🖥️</div>
-                        <h3 id="displayNomeMesaGrande" style="color: #f8fafc; border:none; font-size: 20px; margin:0;">MESA DE OPERAÇÃO</h3>
-                        <p style="margin: 5px 0 0 0; letter-spacing: 1px; font-size: 12px; color: #10b981;">NUVEM ONLINE</p>
+                        <div style="font-size: 40px; margin-bottom: 5px; color: #38bdf8;">🖥️</div>
+                        <h3 id="displayNomeMesaGrande" style="color: #f8fafc; border:none; font-size: 18px; margin:0;">MESA DE OPERAÇÃO</h3>
+                        
+                        <div style="margin-top: 15px; width: 100%; border-top: 1px dashed #334155; padding-top: 15px; display: flex; flex-direction: column; align-items: center;">
+                            <label style="font-size: 11px; color: #ef4444; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 5px rgba(239,68,68,0.5);">🚨 ENVIAR PARA O FINAL DA FILA</label>
+                            <div style="display: flex; width: 90%; gap: 5px;">
+                                <input type="text" id="inputFinalFila" placeholder="Nome da Rota..." style="padding: 10px; font-size: 12px; border-radius: 4px; border-color: #ef4444; text-align: center;">
+                                <button class="btn-padrao btn-critico" style="padding: 10px; font-size: 11px;" onclick="addRotaFinalFila()">SALVAR</button>
+                            </div>
+                            <p style="font-size: 10px; color: #64748b; margin-top: 10px; text-align: center;">As rotas inseridas aqui não aparecerão na Fila de Espera ao bipar na portaria.</p>
+                        </div>
                     </div>
+
                     <div class="card-analise">
                         <h3 style="color: #10b981; border-color: rgba(16,185,129,0.3);">🟢 EM ANÁLISE (MINHA MESA)</h3>
                         <div class="table-wrapper" style="border-color: rgba(16,185,129,0.2);">
@@ -218,9 +232,16 @@
                             DIRIJA-SE AO DESTINO: <span class="bancada-letra" id="displayBancada">-</span>
                         </div>
                     </div>
+                    
                     <div class="tv-historico">
-                        <h3>ÚLTIMAS CHAMADAS</h3>
-                        <div id="tvHistoricoLista" style="overflow-y: auto; flex-grow: 1;"></div>
+                        <div class="tv-hist-box">
+                            <h3>ÚLTIMAS CHAMADAS</h3>
+                            <div id="tvHistoricoLista" style="overflow-y: auto; flex-grow: 1;"></div>
+                        </div>
+                        <div class="tv-hist-box" style="border-top: 1px dashed #334155; padding-top: 15px;">
+                            <h3 style="color: #ef4444; border-color: rgba(239,68,68,0.3);">🚨 FINAL DE FILA (PENALIDADE)</h3>
+                            <div id="tvFinalFilaLista" style="overflow-y: auto; flex-grow: 1;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -234,12 +255,26 @@
                     </div>
                     <span style="color:#38bdf8; font-size: 26px; font-weight: bold; font-family: 'Consolas';" id="relogioRadar">00:00:00</span>
                 </div>
-                <div class="table-wrapper">
+                <div class="table-wrapper" style="max-height: 45%;">
                     <table>
                         <thead>
                             <tr><th>ROTA / MOTORISTA</th><th>LOCALIZAÇÃO</th><th>STATUS</th><th>CHAMADA</th><th>DURAÇÃO</th></tr>
                         </thead>
                         <tbody id="tabelaDashboard"></tbody>
+                    </table>
+                </div>
+
+                <h3 style="color: #ef4444; border-color: rgba(239,68,68,0.3); margin-top: 25px; text-shadow: 0 0 10px rgba(239,68,68,0.4);">🚨 VEÍCULOS RETIDOS NO FINAL DA FILA</h3>
+                <div class="table-wrapper" style="border-color: rgba(239,68,68,0.3); max-height: 250px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="color: #ef4444;">ROTA / MOTORISTA</th>
+                                <th style="color: #ef4444;">HORA DO CHECK-IN</th>
+                                <th style="color: #ef4444; text-align: right;">AÇÃO ADMINISTRATIVA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaFinalFilaRadar"></tbody>
                     </table>
                 </div>
             </div>
@@ -267,6 +302,7 @@
         
         let veiculos = [];
         let historicoTV = [];
+        let rotasFinalFila = []; // Array que guarda a regra de penalidade
         let ultimaChamadaHora = 0; 
 
         if (!usuarioAtual) window.location.href = "index.html"; 
@@ -281,7 +317,7 @@
         const btnRadar = document.getElementById('btnTabRadar');
 
         // ========================================================
-        // TRAVA-MESTRA DE PERMISSÕES (CÓDIGO BLINDADO)
+        // TRAVA-MESTRA ABSOLUTA DE PERMISSÕES
         // ========================================================
         if(lugarAtual === 'Admin') { 
             // Admin tem acesso livre a todas as telas
@@ -293,24 +329,22 @@
             btnAdmin.click(); 
         } 
         else { 
-            // QUALQUER OUTRO USUÁRIO (Novo ou Antigo) SÓ VÊ "MEU ATENDIMENTO"
+            // QUALQUER OUTRA CONTA (Novas ou Antigas) SÓ VÊ "MEU ATENDIMENTO" E MAIS NADA!
             document.body.classList.add('is-mesa-operacao'); 
             
-            // Escondemos ativamente todas as outras opções por segurança
             btnAdmin.style.display = 'none';
             btnCheckin.style.display = 'none';
             btnTv.style.display = 'none';
             btnRadar.style.display = 'none';
 
-            // Mostra e clica apenas no atendimento
             btnMesas.style.display = 'flex'; 
             btnMesas.click(); 
             
             let nomeDisplay = document.getElementById('displayNomeMesaGrande');
             if (nomeDisplay && lugarAtual) nomeDisplay.innerText = lugarAtual.toUpperCase();
         }
-        // ========================================================
 
+        // --- CONEXÃO AO VIVO COM A NUVEM FIREBASE ---
         db.ref('veiculos').on('value', (snapshot) => {
             veiculos = snapshot.val() || [];
             document.getElementById('txtServidor').innerText = "NUVEM ONLINE";
@@ -322,6 +356,10 @@
             renderizarHistoricoTV();
         });
 
+        db.ref('rotasFinalFila').on('value', (snapshot) => {
+            rotasFinalFila = snapshot.val() || [];
+        });
+
         db.ref('tvComando').on('value', (snapshot) => {
             const dados = snapshot.val();
             if(dados && dados.data > ultimaChamadaHora) {
@@ -330,9 +368,7 @@
             }
         });
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
         function mudarAba(idAba, btn) {
             document.querySelectorAll('.aba').forEach(a => a.classList.remove('active'));
@@ -366,6 +402,7 @@
 
         function addLog(texto, tipo) {
             const consoleBox = document.getElementById('consoleLog');
+            if(!consoleBox) return;
             const dataHora = new Date().toLocaleTimeString();
             let classe = 'log-ok'; if(tipo === 'erro') classe = 'log-erro'; if(tipo === 'aviso') classe = 'log-aviso';
             consoleBox.innerHTML += `<div class="log-linha ${classe}">[${dataHora}] > ${texto}</div>`;
@@ -400,9 +437,13 @@
             if(confirm("Apagar toda a operação de hoje do Servidor?")) { 
                 db.ref('veiculos').set(null);
                 db.ref('tvHistorico').set(null);
+                db.ref('rotasFinalFila').set(null);
             } 
         }
 
+        // ===============================================
+        // CHECK-IN (AGORA COM LÓGICA DE FINAL DE FILA)
+        // ===============================================
         document.getElementById('coletor')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const idBipado = this.value.trim().toUpperCase();
@@ -414,15 +455,53 @@
                     } else if (veiculo.status !== 'NO_PERÍMETRO') {
                         addLog(`AVISO: Motorista ${veiculo.nome} já consta no sistema.`, 'aviso');
                     } else {
-                        veiculo.status = 'AGUARDANDO'; 
-                        veiculo.chegada = Date.now(); 
-                        addLog(`CHECK-IN OK: Rota [${veiculo.rota}] enviada para as Mesas.`, 'ok');
+                        // Verifica se a rota está na lista de penalidade
+                        if (rotasFinalFila.includes(veiculo.rota)) {
+                            veiculo.status = 'FINAL_FILA'; 
+                            veiculo.chegada = Date.now(); 
+                            addLog(`⚠️ ROTA PENALIZADA: [${veiculo.rota}] desviada para o Final da Fila.`, 'erro');
+                        } else {
+                            veiculo.status = 'AGUARDANDO'; 
+                            veiculo.chegada = Date.now(); 
+                            addLog(`CHECK-IN OK: Rota [${veiculo.rota}] liberada para as Mesas.`, 'ok');
+                        }
                         db.ref('veiculos').set(dbTemp);
                     }
                     this.value = ''; this.focus();
                 }
             }
         });
+
+        // ===============================================
+        // FUNÇÃO DE ADICIONAR REGRA (FINAL DE FILA)
+        // ===============================================
+        window.addRotaFinalFila = function() {
+            let val = document.getElementById('inputFinalFila').value.trim().toUpperCase();
+            if(val) {
+                let rfTemp = [...rotasFinalFila];
+                if(!rfTemp.includes(val)) {
+                    rfTemp.push(val);
+                    db.ref('rotasFinalFila').set(rfTemp);
+                    alert(`Feito! Todos os motoristas da rota ${val} irão para o Final da Fila.`);
+                }
+                document.getElementById('inputFinalFila').value = '';
+            }
+        };
+
+        // ===============================================
+        // FUNÇÃO DO ADMIN PARA LIBERAR QUEM ESTÁ NO FINAL
+        // ===============================================
+        window.liberarFinalFila = function(id) {
+            if(confirm("Deseja liberar este veículo para a Fila de Espera Normal das mesas?")) {
+                let dbTemp = [...veiculos];
+                let veiculo = dbTemp.find(v => v.id === id);
+                if(veiculo) {
+                    veiculo.status = 'AGUARDANDO';
+                    veiculo.chegada = Date.now(); // Reseta o tempo como se tivesse feito check-in agora
+                    db.ref('veiculos').set(dbTemp);
+                }
+            }
+        };
 
         function chamarVeiculo(id) {
             let dbTemp = [...veiculos];
@@ -468,41 +547,48 @@
 
         function ativarVozTV() {
             document.getElementById('btnAtivarVoz').style.display = 'none';
-            let locucaoInit = new SpeechSynthesisUtterance("Painel de voz ativado.");
+            let locucaoInit = new SpeechSynthesisUtterance("Módulo de comunicação de pátio ativado.");
             locucaoInit.volume = 0; window.speechSynthesis.speak(locucaoInit);
         }
 
         function atualizarEspelhoTV(dados) {
-            document.getElementById('textoAlerta').style.animation = 'piscaAlerta 1s infinite alternate';
-            document.getElementById('textoAlerta').innerText = "ATENÇÃO: DESLOCAMENTO";
-            document.getElementById('displayPlaca').innerText = dados.rota;
-            document.getElementById('displayNomeMotorista').innerText = dados.nome;
-            document.getElementById('displayBancadaContainer').style.display = 'block';
-            document.getElementById('displayBancada').innerText = dados.mesa;
+            let tAlerta = document.getElementById('textoAlerta');
+            if(tAlerta) {
+                tAlerta.style.animation = 'piscaAlerta 1s infinite alternate';
+                tAlerta.innerText = "ATENÇÃO: DESLOCAMENTO";
+            }
+            let dPlaca = document.getElementById('displayPlaca'); if(dPlaca) dPlaca.innerText = dados.rota;
+            let dNome = document.getElementById('displayNomeMotorista'); if(dNome) dNome.innerText = dados.nome;
+            let dBancadaC = document.getElementById('displayBancadaContainer'); if(dBancadaC) dBancadaC.style.display = 'block';
+            let dBancada = document.getElementById('displayBancada'); if(dBancada) dBancada.innerText = dados.mesa;
             
-            let texto = `Atenção motorista ${dados.nome}, da rota ${dados.rota}. Dirija-se à ${dados.mesa}.`;
-            let locucao = new SpeechSynthesisUtterance(texto);
-            locucao.lang = 'pt-BR'; locucao.rate = 0.9;
-            window.speechSynthesis.speak(locucao);
+            // O ÁUDIO É TRAVADO: Só fala se quem está logado for "Admin" e a aba visualizada na hora for a "TV"
+            let abaTvElemento = document.getElementById('abaTv');
+            if (lugarAtual === 'Admin' && abaTvElemento && abaTvElemento.classList.contains('active')) {
+                let texto = `Atenção motorista ${dados.nome}, da rota ${dados.rota}. Dirija-se à ${dados.mesa}.`;
+                let locucao = new SpeechSynthesisUtterance(texto);
+                locucao.lang = 'pt-BR'; locucao.rate = 0.9;
+                window.speechSynthesis.speak(locucao);
+            }
         }
 
         function renderizarHistoricoTV() {
             let listaBox = document.getElementById('tvHistoricoLista');
-            if(!listaBox) return;
-            
-            listaBox.innerHTML = '';
-            historicoTV.forEach(item => {
-                let horaStr = new Date(item.hora).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                let numMesa = item.mesa.replace('Mesa ', '');
-                listaBox.innerHTML += `
-                    <div class="hist-item">
-                        <span class="hist-time">${horaStr}</span>
-                        <span class="hist-rota">${item.rota}</span>
-                        <span class="hist-mesa">M${numMesa}</span>
-                    </div>
-                `;
-            });
-            if(historicoTV.length === 0) listaBox.innerHTML = `<div style="text-align:center; color:#64748b; margin-top: 20px; font-size:14px;">Sem histórico</div>`;
+            if(listaBox) {
+                listaBox.innerHTML = '';
+                historicoTV.forEach(item => {
+                    let horaStr = new Date(item.hora).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    let numMesa = item.mesa.replace('Mesa ', '');
+                    listaBox.innerHTML += `
+                        <div class="hist-item">
+                            <span class="hist-time">${horaStr}</span>
+                            <span class="hist-rota">${item.rota}</span>
+                            <span class="hist-mesa">M${numMesa}</span>
+                        </div>
+                    `;
+                });
+                if(historicoTV.length === 0) listaBox.innerHTML = `<div style="text-align:center; color:#64748b; margin-top: 20px; font-size:14px;">Sem histórico</div>`;
+            }
         }
 
         function formatarTempoLive(milisegundos) {
@@ -517,14 +603,22 @@
             const tbodyDashboard = document.getElementById('tabelaDashboard'); 
             const tbodyAguardando = document.querySelector('#tabelaAguardandoMesa tbody'); 
             const tbodyMinhaMesa = document.getElementById('tabelaMinhaMesa'); 
+            const tbodyFinalFilaAdmin = document.getElementById('tabelaFinalFilaRadar');
+            const listaFinalFilaTV = document.getElementById('tvFinalFilaLista');
 
             if(tbodyDashboard) tbodyDashboard.innerHTML = '';
             if(tbodyAguardando) tbodyAguardando.innerHTML = '';
             if(tbodyMinhaMesa) tbodyMinhaMesa.innerHTML = '';
+            if(tbodyFinalFilaAdmin) tbodyFinalFilaAdmin.innerHTML = '';
+            
+            let htmlFinalFilaTV = '';
 
-            let countAguardando = 0; let countMinhaMesa = 0;
+            let countAguardando = 0; let countMinhaMesa = 0; let countFinalFila = 0;
             let somaTotalMs = 0; let totalMotoristasCalculados = 0;
             let agora = Date.now();
+
+            // Pega apenas quem está punido e ordena pelo mais antigo
+            let veiculosNoFim = veiculos.filter(v => v.status === 'FINAL_FILA').sort((a,b) => a.chegada - b.chegada);
 
             veiculos.forEach(v => {
                 if(v.status === 'NO_PERÍMETRO') return; 
@@ -553,7 +647,13 @@
                     duracaoDisplay = formatarTempoLive(duracaoDesteMotorista) + ' <span style="font-size:10px;color:#10b981;">(Concluído)</span>';
                     somaTotalMs += duracaoDesteMotorista; totalMotoristasCalculados++;
                 }
+                else if (v.status === 'FINAL_FILA') {
+                    localRadar = '<span style="color:#ef4444; font-weight:bold;">RETIDO (FINAL DE FILA)</span>'; txtStatusRadar = 'PENALIZADO'; corStatusRadar = '#ef4444'; 
+                    duracaoDesteMotorista = (agora - v.chegada);
+                    duracaoDisplay = formatarTempoLive(duracaoDesteMotorista) + ' <span style="font-size:10px;color:#ef4444;">(Aguardando Liberação)</span>';
+                }
 
+                // 1. POPULA O RADAR GLOBAL MESTRE
                 if(tbodyDashboard) {
                     tbodyDashboard.innerHTML += `<tr>
                         <td><strong style="color:#f8fafc; font-size: 14px;">${v.rota}</strong><br><span style="font-size:11px; color:#94a3b8;">${v.nome}</span></td>
@@ -564,6 +664,7 @@
                     </tr>`;
                 }
 
+                // 2. POPULA A MESA (RADAR DE ESPERA NORMAL)
                 if(v.status === 'AGUARDANDO' && tbodyAguardando) {
                     countAguardando++;
                     let tempoFilaSimples = Math.floor((agora - v.chegada) / 60000) + 'm';
@@ -574,6 +675,7 @@
                     </tr>`;
                 }
 
+                // 3. POPULA A MESA (EM ANÁLISE)
                 if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lugarAtual && tbodyMinhaMesa) {
                     countMinhaMesa++;
                     let tempoAtendimentoSimples = formatarTempoLive(agora - v.horaChamada);
@@ -585,8 +687,38 @@
                 }
             });
 
+            // 4. POPULA O DASHBOARD DE FINAL DE FILA (ADMIN & TV)
+            veiculosNoFim.forEach(v => {
+                countFinalFila++;
+                let tempoFilaFF = formatarTempoLive(agora - v.chegada);
+                let horaFF = new Date(v.chegada).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                // Admin
+                if(tbodyFinalFilaAdmin) {
+                    tbodyFinalFilaAdmin.innerHTML += `<tr>
+                        <td><strong style="color:#ef4444; font-size:14px;">${v.rota}</strong><br><span style="font-size:11px; color:#94a3b8;">${v.nome}</span></td>
+                        <td style="color:#f8fafc;">${horaFF} <br><span style="font-size:10px; color:#ef4444;">Espera: ${tempoFilaFF}</span></td>
+                        <td align="right"><button class="btn-padrao btn-acao" style="padding: 6px 12px; font-size:10px;" onclick="liberarFinalFila('${v.id}')">LIBERAR PARA MESAS</button></td>
+                    </tr>`;
+                }
+
+                // TV (Max 10)
+                if(countFinalFila <= 10) {
+                    htmlFinalFilaTV += `<div class="hist-item" style="border-bottom: 1px dashed rgba(239,68,68,0.3);">
+                        <span class="hist-time" style="color: #ef4444; font-size:14px;">${tempoFilaFF}</span>
+                        <span class="hist-rota" style="color: #ef4444; text-shadow: 0 0 5px rgba(239,68,68,0.5); font-size:16px;">${v.rota}</span>
+                        <span class="hist-mesa" style="color: #ef4444; font-weight: normal; font-size:12px;">${v.nome.split(' ')[0]}</span>
+                    </div>`;
+                }
+            });
+
             if(countAguardando === 0 && tbodyAguardando) tbodyAguardando.innerHTML = `<tr><td colspan="3" align="center" style="color:#64748b; padding: 30px 10px;">A FILA ESTÁ VAZIA</td></tr>`;
             if(countMinhaMesa === 0 && tbodyMinhaMesa) tbodyMinhaMesa.innerHTML = `<tr><td colspan="3" align="center" style="color:#64748b; padding: 30px 10px;">NENHUM ATENDIMENTO.</td></tr>`;
+            if(countFinalFila === 0 && tbodyFinalFilaAdmin) tbodyFinalFilaAdmin.innerHTML = `<tr><td colspan="3" align="center" style="color:#64748b; padding: 20px;">NENHUM VEÍCULO RETIDO NESTE MOMENTO.</td></tr>`;
+            
+            if(listaFinalFilaTV) {
+                listaFinalFilaTV.innerHTML = htmlFinalFilaTV || `<div style="text-align:center; color:#64748b; margin-top: 10px; font-size:12px;">Pátio Limpo</div>`;
+            }
 
             let mediaCard = document.getElementById('cardMediaGlobal');
             let mediaValor = document.getElementById('valorMediaGlobal');
