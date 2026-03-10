@@ -33,8 +33,8 @@
             <div class="logo-icon">💠</div>
             <h2 id="statusNuvem" style="color: #f1c40f;">CONECTANDO NUVEM...</h2>
             
-            <input type="text" id="usuarioLogin" placeholder="Usuário" autocomplete="off" required>
-            <input type="password" id="senhaLogin" placeholder="Senha" required>
+            <input type="text" id="usuarioLogin" placeholder="Usuário" autocomplete="off" required onkeypress="if(event.key === 'Enter') fazerLogin()">
+            <input type="password" id="senhaLogin" placeholder="Senha" required onkeypress="if(event.key === 'Enter') fazerLogin()">
             
             <div id="containerMesa">
                 <select id="lugarLogin">
@@ -50,8 +50,8 @@
             <div class="logo-icon">👤</div>
             <h2>NOVO OPERADOR</h2>
             
-            <input type="text" id="usuarioCadastro" placeholder="Novo Usuário" autocomplete="off" required>
-            <input type="password" id="senhaCadastro" placeholder="Criar Senha" required>
+            <input type="text" id="usuarioCadastro" placeholder="Novo Usuário" autocomplete="off" required onkeypress="if(event.key === 'Enter') fazerCadastro()">
+            <input type="password" id="senhaCadastro" placeholder="Criar Senha" required onkeypress="if(event.key === 'Enter') fazerCadastro()">
             
             <button class="btn btn-cadastro" onclick="fazerCadastro()">REGISTRAR NO SERVIDOR</button>
             <span class="link-alternar" onclick="alternarTela()">VOLTAR AO LOGIN</span>
@@ -109,7 +109,7 @@
             if(!temMesaLivre) {
                 let option = document.createElement('option');
                 option.value = "";
-                option.text = "TODAS AS MESAS ESTÃO OCUPADAS";
+                option.text = "TODAS AS MESAS OCUPADAS";
                 selectLugar.appendChild(option);
                 selectLugar.disabled = true;
             } else {
@@ -136,7 +136,7 @@
             const userValido = usuariosSalvos.find(user => user.usuario.toLowerCase() === u && user.senha === s);
             
             if (userValido) {
-                if(!lugar) return alert("Não há mesas disponíveis no momento.");
+                if(!lugar) return alert("Não há mesas disponíveis.");
                 
                 mesasOcupadas.push(lugar);
                 db.ref('mesasOcupadas').set(mesasOcupadas).then(() => {
@@ -151,11 +151,7 @@
             localStorage.setItem('usuarioLogado', usuario);
             localStorage.setItem('roleLogado', role);
             localStorage.setItem('lugarLogado', lugar);
-            
-            // REDIRECIONAMENTO BLINDADO: Pega a pasta exata do PC onde o arquivo está rodando
-            let urlAtual = window.location.href;
-            let pastaAtual = urlAtual.substring(0, urlAtual.lastIndexOf('/'));
-            window.location.href = pastaAtual + '/painel.html';
+            window.location.href = "painel.html"; 
         }
 
         function fazerCadastro() {
@@ -164,10 +160,11 @@
             
             if(u && s) {
                 if(['admin'].includes(u.toLowerCase()) || usuariosSalvos.find(user => user.usuario.toLowerCase() === u.toLowerCase())) { 
-                    alert("Este usuário já existe ou é bloqueado pelo sistema!"); return; 
+                    alert("Este usuário já existe ou é bloqueado!"); return; 
                 }
                 
                 usuariosSalvos.push({ usuario: u, senha: s, role: 'operador' });
+                // Salva permanentemente no Firebase
                 db.ref('usuarios').set(usuariosSalvos).then(() => {
                     alert("Cadastro salvo no Servidor com sucesso! Volte e faça o login.");
                     alternarTela(); 
