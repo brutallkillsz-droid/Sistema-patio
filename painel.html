@@ -29,7 +29,10 @@
         .sidebar.collapsed .btn-sair-mini .nav-text { display: none; }
 
         .nav-menu { padding: 10px 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto;}
-        .nav-btn { display: none; width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; display: flex; align-items: center; white-space: nowrap;}
+        
+        /* CORRIGIDO: O ERRO ESTAVA AQUI! REMOVIDO O "display: flex" DUPLICADO QUE BURLAVA O SISTEMA */
+        .nav-btn { display: none; width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; align-items: center; white-space: nowrap;}
+        
         .nav-icon { font-size: 20px; min-width: 35px; text-align: center; margin-right: 10px; }
         .sidebar.collapsed .nav-text { display: none; }
         .sidebar.collapsed .nav-btn { justify-content: center; padding: 16px 0; border-left: 4px solid transparent; }
@@ -51,6 +54,7 @@
         
         input[type="text"], input[type="file"] { width: 100%; padding: 15px; font-size: 18px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; font-family: inherit; box-sizing: border-box; outline: none; transition: 0.3s; border-radius: 6px;}
         input[type="text"]:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+        input:disabled { background: #0b101a; color: #64748b; border-color: #ef4444; cursor: not-allowed; }
 
         .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #1e293b; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
         table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
@@ -184,7 +188,7 @@
                 <div class="tv-layout">
                     <div class="tv-main">
                         <button id="btnAtivarVoz" onclick="ativarVozTV()" style="padding:10px; background:#38bdf8; border:none; cursor:pointer; border-radius:4px; font-weight:bold; position:absolute; top:20px; left:20px; z-index:100;">Ligar Áudio da TV</button>
-                        <div class="alerta-tv" id="textoAlerta">PAINEL STANDBY</div>
+                        <div class="alerta-tv" id="textoAlerta" style="font-family: 'Segoe UI'; font-weight:bold; letter-spacing: 2px; font-size: 35px; color: #f59e0b; margin-bottom: 20px;">STANDBY</div>
                         <div class="placa-tv" id="displayPlaca">---</div>
                         <div class="nome-mtr" id="displayNomeMotorista">AGUARDANDO...</div>
                         <div id="displayBancadaContainer" style="display:none;">
@@ -237,8 +241,25 @@
 
         const bA=document.getElementById('btnTabAdmin'), bC=document.getElementById('btnTabCheckin'), bT=document.getElementById('btnTabTv'), bM=document.getElementById('btnTabMesas'), bR=document.getElementById('btnTabRadar'), bF=document.getElementById('btnTabFinalFila');
 
-        if(lAtu === 'Admin') { [bA, bC, bT, bM, bR, bF].forEach(b=>b.style.display='flex'); bA.click(); }
-        else { document.body.classList.add('is-mesa-operacao'); bM.style.display='flex'; bM.click(); document.getElementById('displayNomeMesaGrande').innerText = lAtu.toUpperCase(); }
+        // ========================================================
+        // A TRAVA ABSOLUTA: IMPEDE QUE MESA VEJA OUTRAS ABAS
+        // ========================================================
+        if(lAtu === 'Admin') { 
+            [bA, bC, bT, bM, bR, bF].forEach(b => { if(b) b.style.display = 'flex'; }); 
+            if(bA) bA.click(); 
+        } else { 
+            document.body.classList.add('is-mesa-operacao'); 
+            if(bM) { bM.style.display = 'flex'; bM.click(); }
+            let dNome = document.getElementById('displayNomeMesaGrande');
+            if(dNome && lAtu) dNome.innerText = lAtu.toUpperCase(); 
+
+            // EXCLUI OS BOTÕES DO HTML PARA O OPERADOR (GARANTIA 100%)
+            if(bA) bA.remove();
+            if(bC) bC.remove();
+            if(bT) bT.remove();
+            if(bR) bR.remove();
+            if(bF) bF.remove();
+        }
 
         db.ref('veiculos').on('value', s => { veiculos = s.val() || []; renderizarTelas(); });
         db.ref('rotasFinalFila').on('value', s => { rFF = s.val() || []; });
