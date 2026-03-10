@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>SISTEMA DE COMANDO - PÁTIO</title>
+    <style>
+        /* BASE HIGH-TECH REFINADA */
+        body { margin: 0; padding: 0; background-color: #0f172a; color: #cbd5e1; font-family: 'Consolas', 'Courier New', monospace; height: 100vh; display: flex; overflow: hidden; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; } 
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; } 
+        ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
+
+        /* MOLDURA PRINCIPAL & SIDEBAR RETRÁTIL */
+        .sidebar { width: 260px; background: #0b132b; border-right: 1px solid #1e293b; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 10; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+        .sidebar.collapsed { width: 80px; }
+        .main-panel { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; background: radial-gradient(circle at top right, #0d1424 0%, #07090f 100%); transition: margin-left 0.4s ease; }
+
+        /* HEADER DO MENU LATERAL (TOPO) */
+        .brand { padding: 20px 15px; border-bottom: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; background: #080f26; position: relative;}
+        .brand-text { display: flex; flex-direction: column; align-items: center; transition: opacity 0.2s; width: 100%;}
+        .sidebar.collapsed .brand-text { opacity: 0; pointer-events: none; display: none; }
+        .brand h1 { margin: 0; font-size: 18px; letter-spacing: 2px; color: #f8fafc; font-family: 'Segoe UI', sans-serif;}
+        .brand p { margin: 5px 0 0 0; font-size: 12px; color: #94a3b8; }
+        .status-led { display: inline-block; width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); margin-right: 5px; }
+
+        /* MINI-CARD DE LOGOUT (NO TOPO) */
+        .btn-sair-mini { background: rgba(239, 68, 68, 0.05); color: #ef4444; border: 1px solid #ef4444; border-radius: 6px; padding: 10px 15px; font-size: 12px; font-family: 'Segoe UI', sans-serif; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 20px; box-sizing: border-box; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); letter-spacing: 1px; }
+        .btn-sair-mini:hover { background: #ef4444; color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+        .sidebar.collapsed .btn-sair-mini { padding: 10px 0; margin-top: 15px; }
+        .sidebar.collapsed .btn-sair-mini .nav-text { display: none; }
+        .sidebar.collapsed .btn-sair-mini .nav-icon { margin: 0; font-size: 18px; }
+
+        /* ABAS (MENU LATERAL) */
+        .nav-menu { padding: 10px 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto;}
+        .nav-btn { display: none; width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; display: flex; align-items: center; white-space: nowrap;}
+        .nav-icon { font-size: 20px; min-width: 35px; text-align: center; margin-right: 10px; transition: 0.3s;}
+        .sidebar.collapsed .nav-icon { margin-right: 0; font-size: 24px; }
+        .sidebar.collapsed .nav-text { display: none; }
+        .sidebar.collapsed .nav-btn { justify-content: center; padding: 16px 0; }
+        .nav-btn:hover { background: rgba(56, 189, 248, 0.05); color: #f8fafc; }
+        .nav-btn.active { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-left: 3px solid #38bdf8; }
+
+        /* BOTÃO TOGGLE (NO FUNDO DO MENU) */
+        .toggle-btn-bottom { width: 100%; background: #080f26; border: none; border-top: 1px solid #1e293b; color: #38bdf8; font-size: 24px; cursor: pointer; transition: 0.3s; padding: 15px 0; display: flex; justify-content: center; align-items: center; margin-top: auto; }
+        .toggle-btn-bottom:hover { color: #fff; text-shadow: 0 0 10px #38bdf8; background: rgba(56, 189, 248, 0.05); }
+
+        /* ÁREA DINÂMICA */
+        .tab-content-area { flex-grow: 1; padding: 25px; position: relative; overflow: hidden; background: transparent; display: flex; flex-direction: column; }
+        .aba { display: none; height: 100%; flex-direction: column; animation: fadeIn 0.3s ease-in-out; }
+        .aba.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* TEXTOS E CAMPOS */
+        h2 { margin-top: 0; color: #f8fafc; font-weight: 600; font-size: 22px; font-family: 'Segoe UI', sans-serif;}
+        h3 { color: #38bdf8; font-size: 15px; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; font-family: 'Segoe UI', sans-serif; margin-top: 0; font-weight: 600;}
+        input[type="text"], input[type="file"] { width: 100%; padding: 15px; font-size: 18px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; font-family: inherit; box-sizing: border-box; outline: none; transition: 0.3s; border-radius: 6px;}
+        input[type="text"]:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+        
+        /* TABELAS */
+        .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #1e293b; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
+        table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
+        th { position: sticky; top: 0; background: #0f172a; padding: 14px; text-align: left; border-bottom: 1px solid #334155; color: #94a3b8; z-index: 2; font-weight: 600; font-size: 13px; text-transform: uppercase;}
+        td { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        
+        /* REGRAS EXCLUSIVAS PARA MESA (FONTE GIGANTE NO RADAR DA MESA) */
+        .is-mesa-operacao #tabelaAguardandoMesa .rota-text { font-size: 24px !important; color: #fff !important; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
+        .is-mesa-operacao #tabelaAguardandoMesa .nome-text { font-size: 16px !important; color: #cbd5e1 !important; }
+        .is-mesa-operacao #tabelaAguardandoMesa .tempo-text { font-size: 20px !important; font-weight: bold !important; }
+        .is-mesa-operacao #tabelaAguardandoMesa .btn-puxar { font-size: 14px !important; padding: 12px 24px !important; border-radius: 6px !important; }
+        
+        /* BOTÕES GERAIS */
+        .btn-padrao { background: transparent; color: #38bdf8; border: 1px solid #38bdf8; padding: 8px 16px; cursor: pointer; text-transform: uppercase; font-family: 'Segoe UI', sans-serif; font-weight: 600; border-radius: 4px; transition: 0.2s;}
+        .btn-padrao:hover { background: #38bdf8; color: #0f172a; }
+        .btn-critico { border-color: #ef4444; color: #ef4444; }
+        .btn-critico:hover { background: #ef4444; color: #fff; }
+        .btn-acao { border-color: #10b981; color: #10b981; }
+        .btn-acao:hover { background: #10b981; color: #fff; }
+
+        /* CONSOLE ADMIN */
+        .console-box { background: #020617; border: 1px solid #1e293b; padding: 15px; height: 180px; overflow-y: auto; margin-top: 15px; font-size: 13px; color: #94a3b8; border-radius: 6px;}
+        .log-linha { margin: 4px 0; border-bottom: 1px dashed #1e293b; padding-bottom: 4px;}
+        .log-erro { color: #ef4444; }
+        .log-ok { color: #10b981; }
+
+        /* GRID ATENDIMENTO (EM L) */
+        .mesas-grid { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: 1fr 320px; gap: 20px; flex-grow: 1; min-height: 0; margin-top: 10px; }
+        .card-radar { grid-column: 1 / 2; grid-row: 1 / 3; display: flex; flex-direction: column; min-height: 0; }
+        .card-decor { grid-column: 2 / 3; grid-row: 1 / 2; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #1e293b; border-radius: 8px; color: #cbd5e1; text-align: center; padding: 20px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
+        .card-analise { grid-column: 2 / 3; grid-row: 2 / 3; display: flex; flex-direction: column; background: transparent; min-height: 0; }
+
+        /* TV TELA CHEIA */
+        .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
+        .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative;}
+        .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; }
+        .tv-historico h3 { color: #f8fafc; font-size: 18px; border-bottom: 1px dashed #334155; padding-bottom: 10px; margin-top: 0; text-align: center;}
+        .hist-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #1e293b; font-family: 'Segoe UI', sans-serif;}
+        .hist-time { color: #64748b; font-size: 12px; }
+        .hist-rota { color: #38bdf8; font-weight: bold; font-size: 14px;}
+        .hist-mesa { color: #10b981; font-weight: bold; font-size: 14px;}
+        .alerta-tv { font-size: 40px; color: #f59e0b; margin-bottom: 20px; letter-spacing: 4px; text-transform: uppercase;}
+        @keyframes piscaAlerta { 0% { opacity: 0.5; color: #ef4444;} 100% { opacity: 1; color: #ff0000; text-shadow: 0 0 20px #ef4444; } }
+        .placa-tv { font-size: 100px; font-weight: bold; background: #0f172a; padding: 30px 80px; border: 2px solid #38bdf8; border-radius: 15px; margin-bottom: 15px; color: #f8fafc; font-family: 'Segoe UI', sans-serif;}
+        .nome-mtr { font-size: 35px; color: #94a3b8; margin-bottom: 30px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
+        .bancada-letra { color: #10b981; font-size: 80px; font-weight: bold; display: block; font-family: 'Segoe UI', sans-serif;}
+        #btnAtivarVoz { position: absolute; top: 20px; left: 20px; padding: 10px 20px; background: #38bdf8; color: #0f172a; border: none; font-weight: bold; cursor: pointer; border-radius: 6px; font-size: 12px; text-transform: uppercase; }
+
+        /* CARD DE MÉDIA (RADAR GLOBAL) */
+        .card-media { display: flex; align-items: center; justify-content: center; padding: 8px 25px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid transparent; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .media-verde { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.05); box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.1); }
+        .media-amarelo { border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.05); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2), 0 0 10px rgba(245, 158, 11, 0.3); }
+        .media-vermelho { border-color: #ef4444; color: #ef4444; background: rgba(239, 68, 68, 0.1); animation: piscaAlertaMedia 0.8s infinite alternate; }
+        @keyframes piscaAlertaMedia { from { box-shadow: inset 0 0 5px rgba(239,68,68,0.2), 0 0 5px rgba(239,68,68,0.4); text-shadow: none; } to { box-shadow: inset 0 0 20px rgba(239,68,68,0.5), 0 0 20px rgba(239,68,68,0.8); text-shadow: 0 0 10px rgba(239,68,68,0.8); } }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-text">
+                <h1>SYS.OPERAÇÃO</h1>
+                <p><span class="status-led"></span><span id="txtServidor">CONECTANDO NUVEM...</span></p>
+                <p style="color:#38bdf8; font-weight:bold; margin-top:15px; font-size: 14px;">OP: <span id="dispUser" style="font-weight:bold;"></span></p>
+                <p style="color:#94a3b8; font-size: 11px;" id="dispLocal">[LOCAL]</p>
+            </div>
+            
+            <button class="btn-sair-mini" onclick="fazerLogout()" title="Encerrar Sessão">
+                <span class="nav-icon" style="margin-right: 8px;">🚪</span>
+                <span class="nav-text">LOGOUT</span>
+            </button>
+        </div>
+
+        <div class="nav-menu">
+            <button class="nav-btn" id="btnTabAdmin" onclick="mudarAba('abaAdmin', this)" title="Importação">
+                <span class="nav-icon">📂</span><span class="nav-text">IMPORTAÇÃO</span>
+            </button>
+            <button class="nav-btn" id="btnTabCheckin" onclick="mudarAba('abaCheckin', this)" title="Check-in Portaria">
+                <span class="nav-icon">🛂</span><span class="nav-text">CHECK-IN PORTARIA</span>
+            </button>
+            <button class="nav-btn" id="btnTabTv" onclick="mudarAba('abaTv', this)" title="Monitor TV">
+                <span class="nav-icon">📺</span><span class="nav-text">MONITOR TV</span>
+            </button>
+            <button class="nav-btn" id="btnTabMesas" onclick="mudarAba('abaMesas', this)" title="Meu Atendimento">
+                <span class="nav-icon">🎯</span><span class="nav-text">MEU ATENDIMENTO</span>
+            </button>
+            <button class="nav-btn" id="btnTabRadar" onclick="mudarAba('abaRadar', this)" title="Radar Global">
+                <span class="nav-icon">🌍</span><span class="nav-text">RADAR GLOBAL</span>
+            </button>
+        </div>
+
+        <button class="toggle-btn-bottom" onclick="toggleSidebar()" title="Recolher/Expandir Menu">
+            ☰
+        </button>
+    </div>
+
+    <div class="main-panel">
+        <div class="tab-content-area">
+            
+            <div id="abaAdmin" class="aba">
+                <h2>GESTÃO DE DADOS (IMPORT)</h2>
+                <p style="color:#94a3b8; font-size:14px;">Carregue o arquivo diário. O formato exigido é CSV (Col C: Rota | Col F: Motorista | Col G: ID).</p>
+                <div style="margin-top:20px; padding:25px; background:#1e293b; border-radius: 8px;">
+                    <label style="font-family: 'Segoe UI'; font-weight: 600; font-size: 14px;">SELECIONAR ARQUIVO DE CARGA:</label><br><br>
+                    <input type="file" id="importArquivo" accept=".csv">
+                </div>
+                <div style="margin-top:auto; padding-top:20px; border-top:1px solid #1e293b; display: flex; justify-content: space-between;">
+                    <button class="btn-padrao btn-critico" onclick="limparDados()">ZERAR DADOS DO DIA</button>
+                    <button class="btn-padrao" style="border-color: #f59e0b; color: #f59e0b;" onclick="destravarMesas()">🔓 DESTRAVAR MESAS PRESAS</button>
+                </div>
+            </div>
+
+            <div id="abaCheckin" class="aba">
+                <h2>PORTARIA DE ACESSO (CHECK-IN)</h2>
+                <p style="color:#94a3b8; font-size:14px;">Realize a leitura do ID do motorista para enviá-lo ao radar.</p>
+                <input type="text" id="coletor" placeholder="> BIPE OU DIGITE O ID AQUI E APERTE ENTER..." autocomplete="off">
+                <div style="margin-top: 20px;">
+                    <label style="font-family: 'Segoe UI'; font-weight: 600; font-size: 12px; color: #64748b;">CONSOLE DE REGISTRO:</label>
+                    <div class="console-box" id="consoleLog">
+                        <div class="log-linha">SISTEMA INICIADO. AGUARDANDO BIPE.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="abaMesas" class="aba">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
+                    <h2>CONTROLE DE ATENDIMENTO</h2>
+                </div>
+                
+                <div class="mesas-grid">
+                    <div class="card-radar">
+                        <h3 style="color: #f59e0b; border-color: rgba(245,158,11,0.3);">📡 FILA DE ESPERA</h3>
+                        <div class="table-wrapper" style="border-color: rgba(245,158,11,0.2);">
+                            <table id="tabelaAguardandoMesa">
+                                <thead><tr><th>ROTA / MOTORISTA</th><th>ESPERA</th><th>AÇÃO</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card-decor">
+                        <div style="font-size: 45px; margin-bottom: 10px; color: #38bdf8;">🖥️</div>
+                        <h3 id="displayNomeMesaGrande" style="color: #f8fafc; border:none; font-size: 20px; margin:0;">MESA DE OPERAÇÃO</h3>
+                        <p style="margin: 5px 0 0 0; letter-spacing: 1px; font-size: 12px; color: #10b981;">NUVEM ONLINE</p>
+                        <p style="margin: 10px 0 0 0; font-size: 11px; color: #64748b;">Ao "PUXAR" uma nova rota, o sistema finalizará automaticamente o atendimento atual.</p>
+                    </div>
+
+                    <div class="card-analise">
+                        <h3 style="color: #10b981; border-color: rgba(16,185,129,0.3);">🟢 EM ANÁLISE (MINHA MESA)</h3>
+                        <div class="table-wrapper" style="border-color: rgba(16,185,129,0.2);">
+                            <table>
+                                <thead><tr><th>ROTA / MOTORISTA</th><th>TEMPO</th><th>AÇÃO</th></tr></thead>
+                                <tbody id="tabelaMinhaMesa"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="abaTv" class="aba" style="padding: 0;">
+                <div class="tv-layout">
+                    <div class="tv-main">
+                        <button id="btnAtivarVoz" onclick="ativarVozTV()">Ligar Áudio da TV</button>
+                        <div class="alerta-tv" id="textoAlerta">PAINEL STANDBY</div>
+                        <div class="placa-tv" id="displayPlaca">---</div>
+                        <div class="nome-mtr" id="displayNomeMotorista">AGUARDANDO CHAMADA...</div>
+                        <div class="bancada-container" id="displayBancadaContainer" style="display:none; font-family: 'Segoe UI', sans-serif;">
+                            DIRIJA-SE AO DESTINO: <span class="bancada-letra" id="displayBancada">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tv-historico">
+                        <h3>ÚLTIMAS CHAMADAS</h3>
+                        <div id="tvHistoricoLista" style="overflow-y: auto; flex-grow: 1;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="abaRadar" class="aba">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h2 style="margin: 0;">RADAR GLOBAL (TEMPO REAL)</h2>
+                        <p style="color:#94a3b8; font-size:12px; margin-top:5px; margin-bottom:0;">Visualização e métricas de todos os veículos no pátio.</p>
+                    </div>
+                    
+                    <div id="cardMediaGlobal" class="card-media media-verde">
+                        <span style="font-family: 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-right: 12px; opacity: 0.8;">SLA de Operação:</span>
+                        <span id="valorMediaGlobal" style="font-size: 24px; font-weight: bold; font-family: 'Consolas';">0m 00s</span>
+                    </div>
+
+                    <span style="color:#38bdf8; font-size: 26px; font-weight: bold; font-family: 'Consolas';" id="relogioRadar">00:00:00</span>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ROTA / MOTORISTA</th>
+                                <th>LOCALIZAÇÃO</th>
+                                <th>STATUS</th>
+                                <th>CHAMADA</th>
+                                <th>DURAÇÃO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaDashboard"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDFQPqoRF6BZm76yAioqhaoOzf8aSjijyU",
+            authDomain: "gestao-de-doca.firebaseapp.com",
+            databaseURL: "https://gestao-de-doca-default-rtdb.firebaseio.com",
+            projectId: "gestao-de-doca",
+            storageBucket: "gestao-de-doca.firebasestorage.app",
+            messagingSenderId: "574246315988",
+            appId: "1:574246315988:web:eacaaef9a2fc82393e9841",
+            measurementId: "G-QWJNRFZBX5"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const usuarioAtual = localStorage.getItem('usuarioLogado');
+        const lugarAtual = localStorage.getItem('lugarLogado');
+        
+        let veiculos = [];
+        let historicoTV = [];
+        let ultimaChamadaHora = 0; 
+
+        if (!usuarioAtual) window.location.href = "index.html"; 
+        
+        document.getElementById('dispUser').innerText = usuarioAtual.toUpperCase();
+        document.getElementById('dispLocal').innerText = lugarAtual.toUpperCase();
+
+        const btnAdmin = document.getElementById('btnTabAdmin');
+        const btnCheckin = document.getElementById('btnTabCheckin');
+        const btnMesas = document.getElementById('btnTabMesas');
+        const btnTv = document.getElementById('btnTabTv');
+        const btnRadar = document.getElementById('btnTabRadar');
+
+        // ==========================================
+        // CONTROLE DE PERMISSÕES 
+        // ==========================================
+        if(lugarAtual === 'Admin') { 
+            // Admin vê todas as 5 telas
+            btnAdmin.style.display = 'flex'; 
+            btnCheckin.style.display = 'flex'; 
+            btnTv.style.display = 'flex'; 
+            btnMesas.style.display = 'flex'; 
+            btnRadar.style.display = 'flex';
+            btnAdmin.click(); 
+        } 
+        else if (lugarAtual.includes('Mesa')) { 
+            // Mesa SÓ VÊ a tela Meu Atendimento (e fontes grandes são ativadas)
+            document.body.classList.add('is-mesa-operacao'); 
+            btnMesas.style.display = 'flex'; 
+            btnMesas.click(); 
+            document.getElementById('displayNomeMesaGrande').innerText = lugarAtual.toUpperCase();
+        }
+
+        // --- CONEXÃO AO VIVO COM A NUVEM FIREBASE ---
+        db.ref('veiculos').on('value', (snapshot) => {
+            veiculos = snapshot.val() || [];
+            document.getElementById('txtServidor').innerText = "NUVEM ONLINE";
+            renderizarTelas(); 
+        });
+
+        db.ref('tvHistorico').on('value', (snapshot) => {
+            historicoTV = snapshot.val() || [];
+            renderizarHistoricoTV();
+        });
+
+        db.ref('tvComando').on('value', (snapshot) => {
+            const dados = snapshot.val();
+            if(dados && dados.data > ultimaChamadaHora) {
+                ultimaChamadaHora = dados.data;
+                atualizarEspelhoTV(dados);
+            }
+        });
+
+        // --- FUNÇÕES GLOBAIS DE INTERFACE ---
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        function mudarAba(idAba, btn) {
+            document.querySelectorAll('.aba').forEach(a => a.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(idAba).classList.add('active'); btn.classList.add('active');
+            if(idAba === 'abaCheckin') setTimeout(() => document.getElementById('coletor').focus(), 100);
+        }
+
+        function fazerLogout() { 
+            if(lugarAtual && lugarAtual.includes('Mesa')) {
+                db.ref('mesasOcupadas').once('value').then((snapshot) => {
+                    let mesasOcupadas = snapshot.val() || [];
+                    mesasOcupadas = mesasOcupadas.filter(m => m !== lugarAtual);
+                    db.ref('mesasOcupadas').set(mesasOcupadas).then(() => {
+                        localStorage.clear(); 
+                        
+                        // Redirecionamento blindado na volta pro login
+                        let urlAtual = window.location.href;
+                        let pastaAtual = urlAtual.substring(0, urlAtual.lastIndexOf('/'));
+                        window.location.href = pastaAtual + '/index.html'; 
+                    });
+                });
+            } else {
+                localStorage.clear(); 
+                let urlAtual = window.location.href;
+                let pastaAtual = urlAtual.substring(0, urlAtual.lastIndexOf('/'));
+                window.location.href = pastaAtual + '/index.html'; 
+            }
+        }
+
+        function destravarMesas() {
+            if(confirm("Liberar acesso a todas as mesas no Login?")) {
+                db.ref('mesasOcupadas').set(null);
+                alert("Mesas liberadas no Servidor.");
+            }
+        }
+
+        function addLog(texto, tipo) {
+            const consoleBox = document.getElementById('consoleLog');
+            const dataHora = new Date().toLocaleTimeString();
+            let classe = 'log-ok'; if(tipo === 'erro') classe = 'log-erro'; if(tipo === 'aviso') classe = 'log-aviso';
+            consoleBox.innerHTML += `<div class="log-linha ${classe}">[${dataHora}] > ${texto}</div>`;
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        // --- AÇÕES DE BANCO DE DADOS ---
+        document.getElementById('importArquivo')?.addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function(evento) {
+                let dbTemp = [...veiculos];
+                let count = 0;
+                evento.target.result.split('\n').forEach(linha => {
+                    if(!linha.trim()) return;
+                    const colunas = linha.split(/[;,]/);
+                    if(colunas.length >= 7) {
+                        const rotaCol = colunas[2].trim().toUpperCase();
+                        const nomeCol = colunas[5].trim().toUpperCase();
+                        const idCol = colunas[6].trim().toUpperCase();
+                        if(idCol && idCol !== 'ID' && !dbTemp.find(v => v.id === idCol)) {
+                            dbTemp.push({ id: idCol, rota: rotaCol, nome: nomeCol, status: 'NO_PERÍMETRO', chegada: null, horaChamada: null, horaFinalizado: null, finalizado: false, mesaResponsavel: '' });
+                            count++;
+                        }
+                    }
+                });
+                db.ref('veiculos').set(dbTemp);
+                alert(`IMPORTAÇÃO OK: ${count} registros enviados.`); document.getElementById('importArquivo').value = '';
+            };
+            if(e.target.files[0]) reader.readAsText(e.target.files[0]);
+        });
+        
+        function limparDados() { 
+            if(confirm("Apagar toda a operação de hoje do Servidor?")) { 
+                db.ref('veiculos').set(null);
+                db.ref('tvHistorico').set(null);
+            } 
+        }
+
+        document.getElementById('coletor')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const idBipado = this.value.trim().toUpperCase();
+                if(idBipado) {
+                    let dbTemp = [...veiculos];
+                    let veiculo = dbTemp.find(v => v.id === idBipado);
+                    if (!veiculo) {
+                        addLog(`ID INVÁLIDO: [${idBipado}] não importado.`, 'erro');
+                    } else if (veiculo.status !== 'NO_PERÍMETRO') {
+                        addLog(`AVISO: Motorista ${veiculo.nome} já consta no sistema.`, 'aviso');
+                    } else {
+                        veiculo.status = 'AGUARDANDO'; 
+                        veiculo.chegada = Date.now(); 
+                        addLog(`CHECK-IN OK: Rota [${veiculo.rota}] enviada para as Mesas.`, 'ok');
+                        db.ref('veiculos').set(dbTemp);
+                    }
+                    this.value = ''; this.focus();
+                }
+            }
+        });
+
+        function chamarVeiculo(id) {
+            let dbTemp = [...veiculos];
+            
+            dbTemp.forEach(v => {
+                if (v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lugarAtual) {
+                    v.status = 'FINALIZADO';
+                    v.finalizado = true;
+                    v.horaFinalizado = Date.now();
+                }
+            });
+
+            let veiculo = dbTemp.find(v => v.id === id);
+            if(veiculo) {
+                veiculo.status = 'EM_ATENDIMENTO'; 
+                veiculo.mesaResponsavel = lugarAtual;
+                veiculo.horaChamada = Date.now(); 
+                
+                db.ref('veiculos').set(dbTemp);
+                
+                let histTemp = [...historicoTV];
+                histTemp.unshift({ rota: veiculo.rota, nome: veiculo.nome, mesa: lugarAtual, hora: Date.now() });
+                if(histTemp.length > 10) histTemp = histTemp.slice(0, 10);
+                db.ref('tvHistorico').set(histTemp);
+
+                const payloadTV = { id: veiculo.id, rota: veiculo.rota, nome: veiculo.nome, mesa: lugarAtual, data: Date.now() };
+                db.ref('tvComando').set(payloadTV);
+            }
+        }
+
+        function finalizarVeiculo(id) {
+            if(confirm(`Limpar este atendimento da mesa?`)) {
+                let dbTemp = [...veiculos];
+                let veiculo = dbTemp.find(v => v.id === id);
+                if(veiculo) { 
+                    veiculo.status = 'FINALIZADO'; 
+                    veiculo.finalizado = true; 
+                    veiculo.horaFinalizado = Date.now(); 
+                    db.ref('veiculos').set(dbTemp);
+                }
+            }
+        }
+
+        function ativarVozTV() {
+            document.getElementById('btnAtivarVoz').style.display = 'none';
+            let locucaoInit = new SpeechSynthesisUtterance("Painel de voz ativado.");
+            locucaoInit.volume = 0; window.speechSynthesis.speak(locucaoInit);
+        }
+
+        function atualizarEspelhoTV(dados) {
+            document.getElementById('textoAlerta').style.animation = 'piscaAlerta 1s infinite alternate';
+            document.getElementById('textoAlerta').innerText = "ATENÇÃO: DESLOCAMENTO";
+            document.getElementById('displayPlaca').innerText = dados.rota;
+            document.getElementById('displayNomeMotorista').innerText = dados.nome;
+            document.getElementById('displayBancadaContainer').style.display = 'block';
+            document.getElementById('displayBancada').innerText = dados.mesa;
+            
+            let texto = `Atenção motorista ${dados.nome}, da rota ${dados.rota}. Dirija-se à ${dados.mesa}.`;
+            let locucao = new SpeechSynthesisUtterance(texto);
+            locucao.lang = 'pt-BR'; locucao.rate = 0.9;
+            window.speechSynthesis.speak(locucao);
+        }
+
+        function renderizarHistoricoTV() {
+            let listaBox = document.getElementById('tvHistoricoLista');
+            if(!listaBox) return;
+            
+            listaBox.innerHTML = '';
+            historicoTV.forEach(item => {
+                let horaStr = new Date(item.hora).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                let numMesa = item.mesa.replace('Mesa ', '');
+                listaBox.innerHTML += `
+                    <div class="hist-item">
+                        <span class="hist-time">${horaStr}</span>
+                        <span class="hist-rota">${item.rota}</span>
+                        <span class="hist-mesa">M${numMesa}</span>
+                    </div>
+                `;
+            });
+            if(historicoTV.length === 0) listaBox.innerHTML = `<div style="text-align:center; color:#64748b; margin-top: 20px; font-size:14px;">Sem histórico</div>`;
+        }
+
+        function formatarTempoLive(milisegundos) {
+            if(!milisegundos || milisegundos < 0) return "0m 00s";
+            let totalSegundos = Math.floor(milisegundos / 1000);
+            let m = Math.floor(totalSegundos / 60);
+            let s = totalSegundos % 60;
+            return `${m}m ${s < 10 ? '0':''}${s}s`;
+        }
+
+        function renderizarTelas() {
+            const tbodyDashboard = document.getElementById('tabelaDashboard'); 
+            const tbodyAguardando = document.querySelector('#tabelaAguardandoMesa tbody'); 
+            const tbodyMinhaMesa = document.getElementById('tabelaMinhaMesa'); 
+
+            if(tbodyDashboard) tbodyDashboard.innerHTML = '';
+            if(tbodyAguardando) tbodyAguardando.innerHTML = '';
+            if(tbodyMinhaMesa) tbodyMinhaMesa.innerHTML = '';
+
+            let countAguardando = 0; let countMinhaMesa = 0;
+            let somaTotalMs = 0; let totalMotoristasCalculados = 0;
+            let agora = Date.now();
+
+            veiculos.forEach(v => {
+                if(v.status === 'NO_PERÍMETRO') return; 
+                
+                let localRadar = ''; let txtStatusRadar = ''; let corStatusRadar = '';
+                let horaChamadaDisplay = '-'; let duracaoDisplay = '-';
+                let duracaoDesteMotorista = 0;
+
+                if(v.status === 'AGUARDANDO') {
+                    localRadar = '<span style="color:#64748b;">RADAR (FILA)</span>'; txtStatusRadar = 'AGUARDANDO'; corStatusRadar = '#f59e0b'; 
+                    duracaoDesteMotorista = (agora - v.chegada);
+                    duracaoDisplay = formatarTempoLive(duracaoDesteMotorista) + ' <span style="font-size:10px;color:#f59e0b;">(Espera)</span>';
+                    somaTotalMs += duracaoDesteMotorista; totalMotoristasCalculados++;
+                } 
+                else if (v.status === 'EM_ATENDIMENTO') {
+                    localRadar = `MESA ${v.mesaResponsavel.replace('Mesa ','')}`; txtStatusRadar = 'PROCESSANDO'; corStatusRadar = '#38bdf8'; 
+                    horaChamadaDisplay = new Date(v.horaChamada).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                    duracaoDesteMotorista = (agora - v.horaChamada);
+                    duracaoDisplay = formatarTempoLive(duracaoDesteMotorista) + ' <span style="font-size:10px;color:#38bdf8;">(Executando)</span>';
+                    somaTotalMs += duracaoDesteMotorista; totalMotoristasCalculados++;
+                } 
+                else if (v.status === 'FINALIZADO') {
+                    localRadar = `MESA ${v.mesaResponsavel.replace('Mesa ','')}`; txtStatusRadar = 'FINALIZADO'; corStatusRadar = '#10b981'; 
+                    horaChamadaDisplay = v.horaChamada ? new Date(v.horaChamada).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '-';
+                    duracaoDesteMotorista = (v.horaFinalizado && v.horaChamada) ? (v.horaFinalizado - v.horaChamada) : 0;
+                    duracaoDisplay = formatarTempoLive(duracaoDesteMotorista) + ' <span style="font-size:10px;color:#10b981;">(Concluído)</span>';
+                    somaTotalMs += duracaoDesteMotorista; totalMotoristasCalculados++;
+                }
+
+                if(tbodyDashboard) {
+                    tbodyDashboard.innerHTML += `<tr>
+                        <td><strong style="color:#f8fafc; font-size: 14px;">${v.rota}</strong><br><span style="font-size:11px; color:#94a3b8;">${v.nome}</span></td>
+                        <td style="font-weight: 600;">${localRadar}</td>
+                        <td style="color:${corStatusRadar}; font-weight:bold; letter-spacing: 1px; font-size:12px;">${txtStatusRadar}</td>
+                        <td>${horaChamadaDisplay}</td>
+                        <td style="font-weight: bold; font-size: 14px; font-family:'Consolas';">${duracaoDisplay}</td>
+                    </tr>`;
+                }
+
+                if(v.status === 'AGUARDANDO' && tbodyAguardando) {
+                    countAguardando++;
+                    let tempoFilaSimples = Math.floor((agora - v.chegada) / 60000) + 'm';
+                    tbodyAguardando.innerHTML += `<tr>
+                        <td><strong class="rota-text" style="color:#f8fafc; font-size:15px;">${v.rota}</strong><br><span class="nome-text" style="font-size:11px; color:#94a3b8;">${v.nome}</span></td>
+                        <td class="tempo-text" style="color:#f59e0b; font-weight:600;">${tempoFilaSimples}</td>
+                        <td><button class="btn-padrao btn-acao btn-puxar" style="padding: 6px 12px; font-size:11px;" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td>
+                    </tr>`;
+                }
+
+                if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lugarAtual && tbodyMinhaMesa) {
+                    countMinhaMesa++;
+                    let tempoAtendimentoSimples = formatarTempoLive(agora - v.horaChamada);
+                    tbodyMinhaMesa.innerHTML += `<tr>
+                        <td><strong style="color:#f8fafc; font-size:13px;">${v.rota}</strong><br><span style="font-size:11px; color:#718096;">${v.nome}</span></td>
+                        <td style="color:#38bdf8; font-weight:600; font-family:'Consolas'; font-size: 12px;">${tempoAtendimentoSimples}</td>
+                        <td><button class="btn-padrao btn-critico" style="padding: 5px 8px; font-size:10px;" onclick="finalizarVeiculo('${v.id}')">FINALIZAR</button></td>
+                    </tr>`;
+                }
+            });
+
+            if(countAguardando === 0 && tbodyAguardando) tbodyAguardando.innerHTML = `<tr><td colspan="3" align="center" style="color:#64748b; padding: 30px 10px;">A FILA ESTÁ VAZIA</td></tr>`;
+            if(countMinhaMesa === 0 && tbodyMinhaMesa) tbodyMinhaMesa.innerHTML = `<tr><td colspan="3" align="center" style="color:#64748b; padding: 30px 10px;">NENHUM ATENDIMENTO.</td></tr>`;
+
+            let mediaCard = document.getElementById('cardMediaGlobal');
+            let mediaValor = document.getElementById('valorMediaGlobal');
+            if(mediaCard && mediaValor) {
+                let mediaMs = totalMotoristasCalculados > 0 ? (somaTotalMs / totalMotoristasCalculados) : 0;
+                let mediaMinutos = mediaMs / 60000;
+                
+                mediaValor.innerText = formatarTempoLive(mediaMs);
+                mediaCard.classList.remove('media-verde', 'media-amarelo', 'media-vermelho');
+                
+                if (mediaMinutos <= 15) { mediaCard.classList.add('media-verde'); } 
+                else if (mediaMinutos > 15 && mediaMinutos <= 17) { mediaCard.classList.add('media-amarelo'); } 
+                else { mediaCard.classList.add('media-vermelho'); }
+            }
+        }
+        
+        setInterval(() => { 
+            let relogio = document.getElementById('relogioRadar');
+            if(relogio) relogio.innerText = new Date().toLocaleTimeString(); 
+            renderizarTelas(); 
+        }, 1000); 
+        
+    </script>
+</body>
+</html>

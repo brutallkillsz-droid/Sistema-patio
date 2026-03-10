@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Acesso - Sistema Orbital</title>
+    <style>
+        /* DESIGN NEON EQUILIBRADO */
+        body { margin: 0; font-family: 'Consolas', 'Segoe UI', sans-serif; background-color: #07090f; display: flex; justify-content: center; align-items: center; height: 100vh; color: #00f0ff; }
+        .caixa-login { background: #0b101a; padding: 40px; border-radius: 12px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.05); width: 350px; text-align: center; border: 1px solid rgba(0, 240, 255, 0.2); position: relative; overflow: hidden;}
+        .caixa-login::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #00f0ff; box-shadow: 0 0 15px #00f0ff; }
+        .logo-icon { font-size: 35px; margin-bottom: 10px; color: #00f0ff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.5); }
+        h2 { margin: 0 0 25px 0; color: #fff; font-weight: normal; font-size: 20px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);}
+        input, select { width: 100%; padding: 14px; margin: 10px 0; background: rgba(0,0,0,0.6); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 6px; box-sizing: border-box; font-size: 15px; color: #fff; outline: none; transition: all 0.3s ease; font-family: inherit;}
+        input::placeholder { color: #4a5568; }
+        input:focus, select:focus { border-color: #00f0ff; box-shadow: 0 0 12px rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); }
+        .btn { width: 100%; padding: 14px; background: rgba(0, 240, 255, 0.1); color: #00f0ff; border: 1px solid #00f0ff; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; margin-top: 20px; transition: all 0.2s; letter-spacing: 1px; text-transform: uppercase;}
+        .btn:hover { background: #00f0ff; color: #000; box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+        .btn-cadastro { border-color: #39ff14; color: #39ff14; background: rgba(57, 255, 20, 0.05); }
+        .btn-cadastro:hover { background: #39ff14; color: #000; box-shadow: 0 0 15px rgba(57, 255, 20, 0.6); }
+        .link-alternar { display: inline-block; margin-top: 20px; color: #718096; cursor: pointer; font-size: 12px; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;}
+        .link-alternar:hover { color: #00f0ff; text-decoration: underline; }
+        .escondido { display: none; }
+        option { background: #0b101a; color: #fff; }
+    </style>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <div class="caixa-login">
+        <div id="formLogin">
+            <div class="logo-icon">💠</div>
+            <h2 id="statusNuvem" style="color: #f1c40f;">CONECTANDO NUVEM...</h2>
+            
+            <input type="text" id="usuarioLogin" placeholder="Usuário" autocomplete="off" required>
+            <input type="password" id="senhaLogin" placeholder="Senha" required>
+            
+            <div id="containerMesa">
+                <select id="lugarLogin">
+                    <option value="">Aguardando Servidor...</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="fazerLogin()">AUTENTICAR</button>
+            <span class="link-alternar" onclick="alternarTela()">SOLICITAR CREDENCIAL</span>
+        </div>
+
+        <div id="formCadastro" class="escondido">
+            <div class="logo-icon">👤</div>
+            <h2>NOVO OPERADOR</h2>
+            
+            <input type="text" id="usuarioCadastro" placeholder="Novo Usuário" autocomplete="off" required>
+            <input type="password" id="senhaCadastro" placeholder="Criar Senha" required>
+            
+            <button class="btn btn-cadastro" onclick="fazerCadastro()">REGISTRAR NO SERVIDOR</button>
+            <span class="link-alternar" onclick="alternarTela()">VOLTAR AO LOGIN</span>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL_DE_MESAS = 30;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDFQPqoRF6BZm76yAioqhaoOzf8aSjijyU",
+            authDomain: "gestao-de-doca.firebaseapp.com",
+            databaseURL: "https://gestao-de-doca-default-rtdb.firebaseio.com",
+            projectId: "gestao-de-doca",
+            storageBucket: "gestao-de-doca.firebasestorage.app",
+            messagingSenderId: "574246315988",
+            appId: "1:574246315988:web:eacaaef9a2fc82393e9841",
+            measurementId: "G-QWJNRFZBX5"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let usuariosSalvos = [];
+        let mesasOcupadas = [];
+
+        db.ref('usuarios').on('value', (snapshot) => {
+            usuariosSalvos = snapshot.val() || [];
+            let statusEl = document.getElementById('statusNuvem');
+            statusEl.innerText = "SYS.OPERAÇÃO";
+            statusEl.style.color = "#fff";
+        });
+
+        db.ref('mesasOcupadas').on('value', (snapshot) => {
+            mesasOcupadas = snapshot.val() || [];
+            carregarMesasLivres();
+        });
+
+        function carregarMesasLivres() {
+            const selectLugar = document.getElementById('lugarLogin');
+            selectLugar.innerHTML = '';
+            
+            let temMesaLivre = false;
+            for(let i = 1; i <= TOTAL_DE_MESAS; i++) {
+                let nomeMesa = 'Mesa ' + i;
+                if(!mesasOcupadas.includes(nomeMesa)) {
+                    let option = document.createElement('option');
+                    option.value = nomeMesa;
+                    option.text = 'MESA ' + i;
+                    selectLugar.appendChild(option);
+                    temMesaLivre = true;
+                }
+            }
+
+            if(!temMesaLivre) {
+                let option = document.createElement('option');
+                option.value = "";
+                option.text = "TODAS AS MESAS ESTÃO OCUPADAS";
+                selectLugar.appendChild(option);
+                selectLugar.disabled = true;
+            } else {
+                selectLugar.disabled = false;
+            }
+        }
+
+        function alternarTela() {
+            document.getElementById('formLogin').classList.toggle('escondido');
+            document.getElementById('formCadastro').classList.toggle('escondido');
+        }
+
+        function fazerLogin() {
+            const u = document.getElementById('usuarioLogin').value.trim().toLowerCase();
+            const s = document.getElementById('senhaLogin').value.trim();
+            const lugar = document.getElementById('lugarLogin').value; 
+            
+            if(!u || !s) return alert("Preencha usuário e senha.");
+
+            if(u === 'admin' && s === 'admin') {
+                logarComo('admin', 'admin', 'Admin'); return;
+            }
+
+            const userValido = usuariosSalvos.find(user => user.usuario.toLowerCase() === u && user.senha === s);
+            
+            if (userValido) {
+                if(!lugar) return alert("Não há mesas disponíveis no momento.");
+                
+                mesasOcupadas.push(lugar);
+                db.ref('mesasOcupadas').set(mesasOcupadas).then(() => {
+                    logarComo(userValido.usuario, 'operador', lugar);
+                });
+            } else { 
+                alert("Acesso Negado: Credenciais inválidas ou usuário inexistente."); 
+            }
+        }
+
+        function logarComo(usuario, role, lugar) {
+            localStorage.setItem('usuarioLogado', usuario);
+            localStorage.setItem('roleLogado', role);
+            localStorage.setItem('lugarLogado', lugar);
+            
+            // REDIRECIONAMENTO BLINDADO: Pega a pasta exata do PC onde o arquivo está rodando
+            let urlAtual = window.location.href;
+            let pastaAtual = urlAtual.substring(0, urlAtual.lastIndexOf('/'));
+            window.location.href = pastaAtual + '/painel.html';
+        }
+
+        function fazerCadastro() {
+            const u = document.getElementById('usuarioCadastro').value.trim();
+            const s = document.getElementById('senhaCadastro').value.trim();
+            
+            if(u && s) {
+                if(['admin'].includes(u.toLowerCase()) || usuariosSalvos.find(user => user.usuario.toLowerCase() === u.toLowerCase())) { 
+                    alert("Este usuário já existe ou é bloqueado pelo sistema!"); return; 
+                }
+                
+                usuariosSalvos.push({ usuario: u, senha: s, role: 'operador' });
+                db.ref('usuarios').set(usuariosSalvos).then(() => {
+                    alert("Cadastro salvo no Servidor com sucesso! Volte e faça o login.");
+                    alternarTela(); 
+                });
+            } else {
+                alert("Preencha todos os campos.");
+            }
+        }
+    </script>
+</body>
+</html>
