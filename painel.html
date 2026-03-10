@@ -25,20 +25,14 @@
 
         .btn-sair-mini { background: rgba(239, 68, 68, 0.05); color: #ef4444; border: 1px solid #ef4444; border-radius: 6px; padding: 10px 15px; font-size: 12px; font-family: 'Segoe UI', sans-serif; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 20px; box-sizing: border-box; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); letter-spacing: 1px; }
         .btn-sair-mini:hover { background: #ef4444; color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
-        .sidebar.collapsed .btn-sair-mini { padding: 10px 0; width: 40px; margin-top: 10px; }
-        .sidebar.collapsed .btn-sair-mini .nav-text { display: none; }
 
         .nav-menu { padding: 10px 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto;}
         .nav-btn { display: none; width: 100%; padding: 16px 20px; background: transparent; color: #94a3b8; border: none; text-align: left; font-family: 'Segoe UI', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.2s; font-weight: 600; display: flex; align-items: center; white-space: nowrap;}
         .nav-icon { font-size: 20px; min-width: 35px; text-align: center; margin-right: 10px; }
-        .sidebar.collapsed .nav-text { display: none; }
-        .sidebar.collapsed .nav-btn { justify-content: center; padding: 16px 0; border-left: 4px solid transparent; }
-        .sidebar.collapsed .nav-icon { margin-right: 0; }
-
         .nav-btn:hover { background: rgba(56, 189, 248, 0.05); color: #f8fafc; }
         .nav-btn.active { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-left: 3px solid #38bdf8; }
-        #btnTabFinalFila.active { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-left: 3px solid #ef4444; }
         
+        #btnTabFinalFila.active { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-left: 3px solid #ef4444; }
         .toggle-btn-bottom { width: 100%; background: #080f26; border: none; border-top: 1px solid #1e293b; color: #38bdf8; font-size: 24px; cursor: pointer; transition: 0.3s; padding: 15px 0; display: flex; justify-content: center; align-items: center; margin-top: auto; }
 
         .tab-content-area { flex-grow: 1; padding: 25px; position: relative; overflow: hidden; background: transparent; display: flex; flex-direction: column; }
@@ -49,67 +43,53 @@
         h2 { margin-top: 0; color: #f8fafc; font-weight: 600; font-size: 22px; font-family: 'Segoe UI', sans-serif;}
         h3 { color: #38bdf8; font-size: 15px; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; font-family: 'Segoe UI', sans-serif; margin-top: 0; font-weight: 600;}
         
+        /* ADICIONADO ESTILO PARA QUANDO O INPUT ESTIVER DESATIVADO (TRAVA 3 SEG) */
         input[type="text"], input[type="file"] { width: 100%; padding: 15px; font-size: 18px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; font-family: inherit; box-sizing: border-box; outline: none; transition: 0.3s; border-radius: 6px;}
         input[type="text"]:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+        input:disabled { background: #0b101a; color: #64748b; border-color: #ef4444; cursor: not-allowed; }
 
         .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #1e293b; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
         table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
         th { position: sticky; top: 0; background: #0f172a; padding: 14px; text-align: left; border-bottom: 1px solid #334155; color: #94a3b8; z-index: 2; font-weight: 600; font-size: 13px; text-transform: uppercase;}
         td { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
-        /* GRID ATENDIMENTO */
+        /* GRID ATENDIMENTO (EM L) */
         .mesas-grid { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: 1fr 320px; gap: 20px; flex-grow: 1; min-height: 0; margin-top: 10px; }
         .card-radar { grid-column: 1 / 2; grid-row: 1 / 3; display: flex; flex-direction: column; min-height: 0; }
         .card-decor { grid-column: 2 / 3; grid-row: 1 / 2; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #1e293b; border-radius: 8px; color: #cbd5e1; text-align: center; padding: 20px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .card-analise { grid-column: 2 / 3; grid-row: 2 / 3; display: flex; flex-direction: column; background: transparent; min-height: 0; }
 
+        /* FONTES GIGANTES DA MESA LOGADA */
         .is-mesa-operacao #tabelaAguardandoMesa .rota-text { font-size: 24px !important; color: #fff !important; font-weight: bold; }
         .is-mesa-operacao #tabelaAguardandoMesa .nome-text { font-size: 16px !important; color: #cbd5e1 !important; }
         .is-mesa-operacao #tabelaAguardandoMesa .tempo-text { font-size: 20px !important; color: #f59e0b !important; }
 
+        /* BOX FINAL DE FILA */
         .ff-box { width: 100%; margin-top: 15px; padding: 12px; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; background: rgba(239, 68, 68, 0.05); }
         .ff-box label { font-size: 11px; color: #ef4444; font-weight: bold; letter-spacing: 1px; display: block; margin-bottom: 8px; }
         #inputFinalFila { width: 100%; padding: 12px; background: #0b132b; border: 1px solid #ef4444; border-radius: 4px; color: #fff; font-size: 18px; font-weight: bold; text-align: center; text-transform: uppercase; box-sizing: border-box; }
+        #inputFinalFila:focus { border-color: #ff0000; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
 
+        /* CONSOLE ADMIN */
         .console-box { background: #020617; border: 1px solid #1e293b; padding: 15px; height: 180px; overflow-y: auto; margin-top: 15px; font-size: 13px; color: #94a3b8; border-radius: 6px;}
         .log-linha { margin: 4px 0; border-bottom: 1px dashed #1e293b; padding-bottom: 4px;}
         .log-ok { color: #10b981; }
+        .log-erro { color: #ef4444; }
 
-        /* ============================================================
-           MONITOR TV - REDIMENSIONADO (ESPECÍFICO)
-           ============================================================ */
+        /* TV DESIGN */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
-        
-        /* CARD CENTRAL AUMENTADO PARA DAR DESTAQUE */
-        .tv-main { 
-            flex: 3; /* Ocupa mais espaço horizontal */
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            background: #020617; border-radius: 16px; border: 2px solid #1e293b; 
-            text-align: center; position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Sombra Premium */
-        }
-        
-        /* HISTÓRICO LATERAL MANTIDO INTACTO */
-        .tv-historico { flex: 1; background: #0b101a; border-radius: 16px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.3);}
+        .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative;}
+        .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; }
         .hist-item-tv { border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding: 15px 0; }
         .hist-rota-tv { color: #ef4444; font-size: 26px; font-weight: bold; display: block; margin-bottom: 5px; text-shadow: 0 0 10px rgba(239,68,68,0.3);}
         .hist-nome-tv { color: #fff; font-size: 14px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
 
-        /* FONTES MAIORES NO CARD DA TV */
-        .placa-tv { 
-            font-size: 130px; /* Aumentado */
-            font-weight: bold; background: #0f172a; 
-            padding: 40px 100px; /* Aumentado */
-            border: 3px solid #38bdf8; border-radius: 20px; color: #f8fafc;
-            box-shadow: inset 0 0 20px rgba(56,189,248,0.2), 0 0 20px rgba(56,189,248,0.2);
-            margin-bottom: 20px;
-        }
-        .nome-mtr { font-size: 45px; color: #94a3b8; margin-bottom: 30px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
+        .placa-tv { font-size: 100px; font-weight: bold; background: #0f172a; padding: 30px 80px; border: 2px solid #38bdf8; border-radius: 15px; color: #f8fafc;}
+        .nome-mtr { font-size: 35px; color: #94a3b8; margin-bottom: 30px; text-transform: uppercase;}
         
         #displayBancadaContainer { font-family: 'Segoe UI', sans-serif; font-weight:bold; margin-top:20px; text-transform: uppercase; }
         #prefixoMesa { color: #cbd5e1; font-size: 50px; }
         
-        /* MESA COM DEGRADE PRESERVADO */
         #displayBancada { 
             font-size: 110px; margin-left: 20px;
             background-image: linear-gradient(to bottom, #10b981, #77ff77); 
@@ -134,21 +114,17 @@
                 <p><span class="status-led"></span><span id="txtServidor">CONECTANDO...</span></p>
                 <p style="color:#38bdf8; font-weight:bold; margin-top:15px; font-size: 14px;">OP: <span id="dispUser"></span></p>
             </div>
-            <button class="btn-sair-mini" onclick="fazerLogout()" title="Sair do Sistema">
-                <span class="nav-icon nav-icon-logout" style="margin-right: 8px;">🚪</span><span class="nav-text">LOGOUT</span>
-            </button>
+            <button class="btn-sair-mini" onclick="fazerLogout()"><span class="nav-icon">🚪</span>LOGOUT</button>
         </div>
-
         <div class="nav-menu">
-            <button class="nav-btn" id="btnTabAdmin" onclick="mudarAba('abaAdmin', this)" title="Importação"><span class="nav-icon">📂</span><span class="nav-text">IMPORTAÇÃO</span></button>
-            <button class="nav-btn" id="btnTabCheckin" onclick="mudarAba('abaCheckin', this)" title="Check-in Portaria"><span class="nav-icon">🛂</span><span class="nav-text">CHECK-IN</span></button>
-            <button class="nav-btn" id="btnTabTv" onclick="mudarAba('abaTv', this)" title="Monitor TV"><span class="nav-icon">📺</span><span class="nav-text">MONITOR TV</span></button>
-            <button class="nav-btn" id="btnTabMesas" onclick="mudarAba('abaMesas', this)" title="Atendimento"><span class="nav-icon">🎯</span><span class="nav-text">ATENDIMENTO</span></button>
-            <button class="nav-btn" id="btnTabRadar" onclick="mudarAba('abaRadar', this)" title="Radar Global"><span class="nav-icon">🌍</span><span class="nav-text">RADAR GLOBAL</span></button>
-            <button class="nav-btn" id="btnTabFinalFila" onclick="mudarAba('abaFinalFila', this)" title="Final de Fila"><span class="nav-icon">🚨</span><span class="nav-text">FINAL DE FILA</span></button>
+            <button class="nav-btn" id="btnTabAdmin" onclick="mudarAba('abaAdmin', this)"><span class="nav-icon">📂</span>IMPORTAÇÃO</button>
+            <button class="nav-btn" id="btnTabCheckin" onclick="mudarAba('abaCheckin', this)"><span class="nav-icon">🛂</span>CHECK-IN</button>
+            <button class="nav-btn" id="btnTabTv" onclick="mudarAba('abaTv', this)"><span class="nav-icon">📺</span>MONITOR TV</button>
+            <button class="nav-btn" id="btnTabMesas" onclick="mudarAba('abaMesas', this)"><span class="nav-icon">🎯</span>ATENDIMENTO</button>
+            <button class="nav-btn" id="btnTabRadar" onclick="mudarAba('abaRadar', this)"><span class="nav-icon">🌍</span>RADAR GLOBAL</button>
+            <button class="nav-btn" id="btnTabFinalFila" onclick="mudarAba('abaFinalFila', this)"><span class="nav-icon">🚨</span>FINAL DE FILA</button>
         </div>
-
-        <button class="toggle-btn-bottom" onclick="toggleSidebar()" title="Expandir/Recolher Menu">☰</button>
+        <button class="toggle-btn-bottom" onclick="toggleSidebar()">☰</button>
     </div>
 
     <div class="main-panel">
@@ -203,7 +179,7 @@
                 <div class="tv-layout">
                     <div class="tv-main">
                         <button id="btnAtivarVoz" onclick="ativarVozTV()" style="padding:10px; background:#38bdf8; border:none; cursor:pointer; border-radius:4px; font-weight:bold; position:absolute; top:20px; left:20px; z-index:100;">Ligar Áudio da TV</button>
-                        <div class="alerta-tv" id="textoAlerta" style="font-family: 'Segoe UI'; font-weight:bold; letter-spacing: 2px; font-size: 35px; color: #f59e0b; margin-bottom: 20px;">STANDBY</div>
+                        <div class="alerta-tv" id="textoAlerta">PAINEL STANDBY</div>
                         <div class="placa-tv" id="displayPlaca">---</div>
                         <div class="nome-mtr" id="displayNomeMotorista">AGUARDANDO...</div>
                         <div id="displayBancadaContainer" style="display:none;">
@@ -277,11 +253,14 @@
             const d = audioFila.shift();
             document.getElementById('displayPlaca').innerText = d.rota;
             document.getElementById('displayNomeMotorista').innerText = d.nome;
-            document.getElementById('displayBancada').innerText = d.mesa.toUpperCase().replace('MESA ', '');
+            
+            let nomeMesaRaw = d.mesa.toUpperCase();
+            let nomeMesaLimpo = nomeMesaRaw.replace('MESA ', '');
+            document.getElementById('displayBancada').innerText = nomeMesaLimpo;
+            
             document.getElementById('displayBancadaContainer').style.display = 'block';
             document.getElementById('textoAlerta').style.animation = 'piscaAlerta 1s infinite alternate';
             document.getElementById('textoAlerta').innerText = "ATENÇÃO: DESLOCAMENTO";
-            
             let abaTv = document.getElementById('abaTv');
             if (lAtu === 'Admin' && abaTv && abaTv.classList.contains('active')) {
                 window.speechSynthesis.cancel();
@@ -327,6 +306,7 @@
             [tD, tA, tM, tF].forEach(t => { if(t) t.innerHTML = ''; });
             let hF = '', ag = Date.now();
             let aguardando = ordenarAlfanumerica(veiculos.filter(v => v.status === 'AGUARDANDO'));
+            
             veiculos.forEach(v => {
                 if(v.status === 'NO_PERÍMETRO') return;
                 let dur = (v.status === 'FINALIZADO') ? (v.horaFinalizado - v.horaChamada) : (ag - (v.horaChamada || v.chegada));
@@ -337,23 +317,47 @@
                     hF += `<div class="hist-item-tv"><span class="hist-rota-tv">${v.rota}</span><span class="hist-nome-tv">${v.nome}</span></div>`;
                 }
             });
+
             aguardando.forEach(v => { if(tA) tA.innerHTML += `<tr><td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td><td><button class="btn-padrao" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td></tr>`; });
             if(lF) lF.innerHTML = hF || '<center style="color:#4a5568; margin-top:20px;">NENHUM RETIDO</center>';
         }
 
-        document.getElementById('coletor')?.addEventListener('keypress', e => {
+        // NOVO CÓDIGO DO COLETOR COM TRAVA DE 3 SEGUNDOS
+        document.getElementById('coletor')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                const id = e.target.value.trim().toUpperCase();
+                const id = this.value.trim().toUpperCase();
                 if(id) {
+                    this.disabled = true; 
+                    let placeholderOriginal = this.placeholder;
+                    this.placeholder = "PROCESSANDO... AGUARDE 3 SEGUNDOS.";
+
                     let vt = [...veiculos], v = vt.find(x => x.id === id);
-                    if(v) { 
-                        v.status = rFF.includes(v.rota) ? 'FINAL_FILA' : 'AGUARDANDO'; v.chegada = Date.now(); db.ref('veiculos').set(vt); 
-                        const consoleBox = document.getElementById('consoleLog');
-                        const dataHora = new Date().toLocaleTimeString();
-                        consoleBox.innerHTML += `<div class="log-linha log-ok">[${dataHora}] > CHECK-IN: ${v.rota}</div>`;
-                        consoleBox.scrollTop = consoleBox.scrollHeight;
+                    const consoleBox = document.getElementById('consoleLog');
+                    const dataHora = new Date().toLocaleTimeString();
+
+                    if (!v) {
+                        consoleBox.innerHTML += `<div class="log-linha log-erro">[${dataHora}] > ERRO: ID [${id}] NÃO ENCONTRADO.</div>`;
+                    } else if (v.status !== 'NO_PERÍMETRO') {
+                        consoleBox.innerHTML += `<div class="log-linha" style="color: #f59e0b;">[${dataHora}] > AVISO: MOTORISTA JÁ FEZ CHECK-IN.</div>`;
+                    } else {
+                        v.status = rFF.includes(v.rota) ? 'FINAL_FILA' : 'AGUARDANDO'; 
+                        v.chegada = Date.now(); 
+                        db.ref('veiculos').set(vt); 
+                        
+                        let msg = rFF.includes(v.rota) ? `⚠️ ROTA PENALIZADA: ${v.rota}` : `CHECK-IN OK: ${v.rota}`;
+                        let cor = rFF.includes(v.rota) ? "log-erro" : "log-ok";
+                        consoleBox.innerHTML += `<div class="log-linha ${cor}">[${dataHora}] > ${msg}</div>`;
                     }
-                    e.target.value = '';
+                    
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+
+                    // DESTRAVA O CAMPO APÓS EXATOS 3000 MILISSEGUNDOS
+                    setTimeout(() => {
+                        this.value = '';
+                        this.placeholder = placeholderOriginal;
+                        this.disabled = false;
+                        this.focus();
+                    }, 3000);
                 }
             }
         });
