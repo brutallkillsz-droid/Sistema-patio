@@ -319,7 +319,7 @@
         }
 
         // ========================================================
-        // APLICAR IMPORTAÇÃO EXCEL (.XLSX) - MAPA: A=Nome, B=ID, C=Rota
+        // IMPORTAÇÃO EXCEL (.XLSX) - BLINDADO PARA COLUNAS A, B e C
         // ========================================================
         window.aplicarImportacao = function() {
             let input = document.getElementById('importArquivo');
@@ -331,38 +331,35 @@
                     let data = new Uint8Array(evento.target.result);
                     let workbook = XLSX.read(data, {type: 'array'});
                     
-                    // Busca pela aba chamada "Pátio" ou "Patio" (ignorando minúsculas/maiúsculas)
-                    let nomeAbaCorreta = workbook.SheetNames.find(n => n.toUpperCase().includes('PÁTIO') || n.toUpperCase().includes('PATIO'));
+                    // Puxa obrigatoriamente a primeira aba do arquivo, independente do nome que tenha
+                    let firstSheetName = workbook.SheetNames[0];
+                    let sheet = workbook.Sheets[firstSheetName];
                     
-                    if (!nomeAbaCorreta) {
-                        return alert("ERRO: A aba 'Pátio' não foi encontrada na planilha Excel. Renomeie a aba e tente novamente.");
-                    }
-
-                    let sheet = workbook.Sheets[nomeAbaCorreta];
-                    // Lê a planilha gerando um array onde cada linha é um array: [Nome, ID, Rota]
-                    let linhas = XLSX.utils.sheet_to_json(sheet, {header: 1}); 
+                    // Converte a aba em array, forçando a criação de células vazias para não perder a posição das colunas
+                    let linhas = XLSX.utils.sheet_to_json(sheet, {header: 1, defval: ""}); 
 
                     let dbTemp = [...veiculos];
                     let count = 0;
 
-                    // Começamos o loop no 1 para pular a linha do cabeçalho (que está na linha 0)
+                    // i = 1 para pular o cabeçalho do Excel e começar na linha 2 (dados reais)
                     for(let i = 1; i < linhas.length; i++) {
                         let colunas = linhas[i];
                         if(!colunas || colunas.length === 0) continue;
 
-                        // Índice 0 = Coluna A (Nome)
-                        // Índice 1 = Coluna B (ID)
-                        // Índice 2 = Coluna C (Rota)
-                        let nome = colunas[0] ? String(colunas[0]).trim().toUpperCase() : "";
-                        let id = colunas[1] ? String(colunas[1]).trim().toUpperCase() : "";
-                        let rota = colunas[2] ? String(colunas[2]).trim().toUpperCase() : "";
+                        // MAPEAMENTO EXATO SOLICITADO:
+                        // Coluna A (Índice 0) = Nome
+                        // Coluna B (Índice 1) = ID
+                        // Coluna C (Índice 2) = Rota
+                        let nome = String(colunas[0]).trim().toUpperCase();
+                        let id = String(colunas[1]).trim().toUpperCase();
+                        let rota = String(colunas[2]).trim().toUpperCase();
 
-                        // Ignora se o ID estiver vazio ou se for a palavra "ID" perdida no meio
+                        // O ID não pode ser vazio, e não pode ser a palavra do cabeçalho repetida
                         if(id && id !== 'ID' && !dbTemp.find(v => v.id === id)) {
                             dbTemp.push({ 
                                 id: id, 
-                                rota: rota, 
-                                nome: nome, 
+                                rota: rota || "SEM ROTA", 
+                                nome: nome || "MOTORISTA DESCONHECIDO", 
                                 status: 'NO_PERÍMETRO', 
                                 chegada: null, 
                                 horaChamada: null, 
@@ -376,15 +373,15 @@
 
                     if(count > 0) {
                         db.ref('veiculos').set(dbTemp);
-                        alert(`✅ IMPORTAÇÃO DO EXCEL CONCLUÍDA!\n${count} novos motoristas foram adicionados com sucesso.`);
+                        alert(`✅ IMPORTAÇÃO DO EXCEL CONCLUÍDA!\n${count} novos motoristas foram adicionados ao sistema.`);
                     } else {
-                        alert("⚠️ Nenhum registro novo foi importado. Verifique se os dados estão preenchidos na Coluna B (ID).");
+                        alert("⚠️ Nenhum registro importado. Verifique se o arquivo tem dados na Linha 2 em diante e se a Coluna B contém os IDs.");
                     }
                     
                     input.value = '';
 
                 } catch (error) {
-                    alert("Erro ao ler o arquivo Excel. Verifique se o arquivo não está corrompido.");
+                    alert("Erro ao processar o arquivo Excel. Tente salvar o arquivo novamente ou verifique sua estrutura.");
                     console.error(error);
                 }
             };
