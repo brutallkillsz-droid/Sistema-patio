@@ -79,7 +79,7 @@
         .log-erro { color: #ef4444; }
 
         /* ============================================================
-           TV DESIGN - PRESERVADO E AJUSTADO NO TAMANHO DA FONTE MESA
+           TV DESIGN - PRESERVADO
            ============================================================ */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         
@@ -116,6 +116,7 @@
         .btn-acao:hover { background: #10b981; color: #fff; }
     </style>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
@@ -152,8 +153,8 @@
             <div id="abaAdmin" class="aba">
                 <h2>GESTÃO DE DADOS (IMPORT)</h2>
                 <div style="margin-top:20px; padding:25px; background:#1e293b; border-radius: 8px;">
-                    <input type="file" id="importArquivo" accept=".csv">
-                    <button class="btn-padrao btn-acao" style="width: 100%; margin-top: 15px;" onclick="aplicarImportacao()">APLICAR IMPORTAÇÃO</button>
+                    <input type="file" id="importArquivo" accept=".xlsx, .xls">
+                    <button class="btn-padrao btn-acao" style="width: 100%; margin-top: 15px;" onclick="aplicarImportacao()">APLICAR IMPORTAÇÃO EXCEL</button>
                 </div>
                 <div style="margin-top:auto; padding-top:20px; display: flex; justify-content: space-between;">
                     <button class="btn-padrao btn-critico" onclick="limparDados()">ZERAR DIA</button>
@@ -318,44 +319,45 @@
         }
 
         // ========================================================
-        // APLICAR IMPORTAÇÃO CORRIGIDO PARA COLUNA H (ÍNDICE 7)
+        // APLICAR IMPORTAÇÃO EXCEL (.XLSX) - MAPA: A=Nome, B=ID, C=Rota
         // ========================================================
         window.aplicarImportacao = function() {
             let input = document.getElementById('importArquivo');
-            if(!input.files[0]) return alert("Por favor, selecione um arquivo CSV primeiro!");
+            if(!input.files[0]) return alert("Por favor, selecione um arquivo Excel (.xlsx) primeiro!");
 
             const reader = new FileReader();
             reader.onload = function(evento) {
-                let dbTemp = [...veiculos];
-                let count = 0;
-                
-                let linhas = evento.target.result.split('\n');
-                if(linhas.length < 2) return alert("Arquivo vazio ou inválido.");
-                
-                let delimitador = linhas[0].includes(';') ? ';' : ',';
-                let cabecalho = linhas[0].toUpperCase().split(delimitador).map(c => c.trim().replace(/(^"|"$)/g, ''));
-                
-                let idxRota = cabecalho.findIndex(c => c.includes('ROTA') || c.includes('PLACA'));
-                let idxNome = cabecalho.findIndex(c => c.includes('NOME') || c.includes('MOTORISTA'));
-                let idxId = cabecalho.findIndex(c => c.includes('ID') || c.includes('TRACKING') || c.includes('CPF') || c.includes('DOCUMENTO'));
-                
-                // Mapeamento caso os nomes do cabeçalho sejam diferentes
-                if(idxRota === -1) idxRota = 2; // C
-                if(idxNome === -1) idxNome = 5; // F
-                if(idxId === -1) idxId = 7;     // COLUNA H (A=0, B=1, C=2... H=7)
+                try {
+                    let data = new Uint8Array(evento.target.result);
+                    let workbook = XLSX.read(data, {type: 'array'});
+                    
+                    // Busca pela aba chamada "Pátio" ou "Patio" (ignorando minúsculas/maiúsculas)
+                    let nomeAbaCorreta = workbook.SheetNames.find(n => n.toUpperCase().includes('PÁTIO') || n.toUpperCase().includes('PATIO'));
+                    
+                    if (!nomeAbaCorreta) {
+                        return alert("ERRO: A aba 'Pátio' não foi encontrada na planilha Excel. Renomeie a aba e tente novamente.");
+                    }
 
-                for(let i = 1; i < linhas.length; i++) {
-                    let linha = linhas[i].trim();
-                    if(!linha) continue;
-                    
-                    let colunas = linha.split(delimitador).map(c => c.trim().replace(/(^"|"$)/g, ''));
-                    
-                    // Checa se a linha tem colunas suficientes para ler a Coluna H
-                    if(colunas.length > Math.max(idxRota, idxNome, idxId)) {
-                        let rota = colunas[idxRota].toUpperCase();
-                        let nome = colunas[idxNome].toUpperCase();
-                        let id = colunas[idxId].toUpperCase();
-                        
+                    let sheet = workbook.Sheets[nomeAbaCorreta];
+                    // Lê a planilha gerando um array onde cada linha é um array: [Nome, ID, Rota]
+                    let linhas = XLSX.utils.sheet_to_json(sheet, {header: 1}); 
+
+                    let dbTemp = [...veiculos];
+                    let count = 0;
+
+                    // Começamos o loop no 1 para pular a linha do cabeçalho (que está na linha 0)
+                    for(let i = 1; i < linhas.length; i++) {
+                        let colunas = linhas[i];
+                        if(!colunas || colunas.length === 0) continue;
+
+                        // Índice 0 = Coluna A (Nome)
+                        // Índice 1 = Coluna B (ID)
+                        // Índice 2 = Coluna C (Rota)
+                        let nome = colunas[0] ? String(colunas[0]).trim().toUpperCase() : "";
+                        let id = colunas[1] ? String(colunas[1]).trim().toUpperCase() : "";
+                        let rota = colunas[2] ? String(colunas[2]).trim().toUpperCase() : "";
+
+                        // Ignora se o ID estiver vazio ou se for a palavra "ID" perdida no meio
                         if(id && id !== 'ID' && !dbTemp.find(v => v.id === id)) {
                             dbTemp.push({ 
                                 id: id, 
@@ -371,19 +373,23 @@
                             count++;
                         }
                     }
+
+                    if(count > 0) {
+                        db.ref('veiculos').set(dbTemp);
+                        alert(`✅ IMPORTAÇÃO DO EXCEL CONCLUÍDA!\n${count} novos motoristas foram adicionados com sucesso.`);
+                    } else {
+                        alert("⚠️ Nenhum registro novo foi importado. Verifique se os dados estão preenchidos na Coluna B (ID).");
+                    }
+                    
+                    input.value = '';
+
+                } catch (error) {
+                    alert("Erro ao ler o arquivo Excel. Verifique se o arquivo não está corrompido.");
+                    console.error(error);
                 }
-                
-                if(count > 0) {
-                    db.ref('veiculos').set(dbTemp);
-                    alert(`✅ IMPORTAÇÃO CONCLUÍDA!\n${count} novos motoristas foram adicionados com sucesso.`);
-                } else {
-                    alert("⚠️ Nenhum registro novo foi encontrado. Verifique se o arquivo está correto, se a coluna H possui IDs, ou se a importação já foi feita.");
-                }
-                
-                input.value = '';
             };
             
-            reader.readAsText(input.files[0], 'ISO-8859-1');
+            reader.readAsArrayBuffer(input.files[0]);
         };
 
         function renderizarControleMesas() {
