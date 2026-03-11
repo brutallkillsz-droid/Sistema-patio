@@ -79,34 +79,39 @@
         .log-erro { color: #ef4444; }
 
         /* ============================================================
-           TV DESIGN - PRESERVADO
+           TV DESIGN - AJUSTE FINO PARA NÃO VAZAR O CARD (TÉCNICA CLAMP E OVERFLOW)
            ============================================================ */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         
-        .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative;}
+        /* Box-sizing e Overflow garantem que nada vai estourar o card principal */
+        .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative; padding: 20px; box-sizing: border-box; overflow: hidden; }
         
-        .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; }
+        .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; overflow: hidden;}
         
         .hist-item-tv { border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding: 12px 0; text-align: center; }
         .hist-item-tv.atend { border-bottom-color: rgba(16, 185, 129, 0.2); }
 
         .hist-rota-tv { color: #ef4444; font-size: 26px; font-weight: bold; display: block; margin-bottom: 5px; text-shadow: 0 0 10px rgba(239,68,68,0.3);}
-        .hist-nome-tv { color: #fff; font-size: 11px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
+        /* Evita que nomes gigantes nos históricos laterais vazem a tela */
+        .hist-nome-tv { color: #fff; font-size: 11px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 
-        .alerta-tv { font-size: 45px; color: #f59e0b; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; font-weight: bold; letter-spacing: 4px; text-transform: uppercase;}
+        /* Fontes Flexíveis usando Clamp: Fica gigante em telas grandes, mas reduz se o card for menor */
+        .alerta-tv { font-size: clamp(30px, 4vw, 45px); color: #f59e0b; margin-bottom: 2vh; font-family: 'Segoe UI', sans-serif; font-weight: bold; letter-spacing: 4px; text-transform: uppercase; width: 100%; text-align: center;}
         @keyframes piscaAlerta { 0% { opacity: 0.5; color: #ef4444;} 100% { opacity: 1; color: #ff0000; text-shadow: 0 0 20px #ef4444; } }
         
-        .placa-tv { font-size: 130px; font-weight: bold; background: #0f172a; padding: 40px 100px; border: 2px solid #38bdf8; border-radius: 15px; margin-bottom: 15px; color: #f8fafc; font-family: 'Segoe UI', sans-serif;}
-        .nome-mtr { font-size: 45px; color: #94a3b8; margin-bottom: 30px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
+        .placa-tv { font-size: clamp(60px, 7vw, 130px); font-weight: bold; background: #0f172a; padding: 2vh 5vw; border: 2px solid #38bdf8; border-radius: 15px; margin-bottom: 2vh; color: #f8fafc; font-family: 'Segoe UI', sans-serif; max-width: 95%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-sizing: border-box;}
         
-        #displayBancadaContainer { font-family: 'Segoe UI', sans-serif; font-weight:bold; margin-top:20px; text-transform: uppercase; }
-        #prefixoMesa { color: #cbd5e1; font-size: 55px; }
+        .nome-mtr { font-size: clamp(25px, 3vw, 45px); color: #94a3b8; margin-bottom: 3vh; text-transform: uppercase; font-family: 'Segoe UI', sans-serif; max-width: 95%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        
+        #displayBancadaContainer { font-family: 'Segoe UI', sans-serif; font-weight:bold; margin-top: 1vh; text-transform: uppercase; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; max-width: 100%; }
+        #prefixoMesa { color: #cbd5e1; font-size: clamp(35px, 4vw, 55px); margin-right: 15px; }
         
         #displayBancada { 
-            font-size: 120px; margin-left: 20px;
+            font-size: clamp(70px, 8vw, 120px); 
             background-image: linear-gradient(to bottom, #10b981, #77ff77); 
             -webkit-background-clip: text; background-clip: text; color: transparent;
             text-shadow: 0 0 8px rgba(16, 185, 129, 0.5); 
+            line-height: 1;
         }
 
         .btn-padrao { background: transparent; color: #38bdf8; border: 1px solid #38bdf8; padding: 8px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; transition: 0.2s; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
@@ -318,9 +323,6 @@
             }
         }
 
-        // ========================================================
-        // APLICAR IMPORTAÇÃO EXCEL - BUSCA ESTRITA PELA ABA "PÁTIO"
-        // ========================================================
         window.aplicarImportacao = function() {
             let input = document.getElementById('importArquivo');
             if(!input.files[0]) return alert("Por favor, selecione um arquivo Excel (.xlsx) primeiro!");
@@ -331,7 +333,6 @@
                     let data = new Uint8Array(evento.target.result);
                     let workbook = XLSX.read(data, {type: 'array'});
                     
-                    // Busca estritamente a aba chamada "Pátio" (com ou sem acento, ignorando espaços)
                     let nomeAbaCorreta = workbook.SheetNames.find(n => n.trim().toUpperCase() === 'PÁTIO' || n.trim().toUpperCase() === 'PATIO');
                     
                     if (!nomeAbaCorreta) {
@@ -339,21 +340,18 @@
                     }
 
                     let sheet = workbook.Sheets[nomeAbaCorreta];
-                    // Mantém a ordem exata das colunas lidas do Excel
                     let linhas = XLSX.utils.sheet_to_json(sheet, {header: 1, defval: ""}); 
 
                     let dbTemp = [...veiculos];
                     let count = 0;
 
-                    // Começa do 1 para pular a linha do cabeçalho
                     for(let i = 1; i < linhas.length; i++) {
                         let colunas = linhas[i];
                         if(!colunas || colunas.length === 0) continue;
 
-                        // MAPEAMENTO EXATO: A=0, B=1, C=2
-                        let nome = String(colunas[0] || "").trim().toUpperCase(); // Coluna A
-                        let id = String(colunas[1] || "").trim().toUpperCase();   // Coluna B
-                        let rota = String(colunas[2] || "").trim().toUpperCase(); // Coluna C
+                        let nome = String(colunas[0] || "").trim().toUpperCase();
+                        let id = String(colunas[1] || "").trim().toUpperCase();
+                        let rota = String(colunas[2] || "").trim().toUpperCase();
 
                         if(id && id !== 'ID' && !dbTemp.find(v => v.id === id)) {
                             dbTemp.push({ 
@@ -375,7 +373,7 @@
                         db.ref('veiculos').set(dbTemp);
                         alert(`✅ IMPORTAÇÃO DO EXCEL CONCLUÍDA!\n${count} motoristas da aba 'Pátio' foram adicionados com sucesso.`);
                     } else {
-                        alert("⚠️ Nenhum registro importado. Verifique se há dados a partir da linha 2 na aba 'Pátio' e se a Coluna B possui IDs.");
+                        alert("⚠️ Nenhum registro importado. Verifique se há dados a partir da linha 2 na aba 'Pátio' e se a Coluna B possui IDs válidos.");
                     }
                     
                     input.value = '';
