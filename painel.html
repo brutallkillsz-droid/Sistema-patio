@@ -5,7 +5,7 @@
     <title>Gestão de Pátio</title>
     <style>
         /* ============================================================
-           DESIGN ORIGINAL PRESERVADO - ALTA FIDELIDADE
+           DESIGN ORIGINAL PRESERVADO E BLINDADO
            ============================================================ */
         body { margin: 0; padding: 0; background-color: #0f172a; color: #cbd5e1; font-family: 'Consolas', 'Courier New', monospace; height: 100vh; display: flex; overflow: hidden; }
         ::-webkit-scrollbar { width: 8px; height: 8px; } 
@@ -79,7 +79,7 @@
         .log-erro { color: #ef4444; }
 
         /* ============================================================
-           TV DESIGN - COM 2 HISTÓRICOS LIMITADOS
+           TV DESIGN - 3 COLUNAS MANTIDAS
            ============================================================ */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         
@@ -393,31 +393,42 @@
             if(v) { v.status = 'EM_ATENDIMENTO'; v.mesaResponsavel = lAtu; v.horaChamada = Date.now(); db.ref('veiculos').set(vt); db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, data: Date.now() }); }
         };
 
-        window.finalizarVeiculo = function(id) {
-            let vt = [...veiculos], v = vt.find(x => x.id === id);
-            if(v) { v.status = 'FINALIZADO'; v.horaFinalizado = Date.now(); db.ref('veiculos').set(vt); }
-        };
-
-        // ========================================================
-        // NOVA FUNÇÃO: PENALIZAR MOTORISTA QUE NÃO ESCUTOU O CHAMADO
-        // ========================================================
         window.penalizarVeiculo = function(id) {
             if(confirm("O motorista não compareceu? Enviar para o Final de Fila?")) {
                 let vt = [...veiculos];
                 let v = vt.find(x => x.id === id);
                 if(v) {
                     v.status = 'FINAL_FILA';
-                    v.chegada = Date.now(); // Reseta o tempo de chegada para ir pro final de verdade
+                    v.chegada = Date.now();
                     v.mesaResponsavel = '';
                     db.ref('veiculos').set(vt);
-                    
-                    // Adiciona a rota automaticamente na lista de punição para futuros check-ins
                     let f = [...rFF];
-                    if(!f.includes(v.rota)) {
-                        f.push(v.rota);
-                        db.ref('rotasFinalFila').set(f);
-                    }
+                    if(!f.includes(v.rota)) { f.push(v.rota); db.ref('rotasFinalFila').set(f); }
                 }
+            }
+        };
+
+        // ========================================================
+        // FUNÇÃO DE ZERAR DIA (RESETA SISTEMA E INTERFACE)
+        // ========================================================
+        window.limparDados = function() { 
+            if(confirm("ATENÇÃO: Isso apagará TODOS os dados, histórico e check-ins do dia. Deseja continuar?")) { 
+                db.ref('veiculos').set(null); 
+                db.ref('rotasFinalFila').set(null); 
+                db.ref('tvComando').set(null);
+
+                const consoleBox = document.getElementById('consoleLog');
+                if(consoleBox) consoleBox.innerHTML = '<div class="log-linha">SISTEMA ZERADO. AGUARDANDO NOVA IMPORTAÇÃO.</div>';
+
+                const dPlaca = document.getElementById('displayPlaca');
+                if(dPlaca) {
+                    dPlaca.innerText = "---";
+                    document.getElementById('displayNomeMotorista').innerText = "AGUARDANDO...";
+                    document.getElementById('displayBancadaContainer').style.display = 'none';
+                    document.getElementById('textoAlerta').innerText = "PAINEL STANDBY";
+                    document.getElementById('textoAlerta').style.animation = 'none';
+                }
+                alert("Sistema zerado com sucesso! Pronto para o próximo dia.");
             }
         };
 
@@ -451,14 +462,13 @@
                 
                 if(tD) tD.innerHTML += `<tr><td>${v.rota}<br><small>${v.nome}</small></td><td>${v.mesaResponsavel || '-'}</td><td>${v.status}</td><td>${formatarTempoLive(dur)}</td></tr>`;
                 
-                // INSERÇÃO DO NOVO BOTÃO 'RETIDO' NA MESA DO OPERADOR
+                // MESA DO OPERADOR (BOTÃO FIM REMOVIDO, APENAS BOTÃO RETIDO)
                 if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lAtu && tM) {
                     tM.innerHTML += `<tr>
                         <td>${v.rota}</td>
                         <td>${formatarTempoLive(ag - v.horaChamada)}</td>
-                        <td align="right" style="display:flex; gap:8px; justify-content: flex-end;">
+                        <td align="right">
                             <button class="btn-padrao" style="border-color:#f59e0b; color:#f59e0b;" onclick="penalizarVeiculo('${v.id}')" title="Enviar para Final de Fila">RETIDO</button>
-                            <button class="btn-padrao btn-critico" onclick="finalizarVeiculo('${v.id}')" title="Finalizar Atendimento">FIM</button>
                         </td>
                     </tr>`;
                 }
@@ -532,7 +542,6 @@
 
         setInterval(renderizarTelas, 1000);
         window.ativarVozTV = function() { document.getElementById('btnAtivarVoz').style.display = 'none'; window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); };
-        window.limparDados = function() { if(confirm("Apagar dados do dia?")) { db.ref('veiculos').set(null); db.ref('rotasFinalFila').set(null); }};
     </script>
 </body>
 </html>
