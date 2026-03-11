@@ -79,7 +79,7 @@
         .log-erro { color: #ef4444; }
 
         /* ============================================================
-           TV DESIGN - 3 COLUNAS MANTIDAS
+           TV DESIGN - PROPORÇÕES MANTIDAS
            ============================================================ */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         
@@ -408,9 +408,6 @@
             }
         };
 
-        // ========================================================
-        // FUNÇÃO DE ZERAR DIA (RESETA SISTEMA E INTERFACE)
-        // ========================================================
         window.limparDados = function() { 
             if(confirm("ATENÇÃO: Isso apagará TODOS os dados, histórico e check-ins do dia. Deseja continuar?")) { 
                 db.ref('veiculos').set(null); 
@@ -462,7 +459,7 @@
                 
                 if(tD) tD.innerHTML += `<tr><td>${v.rota}<br><small>${v.nome}</small></td><td>${v.mesaResponsavel || '-'}</td><td>${v.status}</td><td>${formatarTempoLive(dur)}</td></tr>`;
                 
-                // MESA DO OPERADOR (BOTÃO FIM REMOVIDO, APENAS BOTÃO RETIDO)
+                // MESA DO OPERADOR: APENAS BOTÃO RETIDO
                 if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lAtu && tM) {
                     tM.innerHTML += `<tr>
                         <td>${v.rota}</td>
@@ -478,14 +475,15 @@
 
             aguardando.forEach(v => { if(tA) tA.innerHTML += `<tr><td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td><td><button class="btn-padrao" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td></tr>`; });
 
+            // HISTÓRICO TV COM OS TAMANHOS DE FONTE AJUSTADOS
             if(lAtendTV) {
                 let atendTV = veiculos.filter(v => v.status === 'EM_ATENDIMENTO').sort((a, b) => b.horaChamada - a.horaChamada).slice(0, 14);
                 let hAtend = '';
                 atendTV.forEach(v => {
                     hAtend += `<div class="hist-item-tv atend">
                                   <span class="hist-rota-tv" style="color:#10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">${v.rota}</span>
-                                  <span class="hist-nome-tv">${v.nome}</span>
-                                  <span style="color:#10b981; font-size:12px; font-weight:bold; display:block; margin-top:3px; letter-spacing:1px;">${v.mesaResponsavel.toUpperCase()}</span>
+                                  <span class="hist-nome-tv" style="font-size:11px;">${v.nome}</span>
+                                  <span style="color:#10b981; font-size:26px; font-weight:bold; display:block; margin-top:5px; letter-spacing:1px; text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">${v.mesaResponsavel.toUpperCase()}</span>
                                </div>`;
                 });
                 lAtendTV.innerHTML = hAtend || '<center style="color:#4a5568; margin-top:20px;">NENHUM EM ATENDIMENTO</center>';
