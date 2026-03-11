@@ -79,7 +79,7 @@
         .log-erro { color: #ef4444; }
 
         /* ============================================================
-           TV DESIGN - PROPORÇÕES MANTIDAS
+           TV DESIGN - PRESERVADO E AJUSTADO NO TAMANHO DA FONTE MESA
            ============================================================ */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         
@@ -91,7 +91,7 @@
         .hist-item-tv.atend { border-bottom-color: rgba(16, 185, 129, 0.2); }
 
         .hist-rota-tv { color: #ef4444; font-size: 26px; font-weight: bold; display: block; margin-bottom: 5px; text-shadow: 0 0 10px rgba(239,68,68,0.3);}
-        .hist-nome-tv { color: #fff; font-size: 14px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
+        .hist-nome-tv { color: #fff; font-size: 11px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
 
         .alerta-tv { font-size: 45px; color: #f59e0b; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; font-weight: bold; letter-spacing: 4px; text-transform: uppercase;}
         @keyframes piscaAlerta { 0% { opacity: 0.5; color: #ef4444;} 100% { opacity: 1; color: #ff0000; text-shadow: 0 0 20px #ef4444; } }
@@ -317,6 +317,9 @@
             }
         }
 
+        // ========================================================
+        // APLICAR IMPORTAÇÃO - CÓDIGO INTELIGENTE E BLINDADO
+        // ========================================================
         window.aplicarImportacao = function() {
             let input = document.getElementById('importArquivo');
             if(!input.files[0]) return alert("Por favor, selecione um arquivo CSV primeiro!");
@@ -325,24 +328,65 @@
             reader.onload = function(evento) {
                 let dbTemp = [...veiculos];
                 let count = 0;
-                evento.target.result.split('\n').forEach(linha => {
-                    if(!linha.trim()) return;
-                    const colunas = linha.split(/[;,]/);
-                    if(colunas.length >= 7) {
-                        const rotaCol = colunas[2].trim().toUpperCase();
-                        const nomeCol = colunas[5].trim().toUpperCase();
-                        const idCol = colunas[6].trim().toUpperCase();
-                        if(idCol && idCol !== 'ID' && !dbTemp.find(v => v.id === idCol)) {
-                            dbTemp.push({ id: idCol, rota: rotaCol, nome: nomeCol, status: 'NO_PERÍMETRO', chegada: null, horaChamada: null, horaFinalizado: null, finalizado: false, mesaResponsavel: '' });
+                
+                let linhas = evento.target.result.split('\n');
+                if(linhas.length < 2) return alert("Arquivo vazio ou inválido.");
+                
+                // Tenta achar o separador correto
+                let delimitador = linhas[0].includes(';') ? ';' : ',';
+                let cabecalho = linhas[0].toUpperCase().split(delimitador).map(c => c.trim().replace(/(^"|"$)/g, ''));
+                
+                // Mapeamento Inteligente: Tenta achar a coluna pelo nome
+                let idxRota = cabecalho.findIndex(c => c.includes('ROTA') || c.includes('PLACA'));
+                let idxNome = cabecalho.findIndex(c => c.includes('NOME') || c.includes('MOTORISTA'));
+                let idxId = cabecalho.findIndex(c => c.includes('ID') || c.includes('TRACKING') || c.includes('CPF') || c.includes('DOCUMENTO'));
+                
+                // Se o arquivo não tiver esses nomes no cabeçalho, ele tenta adivinhar pelas posições antigas (2, 5, 6)
+                if(idxRota === -1) idxRota = 2;
+                if(idxNome === -1) idxNome = 5;
+                if(idxId === -1) idxId = 6;
+
+                for(let i = 1; i < linhas.length; i++) {
+                    let linha = linhas[i].trim();
+                    if(!linha) continue;
+                    
+                    let colunas = linha.split(delimitador).map(c => c.trim().replace(/(^"|"$)/g, ''));
+                    
+                    if(colunas.length > Math.max(idxRota, idxNome, idxId)) {
+                        let rota = colunas[idxRota].toUpperCase();
+                        let nome = colunas[idxNome].toUpperCase();
+                        let id = colunas[idxId].toUpperCase();
+                        
+                        // Garante que o ID é válido e não seja repetido
+                        if(id && id !== 'ID' && !dbTemp.find(v => v.id === id)) {
+                            dbTemp.push({ 
+                                id: id, 
+                                rota: rota, 
+                                nome: nome, 
+                                status: 'NO_PERÍMETRO', 
+                                chegada: null, 
+                                horaChamada: null, 
+                                horaFinalizado: null, 
+                                finalizado: false, 
+                                mesaResponsavel: '' 
+                            });
                             count++;
                         }
                     }
-                });
-                db.ref('veiculos').set(dbTemp);
-                alert(`IMPORTAÇÃO OK: ${count} registros adicionados.`); 
+                }
+                
+                if(count > 0) {
+                    db.ref('veiculos').set(dbTemp);
+                    alert(`✅ IMPORTAÇÃO CONCLUÍDA!\n${count} novos motoristas foram adicionados com sucesso.`);
+                } else {
+                    alert("⚠️ Nenhum registro novo foi encontrado. Verifique se o arquivo está correto ou se a importação já foi feita antes.");
+                }
+                
                 input.value = '';
             };
-            reader.readAsText(input.files[0]);
+            
+            // ISO-8859-1 ajuda a ler corretamente o português do Brasil exportado pelo Excel
+            reader.readAsText(input.files[0], 'ISO-8859-1');
         };
 
         function renderizarControleMesas() {
@@ -459,7 +503,6 @@
                 
                 if(tD) tD.innerHTML += `<tr><td>${v.rota}<br><small>${v.nome}</small></td><td>${v.mesaResponsavel || '-'}</td><td>${v.status}</td><td>${formatarTempoLive(dur)}</td></tr>`;
                 
-                // MESA DO OPERADOR: APENAS BOTÃO RETIDO
                 if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lAtu && tM) {
                     tM.innerHTML += `<tr>
                         <td>${v.rota}</td>
@@ -475,7 +518,6 @@
 
             aguardando.forEach(v => { if(tA) tA.innerHTML += `<tr><td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td><td><button class="btn-padrao" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td></tr>`; });
 
-            // HISTÓRICO TV COM OS TAMANHOS DE FONTE AJUSTADOS
             if(lAtendTV) {
                 let atendTV = veiculos.filter(v => v.status === 'EM_ATENDIMENTO').sort((a, b) => b.horaChamada - a.horaChamada).slice(0, 14);
                 let hAtend = '';
