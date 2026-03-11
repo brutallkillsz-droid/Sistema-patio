@@ -79,7 +79,7 @@
         .log-erro { color: #ef4444; }
 
         /* ============================================================
-           TV DESIGN - EXATAMENTE COMO PEDIDO
+           TV DESIGN - COM 2 HISTÓRICOS LIMITADOS
            ============================================================ */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         
@@ -206,7 +206,7 @@
                     </div>
                     <div class="card-analise">
                         <h3 style="color: #10b981;">🟢 EM ANÁLISE</h3>
-                        <div class="table-wrapper"><table><thead><tr><th>ROTA</th><th>TEMPO</th><th>AÇÃO</th></tr></thead><tbody id="tabelaMinhaMesa"></tbody></table></div>
+                        <div class="table-wrapper"><table><thead><tr><th>ROTA</th><th>TEMPO</th><th align="right">AÇÃO</th></tr></thead><tbody id="tabelaMinhaMesa"></tbody></table></div>
                     </div>
                 </div>
             </div>
@@ -393,6 +393,34 @@
             if(v) { v.status = 'EM_ATENDIMENTO'; v.mesaResponsavel = lAtu; v.horaChamada = Date.now(); db.ref('veiculos').set(vt); db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, data: Date.now() }); }
         };
 
+        window.finalizarVeiculo = function(id) {
+            let vt = [...veiculos], v = vt.find(x => x.id === id);
+            if(v) { v.status = 'FINALIZADO'; v.horaFinalizado = Date.now(); db.ref('veiculos').set(vt); }
+        };
+
+        // ========================================================
+        // NOVA FUNÇÃO: PENALIZAR MOTORISTA QUE NÃO ESCUTOU O CHAMADO
+        // ========================================================
+        window.penalizarVeiculo = function(id) {
+            if(confirm("O motorista não compareceu? Enviar para o Final de Fila?")) {
+                let vt = [...veiculos];
+                let v = vt.find(x => x.id === id);
+                if(v) {
+                    v.status = 'FINAL_FILA';
+                    v.chegada = Date.now(); // Reseta o tempo de chegada para ir pro final de verdade
+                    v.mesaResponsavel = '';
+                    db.ref('veiculos').set(vt);
+                    
+                    // Adiciona a rota automaticamente na lista de punição para futuros check-ins
+                    let f = [...rFF];
+                    if(!f.includes(v.rota)) {
+                        f.push(v.rota);
+                        db.ref('rotasFinalFila').set(f);
+                    }
+                }
+            }
+        };
+
         function formatarTempoLive(ms) { if(!ms || ms < 0) return "0m 00s"; let s = Math.floor(ms/1000), m = Math.floor(s/60); return `${m}m ${s%60 < 10 ? '0' : ''}${s%60}s`; }
 
         function ordenarAlfanumerica(lista) {
@@ -422,7 +450,19 @@
                 let dur = (v.status === 'FINALIZADO') ? (v.horaFinalizado - v.horaChamada) : (ag - (v.horaChamada || v.chegada));
                 
                 if(tD) tD.innerHTML += `<tr><td>${v.rota}<br><small>${v.nome}</small></td><td>${v.mesaResponsavel || '-'}</td><td>${v.status}</td><td>${formatarTempoLive(dur)}</td></tr>`;
-                if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lAtu && tM) tM.innerHTML += `<tr><td>${v.rota}</td><td>${formatarTempoLive(ag - v.horaChamada)}</td><td><button class="btn-padrao btn-critico" onclick="finalizarVeiculo('${v.id}')">FIM</button></td></tr>`;
+                
+                // INSERÇÃO DO NOVO BOTÃO 'RETIDO' NA MESA DO OPERADOR
+                if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lAtu && tM) {
+                    tM.innerHTML += `<tr>
+                        <td>${v.rota}</td>
+                        <td>${formatarTempoLive(ag - v.horaChamada)}</td>
+                        <td align="right" style="display:flex; gap:8px; justify-content: flex-end;">
+                            <button class="btn-padrao" style="border-color:#f59e0b; color:#f59e0b;" onclick="penalizarVeiculo('${v.id}')" title="Enviar para Final de Fila">RETIDO</button>
+                            <button class="btn-padrao btn-critico" onclick="finalizarVeiculo('${v.id}')" title="Finalizar Atendimento">FIM</button>
+                        </td>
+                    </tr>`;
+                }
+
                 if(v.status === 'FINAL_FILA' && tF) tF.innerHTML += `<tr><td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td><td>${new Date(v.chegada).toLocaleTimeString()}</td><td align="right"><button class="btn-padrao" onclick="liberarFinalFila('${v.id}')">LIBERAR</button></td></tr>`;
             });
 
