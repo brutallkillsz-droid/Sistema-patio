@@ -318,7 +318,7 @@
         }
 
         // ========================================================
-        // APLICAR IMPORTAÇÃO - CÓDIGO INTELIGENTE E BLINDADO
+        // APLICAR IMPORTAÇÃO CORRIGIDO PARA COLUNA H (ÍNDICE 7)
         // ========================================================
         window.aplicarImportacao = function() {
             let input = document.getElementById('importArquivo');
@@ -332,19 +332,17 @@
                 let linhas = evento.target.result.split('\n');
                 if(linhas.length < 2) return alert("Arquivo vazio ou inválido.");
                 
-                // Tenta achar o separador correto
                 let delimitador = linhas[0].includes(';') ? ';' : ',';
                 let cabecalho = linhas[0].toUpperCase().split(delimitador).map(c => c.trim().replace(/(^"|"$)/g, ''));
                 
-                // Mapeamento Inteligente: Tenta achar a coluna pelo nome
                 let idxRota = cabecalho.findIndex(c => c.includes('ROTA') || c.includes('PLACA'));
                 let idxNome = cabecalho.findIndex(c => c.includes('NOME') || c.includes('MOTORISTA'));
                 let idxId = cabecalho.findIndex(c => c.includes('ID') || c.includes('TRACKING') || c.includes('CPF') || c.includes('DOCUMENTO'));
                 
-                // Se o arquivo não tiver esses nomes no cabeçalho, ele tenta adivinhar pelas posições antigas (2, 5, 6)
-                if(idxRota === -1) idxRota = 2;
-                if(idxNome === -1) idxNome = 5;
-                if(idxId === -1) idxId = 6;
+                // Mapeamento caso os nomes do cabeçalho sejam diferentes
+                if(idxRota === -1) idxRota = 2; // C
+                if(idxNome === -1) idxNome = 5; // F
+                if(idxId === -1) idxId = 7;     // COLUNA H (A=0, B=1, C=2... H=7)
 
                 for(let i = 1; i < linhas.length; i++) {
                     let linha = linhas[i].trim();
@@ -352,12 +350,12 @@
                     
                     let colunas = linha.split(delimitador).map(c => c.trim().replace(/(^"|"$)/g, ''));
                     
+                    // Checa se a linha tem colunas suficientes para ler a Coluna H
                     if(colunas.length > Math.max(idxRota, idxNome, idxId)) {
                         let rota = colunas[idxRota].toUpperCase();
                         let nome = colunas[idxNome].toUpperCase();
                         let id = colunas[idxId].toUpperCase();
                         
-                        // Garante que o ID é válido e não seja repetido
                         if(id && id !== 'ID' && !dbTemp.find(v => v.id === id)) {
                             dbTemp.push({ 
                                 id: id, 
@@ -379,13 +377,12 @@
                     db.ref('veiculos').set(dbTemp);
                     alert(`✅ IMPORTAÇÃO CONCLUÍDA!\n${count} novos motoristas foram adicionados com sucesso.`);
                 } else {
-                    alert("⚠️ Nenhum registro novo foi encontrado. Verifique se o arquivo está correto ou se a importação já foi feita antes.");
+                    alert("⚠️ Nenhum registro novo foi encontrado. Verifique se o arquivo está correto, se a coluna H possui IDs, ou se a importação já foi feita.");
                 }
                 
                 input.value = '';
             };
             
-            // ISO-8859-1 ajuda a ler corretamente o português do Brasil exportado pelo Excel
             reader.readAsText(input.files[0], 'ISO-8859-1');
         };
 
@@ -537,7 +534,7 @@
                 finalTV.forEach(v => {
                     hFim += `<div class="hist-item-tv">
                                <span class="hist-rota-tv">${v.rota}</span>
-                               <span class="hist-nome-tv">${v.nome}</span>
+                               <span class="hist-nome-tv" style="font-size:11px;">${v.nome}</span>
                              </div>`;
                 });
                 lFilaTV.innerHTML = hFim || '<center style="color:#4a5568; margin-top:20px;">NENHUM RETIDO</center>';
