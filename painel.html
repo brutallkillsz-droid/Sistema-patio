@@ -319,7 +319,7 @@
         }
 
         // ========================================================
-        // IMPORTAÇÃO EXCEL (.XLSX) - BLINDADO PARA COLUNAS A, B e C
+        // APLICAR IMPORTAÇÃO EXCEL - BUSCA ESTRITA PELA ABA "PÁTIO"
         // ========================================================
         window.aplicarImportacao = function() {
             let input = document.getElementById('importArquivo');
@@ -331,30 +331,30 @@
                     let data = new Uint8Array(evento.target.result);
                     let workbook = XLSX.read(data, {type: 'array'});
                     
-                    // Puxa obrigatoriamente a primeira aba do arquivo, independente do nome que tenha
-                    let firstSheetName = workbook.SheetNames[0];
-                    let sheet = workbook.Sheets[firstSheetName];
+                    // Busca estritamente a aba chamada "Pátio" (com ou sem acento, ignorando espaços)
+                    let nomeAbaCorreta = workbook.SheetNames.find(n => n.trim().toUpperCase() === 'PÁTIO' || n.trim().toUpperCase() === 'PATIO');
                     
-                    // Converte a aba em array, forçando a criação de células vazias para não perder a posição das colunas
+                    if (!nomeAbaCorreta) {
+                        return alert("ERRO: A aba 'Pátio' não foi encontrada no arquivo Excel. Renomeie a aba e tente novamente. Abas encontradas: " + workbook.SheetNames.join(", "));
+                    }
+
+                    let sheet = workbook.Sheets[nomeAbaCorreta];
+                    // Mantém a ordem exata das colunas lidas do Excel
                     let linhas = XLSX.utils.sheet_to_json(sheet, {header: 1, defval: ""}); 
 
                     let dbTemp = [...veiculos];
                     let count = 0;
 
-                    // i = 1 para pular o cabeçalho do Excel e começar na linha 2 (dados reais)
+                    // Começa do 1 para pular a linha do cabeçalho
                     for(let i = 1; i < linhas.length; i++) {
                         let colunas = linhas[i];
                         if(!colunas || colunas.length === 0) continue;
 
-                        // MAPEAMENTO EXATO SOLICITADO:
-                        // Coluna A (Índice 0) = Nome
-                        // Coluna B (Índice 1) = ID
-                        // Coluna C (Índice 2) = Rota
-                        let nome = String(colunas[0]).trim().toUpperCase();
-                        let id = String(colunas[1]).trim().toUpperCase();
-                        let rota = String(colunas[2]).trim().toUpperCase();
+                        // MAPEAMENTO EXATO: A=0, B=1, C=2
+                        let nome = String(colunas[0] || "").trim().toUpperCase(); // Coluna A
+                        let id = String(colunas[1] || "").trim().toUpperCase();   // Coluna B
+                        let rota = String(colunas[2] || "").trim().toUpperCase(); // Coluna C
 
-                        // O ID não pode ser vazio, e não pode ser a palavra do cabeçalho repetida
                         if(id && id !== 'ID' && !dbTemp.find(v => v.id === id)) {
                             dbTemp.push({ 
                                 id: id, 
@@ -373,15 +373,15 @@
 
                     if(count > 0) {
                         db.ref('veiculos').set(dbTemp);
-                        alert(`✅ IMPORTAÇÃO DO EXCEL CONCLUÍDA!\n${count} novos motoristas foram adicionados ao sistema.`);
+                        alert(`✅ IMPORTAÇÃO DO EXCEL CONCLUÍDA!\n${count} motoristas da aba 'Pátio' foram adicionados com sucesso.`);
                     } else {
-                        alert("⚠️ Nenhum registro importado. Verifique se o arquivo tem dados na Linha 2 em diante e se a Coluna B contém os IDs.");
+                        alert("⚠️ Nenhum registro importado. Verifique se há dados a partir da linha 2 na aba 'Pátio' e se a Coluna B possui IDs.");
                     }
                     
                     input.value = '';
 
                 } catch (error) {
-                    alert("Erro ao processar o arquivo Excel. Tente salvar o arquivo novamente ou verifique sua estrutura.");
+                    alert("Erro ao processar o arquivo Excel. Verifique se o arquivo não está corrompido.");
                     console.error(error);
                 }
             };
