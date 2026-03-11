@@ -79,24 +79,20 @@
         .log-erro { color: #ef4444; }
 
         /* ============================================================
-           TV DESIGN - COM 2 HISTÓRICOS LIMITADOS
+           TV DESIGN - EXATAMENTE COMO PEDIDO
            ============================================================ */
-        /* Ajuste do layout para comportar 3 colunas harmoniosas */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         
-        /* Centro focado sem apertar as laterais */
         .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative;}
         
-        /* As duas barras laterais idênticas em tamanho (Original) */
         .tv-historico { flex: 1; background: #0b101a; border-radius: 12px; border: 1px solid #1e293b; padding: 20px; display: flex; flex-direction: column; }
         
         .hist-item-tv { border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding: 12px 0; text-align: center; }
-        .hist-item-tv.atend { border-bottom-color: rgba(16, 185, 129, 0.2); } /* Borda verde pro histórico esquerdo */
+        .hist-item-tv.atend { border-bottom-color: rgba(16, 185, 129, 0.2); }
 
         .hist-rota-tv { color: #ef4444; font-size: 26px; font-weight: bold; display: block; margin-bottom: 5px; text-shadow: 0 0 10px rgba(239,68,68,0.3);}
         .hist-nome-tv { color: #fff; font-size: 14px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
 
-        /* Fontes gigantes no centro, conforme pedido */
         .alerta-tv { font-size: 45px; color: #f59e0b; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; font-weight: bold; letter-spacing: 4px; text-transform: uppercase;}
         @keyframes piscaAlerta { 0% { opacity: 0.5; color: #ef4444;} 100% { opacity: 1; color: #ff0000; text-shadow: 0 0 20px #ef4444; } }
         
@@ -144,7 +140,7 @@
             <button class="nav-btn" id="btnTabMesas" onclick="mudarAba('abaMesas', this)" title="Atendimento"><span class="nav-icon">🎯</span><span class="nav-text">ATENDIMENTO</span></button>
             <button class="nav-btn" id="btnTabRadar" onclick="mudarAba('abaRadar', this)" title="Radar Global"><span class="nav-icon">🌍</span><span class="nav-text">RADAR GLOBAL</span></button>
             <button class="nav-btn" id="btnTabFinalFila" onclick="mudarAba('abaFinalFila', this)" title="Final de Fila"><span class="nav-icon">🚨</span><span class="nav-text">FINAL DE FILA</span></button>
-            <button class="nav-btn" id="btnTabControle" onclick="mudarAba('abaControle', this)" title="Acessos e Mesas"><span class="nav-icon">🔐</span><span class="nav-text">ACESSOS</span></button>
+            <button class="nav-btn" id="btnTabControle" onclick="mudarAba('abaControle', this)" title="Controle de Mesas"><span class="nav-icon">🔐</span><span class="nav-text">MESAS</span></button>
         </div>
 
         <button class="toggle-btn-bottom" onclick="toggleSidebar()" title="Expandir/Recolher Menu">☰</button>
@@ -165,28 +161,18 @@
             </div>
 
             <div id="abaControle" class="aba">
-                <h2 style="color: #38bdf8;">🔐 CONTROLE DE ACESSOS E MESAS</h2>
-                <p style="color:#94a3b8; font-size:12px; margin-top:5px;">Gerencie as contas criadas e as mesas que ficaram presas no servidor.</p>
+                <h2 style="color: #38bdf8;">🔐 CONTROLE DE MESAS</h2>
+                <p style="color:#94a3b8; font-size:12px; margin-top:5px;">Gerencie e libere mesas que ficaram presas no servidor.</p>
                 <div style="display: flex; gap: 20px; margin-top: 15px; height: 100%;">
                     <div style="flex: 1; background: #0b132b; border: 1px solid #1e293b; border-radius: 8px; padding: 20px; display: flex; flex-direction: column;">
-                        <h3 style="color: #cbd5e1; border-bottom: 1px dashed #334155; padding-bottom: 10px;">👥 CONTAS CADASTRADAS</h3>
-                        <div class="table-wrapper" style="margin-top: 10px;">
-                            <table>
-                                <thead><tr><th>USUÁRIO (LOGIN)</th><th align="right">AÇÃO</th></tr></thead>
-                                <tbody id="tabelaUsuariosAdmin"></tbody>
-                            </table>
-                        </div>
-                        <button class="btn-padrao btn-critico" style="margin-top: 15px; width: 100%; font-size: 11px;" onclick="apagarTodosUsuarios()">APAGAR TODAS AS CONTAS</button>
-                    </div>
-                    <div style="flex: 1; background: #0b132b; border: 1px solid #1e293b; border-radius: 8px; padding: 20px; display: flex; flex-direction: column;">
-                        <h3 style="color: #cbd5e1; border-bottom: 1px dashed #334155; padding-bottom: 10px;">🖥️ MESAS OCUPADAS</h3>
+                        <h3 style="color: #cbd5e1; border-bottom: 1px dashed #334155; padding-bottom: 10px;">🖥️ MESAS OCUPADAS ATUALMENTE</h3>
                         <div class="table-wrapper" style="margin-top: 10px;">
                             <table>
                                 <thead><tr><th>NOME DA MESA</th><th align="right">AÇÃO</th></tr></thead>
                                 <tbody id="tabelaMesasAdmin"></tbody>
                             </table>
                         </div>
-                        <button class="btn-padrao btn-critico" style="margin-top: 15px; width: 100%; font-size: 11px;" onclick="destravarMesas()">DESLOGAR TODAS AS MESAS</button>
+                        <button class="btn-padrao btn-critico" style="margin-top: 15px; width: 100%; font-size: 11px;" onclick="destravarMesas()">DESLOGAR TODAS AS MESAS FORÇADAMENTE</button>
                     </div>
                 </div>
             </div>
@@ -282,8 +268,7 @@
         const db = firebase.database();
         const uAtu = localStorage.getItem('usuarioLogado'), lAtu = localStorage.getItem('lugarLogado');
         
-        let veiculos = [], rFF = [];
-        let listaUsuarios = [], listaMesas = [];
+        let veiculos = [], rFF = [], listaMesas = [];
         let audioFila = [], estaFalando = false, uDataChamada = 0;
 
         if (!uAtu) window.location.href = "index.html";
@@ -306,8 +291,7 @@
 
         db.ref('veiculos').on('value', s => { veiculos = s.val() || []; renderizarTelas(); });
         db.ref('rotasFinalFila').on('value', s => { rFF = s.val() || []; });
-        db.ref('usuarios').on('value', s => { listaUsuarios = s.val() || []; renderizarControleAcessos(); });
-        db.ref('mesasOcupadas').on('value', s => { listaMesas = s.val() || []; renderizarControleAcessos(); });
+        db.ref('mesasOcupadas').on('value', s => { listaMesas = s.val() || []; renderizarControleMesas(); });
         
         db.ref('tvComando').on('value', s => { 
             const d = s.val(); 
@@ -361,20 +345,14 @@
             reader.readAsText(input.files[0]);
         };
 
-        function renderizarControleAcessos() {
-            const tU = document.getElementById('tabelaUsuariosAdmin'), tM = document.getElementById('tabelaMesasAdmin');
-            if(!tU || !tM) return;
-            tU.innerHTML = ''; tM.innerHTML = '';
-
-            if(listaUsuarios.length === 0) { tU.innerHTML = `<tr><td colspan="2" align="center" style="color:#64748b; padding: 20px;">NENHUMA CONTA CADASTRADA.</td></tr>`; } 
-            else { listaUsuarios.forEach((u, i) => { tU.innerHTML += `<tr><td style="color:#f8fafc; font-weight:bold;">${u.usuario.toUpperCase()}</td><td align="right"><button class="btn-padrao btn-critico" style="padding: 4px 8px; font-size:10px;" onclick="deletarUsuario(${i})">EXCLUIR</button></td></tr>`; }); }
-
+        function renderizarControleMesas() {
+            const tM = document.getElementById('tabelaMesasAdmin');
+            if(!tM) return;
+            tM.innerHTML = '';
             if(listaMesas.length === 0) { tM.innerHTML = `<tr><td colspan="2" align="center" style="color:#64748b; padding: 20px;">TODAS AS MESAS ESTÃO LIVRES.</td></tr>`; } 
             else { listaMesas.forEach(m => { tM.innerHTML += `<tr><td style="color:#38bdf8; font-weight:bold;">${m.toUpperCase()}</td><td align="right"><button class="btn-padrao btn-critico" style="padding: 4px 8px; font-size:10px;" onclick="desconectarMesa('${m}')">DESLOGAR</button></td></tr>`; }); }
         }
 
-        window.deletarUsuario = function(i) { if(confirm("Excluir esta conta de usuário?")) { let t = [...listaUsuarios]; t.splice(i, 1); db.ref('usuarios').set(t); } };
-        window.apagarTodosUsuarios = function() { if(confirm("Apagar TODAS as contas cadastradas?")) db.ref('usuarios').set(null); };
         window.desconectarMesa = function(m) { if(confirm(`Liberar a ${m}?`)) { let t = listaMesas.filter(x => x !== m); db.ref('mesasOcupadas').set(t); } };
         window.destravarMesas = function() { if(confirm("Liberar todas as mesas forçadamente?")) db.ref('mesasOcupadas').set(null); };
 
@@ -432,16 +410,13 @@
             const tD = document.getElementById('tabelaDashboard'), tA = document.querySelector('#tabelaAguardandoMesa tbody'), 
                   tM = document.getElementById('tabelaMinhaMesa'), tF = document.getElementById('tabelaFinalFilaAdmin');
             
-            // Variáveis dos novos Históricos na TV
             const lAtendTV = document.getElementById('tvEmAtendimentoLista');
             const lFilaTV = document.getElementById('tvFinalFilaLista');
 
             [tD, tA, tM, tF].forEach(t => { if(t) t.innerHTML = ''; });
             let ag = Date.now();
-            
             let aguardando = ordenarAlfanumerica(veiculos.filter(v => v.status === 'AGUARDANDO'));
             
-            // Popula Tabelas de Admin/Operador (Sem limites)
             veiculos.forEach(v => {
                 if(v.status === 'NO_PERÍMETRO') return;
                 let dur = (v.status === 'FINALIZADO') ? (v.horaFinalizado - v.horaChamada) : (ag - (v.horaChamada || v.chegada));
@@ -453,11 +428,7 @@
 
             aguardando.forEach(v => { if(tA) tA.innerHTML += `<tr><td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td><td><button class="btn-padrao" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td></tr>`; });
 
-            // ========================================================
-            // GERENCIAMENTO DA TV (Limites de 14 e 10 respeitados)
-            // ========================================================
             if(lAtendTV) {
-                // FILTRA, ORDENA PELO MAIS RECENTE E LIMITA A 14
                 let atendTV = veiculos.filter(v => v.status === 'EM_ATENDIMENTO').sort((a, b) => b.horaChamada - a.horaChamada).slice(0, 14);
                 let hAtend = '';
                 atendTV.forEach(v => {
@@ -471,7 +442,6 @@
             }
 
             if(lFilaTV) {
-                // FILTRA, ORDENA POR CHEGADA E LIMITA A 10
                 let finalTV = veiculos.filter(v => v.status === 'FINAL_FILA').sort((a, b) => a.chegada - b.chegada).slice(0, 10);
                 let hFim = '';
                 finalTV.forEach(v => {
