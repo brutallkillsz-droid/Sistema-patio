@@ -16,7 +16,6 @@
         input::placeholder { color: #4a5568; }
         input:focus, select:focus { border-color: #00f0ff; box-shadow: 0 0 12px rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); }
         
-        /* Destaque para o seletor de mesas */
         select { font-weight: bold; text-transform: uppercase; color: #38bdf8; text-align: center;}
         option { background: #0b101a; color: #fff; }
 
@@ -38,9 +37,9 @@
                 <option value="">Aguardando Servidor...</option>
             </select>
             
-            <input type="password" id="senhaLogin" placeholder="Digite a Senha" required autocomplete="off" onkeypress="if(event.key === 'Enter') fazerLogin()">
+            <input type="password" id="senhaLogin" placeholder="Digite a Senha" required autocomplete="off" onkeypress="if(event.key === 'Enter') { event.preventDefault(); fazerLogin(); }">
             
-            <button class="btn" onclick="fazerLogin()">ACESSAR PÁTIO</button>
+            <button type="button" class="btn" onclick="fazerLogin()">ACESSAR PÁTIO</button>
         </div>
     </div>
 
@@ -63,7 +62,6 @@
 
         let mesasOcupadas = [];
 
-        // Conexão estabelecida
         db.ref('.info/connected').on('value', function(connectedSnap) {
             if (connectedSnap.val() === true) {
                 let statusEl = document.getElementById('statusNuvem');
@@ -79,11 +77,10 @@
 
         function carregarMesasLivres() {
             const selectLugar = document.getElementById('lugarLogin');
-            const valorAtual = selectLugar.value; // Salva a escolha atual para não resetar se outra mesa logar
+            const valorAtual = selectLugar.value; 
             
             selectLugar.innerHTML = '';
             
-            // Sempre adiciona a opção do Admin no topo
             let optionAdmin = document.createElement('option');
             optionAdmin.value = 'Admin';
             optionAdmin.text = '🔧 ACESSO ADMIN';
@@ -101,7 +98,6 @@
                 }
             }
 
-            // Restaura a seleção do usuário se ela ainda estiver disponível
             if(valorAtual && Array.from(selectLugar.options).some(opt => opt.value === valorAtual)) {
                 selectLugar.value = valorAtual;
             } else if (!temMesaLivre) {
@@ -116,7 +112,6 @@
             if(!lugar) return alert("Selecione a mesa ou o acesso Admin.");
             if(!s) return alert("Digite a senha.");
 
-            // 1. REGRA PARA O ADMINISTRADOR
             if(lugar === 'Admin') {
                 if(s === 'spxadmin123') {
                     logarComo('ADMIN', 'admin', 'Admin');
@@ -126,16 +121,18 @@
                 return;
             }
 
-            // 2. REGRA PARA AS MESAS (Senha Universal Solicitada)
             if (s === 'Seagroup.com') {
-                // Checa duplamente se a mesa não foi ocupada em milissegundos por outra pessoa
-                if(mesasOcupadas.includes(lugar)) {
-                    return alert("Esta mesa acabou de ser acessada por outro operador. Escolha outra.");
-                }
-                
-                mesasOcupadas.push(lugar);
-                db.ref('mesasOcupadas').set(mesasOcupadas).then(() => {
-                    logarComo(lugar.toUpperCase(), 'operador', lugar);
+                // SISTEMA DE VERIFICAÇÃO INSTANTÂNEA (Race Condition Fix)
+                // Checa no servidor no exato milissegundo antes de registrar para evitar sobreposição
+                db.ref('mesasOcupadas').once('value').then((snapshot) => {
+                    let atuais = snapshot.val() || [];
+                    if(atuais.includes(lugar)) {
+                        return alert("Esta mesa acabou de ser acessada por outro operador. Escolha outra.");
+                    }
+                    atuais.push(lugar);
+                    db.ref('mesasOcupadas').set(atuais).then(() => {
+                        logarComo(lugar.toUpperCase(), 'operador', lugar);
+                    });
                 });
             } else { 
                 alert("Acesso Negado: Senha da Mesa incorreta!"); 
