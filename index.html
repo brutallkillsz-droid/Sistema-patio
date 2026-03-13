@@ -28,6 +28,13 @@
 </head>
 <body>
 
+    <script>
+        // AUTO-REDIRECT: Se já estiver logado, não deixa ficar na tela de login e joga direto pro painel
+        if (sessionStorage.getItem('usuarioLogado')) {
+            window.location.href = "painel.html";
+        }
+    </script>
+
     <div class="caixa-login">
         <div id="formLogin">
             <div class="logo-icon">💠</div>
@@ -122,8 +129,6 @@
             }
 
             if (s === 'Seagroup.com') {
-                // SISTEMA DE VERIFICAÇÃO INSTANTÂNEA (Race Condition Fix)
-                // Checa no servidor no exato milissegundo antes de registrar para evitar sobreposição
                 db.ref('mesasOcupadas').once('value').then((snapshot) => {
                     let atuais = snapshot.val() || [];
                     if(atuais.includes(lugar)) {
@@ -140,9 +145,10 @@
         }
 
         function logarComo(usuario, role, lugar) {
-            localStorage.setItem('usuarioLogado', usuario);
-            localStorage.setItem('roleLogado', role);
-            localStorage.setItem('lugarLogado', lugar);
+            // TROCADO PARA SESSION STORAGE PARA PROTEGER O F5
+            sessionStorage.setItem('usuarioLogado', usuario);
+            sessionStorage.setItem('roleLogado', role);
+            sessionStorage.setItem('lugarLogado', lugar);
             window.location.href = "painel.html"; 
         }
     </script>
