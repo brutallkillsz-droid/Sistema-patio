@@ -80,7 +80,7 @@
         .log-rota-neon { font-size: 34px; font-weight: 900; color: #00f0ff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.8); margin-left: 10px; vertical-align: middle; letter-spacing: 2px;}
 
         /* ============================================================
-           TV DESIGN - BLINDADO
+           TV DESIGN - AJUSTE FINO (TÉCNICA CLAMP)
            ============================================================ */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative; padding: 20px; box-sizing: border-box; overflow: hidden; }
@@ -427,28 +427,35 @@
         window.addRotaFinalFila = function() {
             let vRota = document.getElementById('inputFinalFila').value.trim().toUpperCase();
             if(vRota) { 
-                // 1. Aplica a punição padrão na Rota
+                let vt = [...veiculos];
+                let atualizouVeiculo = false;
+
+                // 1. Finaliza a rota atual que está na mesa do operador (igual ao botão Puxar)
+                vt.forEach(x => { 
+                    if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { 
+                        x.status = 'FINALIZADO'; 
+                        x.horaFinalizado = Date.now(); 
+                        atualizouVeiculo = true;
+                    }
+                    // Bônus de inteligência: se a rota punida já estiver aguardando, move para o final da fila na hora
+                    if(x.rota === vRota && (x.status === 'AGUARDANDO' || x.status === 'NO_PERÍMETRO')) {
+                        x.status = 'FINAL_FILA';
+                        x.chegada = Date.now(); 
+                        atualizouVeiculo = true;
+                    }
+                });
+
+                if(atualizouVeiculo) {
+                    db.ref('veiculos').set(vt);
+                }
+
+                // 2. Salva a penalidade na base de dados para os próximos check-ins
                 let f = [...rFF]; 
                 if(!f.includes(vRota)) { 
                     f.push(vRota); 
                     db.ref('rotasFinalFila').set(f); 
                     alert("Rota Penalizada!"); 
                 } 
-
-                // 2. Tira a Rota automaticamente da mesa se ela estiver 'Em Análise'
-                let vt = [...veiculos];
-                let modificado = false;
-                vt.forEach(x => {
-                    if(x.rota === vRota && x.status === 'EM_ATENDIMENTO') {
-                        x.status = 'FINALIZADO';
-                        x.horaFinalizado = Date.now();
-                        modificado = true;
-                    }
-                });
-                
-                if(modificado) {
-                    db.ref('veiculos').set(vt);
-                }
 
                 document.getElementById('inputFinalFila').value = ''; 
             }
@@ -464,21 +471,6 @@
             vt.forEach(x => { if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { x.status = 'FINALIZADO'; x.horaFinalizado = Date.now(); }});
             let v = vt.find(x => x.id === id);
             if(v) { v.status = 'EM_ATENDIMENTO'; v.mesaResponsavel = lAtu; v.horaChamada = Date.now(); db.ref('veiculos').set(vt); db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, data: Date.now() }); }
-        };
-
-        window.penalizarVeiculo = function(id) {
-            if(confirm("O motorista não compareceu? Enviar para o Final de Fila?")) {
-                let vt = [...veiculos];
-                let v = vt.find(x => x.id === id);
-                if(v) {
-                    v.status = 'FINAL_FILA';
-                    v.chegada = Date.now();
-                    v.mesaResponsavel = '';
-                    db.ref('veiculos').set(vt);
-                    let f = [...rFF];
-                    if(!f.includes(v.rota)) { f.push(v.rota); db.ref('rotasFinalFila').set(f); }
-                }
-            }
         };
 
         window.limparDados = function() { 
@@ -538,7 +530,6 @@
                 
                 let dur = (v.status === 'FINALIZADO') ? (v.horaFinalizado - v.horaChamada) : (ag - (v.horaChamada || v.chegada));
                 
-                // Soma tempo apenas para veículos 100% finalizados para a média do Radar
                 if(v.status === 'FINALIZADO' && v.horaFinalizado && v.horaChamada) {
                     totalTempoMs += (v.horaFinalizado - v.horaChamada);
                     qtdFinalizados++;
@@ -559,7 +550,6 @@
                 if(v.status === 'FINAL_FILA' && tF) tF.innerHTML += `<tr><td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td><td>${new Date(v.chegada).toLocaleTimeString()}</td><td align="right"><button type="button" class="btn-padrao" onclick="liberarFinalFila('${v.id}')">LIBERAR</button></td></tr>`;
             });
 
-            // Atualiza o Card do Tempo Médio na aba Radar
             if(elTempoMedio) {
                 if(qtdFinalizados > 0) {
                     elTempoMedio.innerText = formatarTempoLive(totalTempoMs / qtdFinalizados);
