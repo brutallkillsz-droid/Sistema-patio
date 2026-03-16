@@ -538,10 +538,10 @@
             [tD, tA, tM, tF].forEach(t => { if(t) t.innerHTML = ''; });
             let ag = Date.now();
             
-            // INTELIGÊNCIA DO DELAY: Mantém na tabela "Aguardando" as rotas puxadas nos últimos 4 segundos
+            // INTELIGÊNCIA DO DELAY: Mantém na tabela "Aguardando" as rotas puxadas nos últimos 7 segundos (7000 ms)
             let aguardando = veiculos.filter(v => 
                 v.status === 'AGUARDANDO' || 
-                (v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 4000))
+                (v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 7000))
             );
             aguardando = ordenarAlfanumerica(aguardando);
             
@@ -581,12 +581,12 @@
                 }
             }
 
-            // GERAÇÃO DA TABELA AGUARDANDO COM O CARD RED (FANTASMA)
+            // GERAÇÃO DA TABELA AGUARDANDO COM O CARD RED (FANTASMA DE 7 SEGUNDOS)
             aguardando.forEach(v => { 
-                let isCongelado = v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 4000);
+                let isCongelado = v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 7000);
                 
                 if (isCongelado) {
-                    // CARD RED: Linha levemente vermelha e botão totalmente vermelho e vazio (sem texto) para não perder o tamanho
+                    // CARD RED: Linha levemente vermelha e botão totalmente vermelho e vazio
                     if(tA) tA.innerHTML += `<tr style="background: rgba(239, 68, 68, 0.1);">
                         <td class="rota-text" style="opacity: 0.5;">${v.rota}<br><span class="nome-text">${v.nome}</span></td>
                         <td class="tempo-text" style="opacity: 0.5;">${formatarTempoLive(ag - v.chegada)}</td>
