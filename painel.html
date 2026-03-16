@@ -80,7 +80,7 @@
         .log-rota-neon { font-size: 34px; font-weight: 900; color: #00f0ff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.8); margin-left: 10px; vertical-align: middle; letter-spacing: 2px;}
 
         /* ============================================================
-           TV DESIGN - PRESERVADO
+           TV DESIGN - BLINDADO
            ============================================================ */
         .tv-layout { display: flex; width: 100%; height: 100%; gap: 20px; }
         .tv-main { flex: 2.5; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #020617; border-radius: 12px; border: 1px solid #1e293b; text-align: center; position: relative; padding: 20px; box-sizing: border-box; overflow: hidden; }
@@ -228,7 +228,13 @@
             </div>
 
             <div id="abaRadar" class="aba">
-                <h2>RADAR GLOBAL (TEMPO REAL)</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">RADAR GLOBAL (TEMPO REAL)</h2>
+                    <div style="background: #1e293b; border: 1px solid #334155; padding: 10px 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                        <div style="font-size: 11px; color: #94a3b8; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">TEMPO MÉD. ATENDIMENTO</div>
+                        <div id="displayTempoMedio" style="font-size: 22px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);">00m 00s</div>
+                    </div>
+                </div>
                 <div class="table-wrapper"><table><thead><tr><th>ROTA / MOTORISTA</th><th>MESA</th><th>STATUS</th><th>DURAÇÃO</th></tr></thead><tbody id="tabelaDashboard"></tbody></table></div>
             </div>
 
@@ -255,7 +261,6 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        // USANDO A MEMÓRIA DE SESSÃO (BLINDADA CONTRA F5)
         const uAtu = sessionStorage.getItem('usuarioLogado'), lAtu = sessionStorage.getItem('lugarLogado');
         
         let veiculos = [], rFF = [], listaMesas = [];
@@ -278,7 +283,6 @@
             if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
             if(bR) bR.remove(); if(bF) bF.remove(); if(bCtrl) bCtrl.remove();
 
-            // SISTEMA DE AUTO-CURA
             db.ref('mesasOcupadas').once('value').then(s => {
                 let ocupadas = s.val() || [];
                 if(lAtu && !ocupadas.includes(lAtu)) {
@@ -417,9 +421,37 @@
             } else { setTimeout(() => { estaFalando = false; processarFilaAudio(); }, 5000); }
         }
 
+        // ========================================================
+        // AUTOMAÇÃO DO FINAL DE FILA: FINALIZA ROTA "EM ANÁLISE"
+        // ========================================================
         window.addRotaFinalFila = function() {
-            let v = document.getElementById('inputFinalFila').value.trim().toUpperCase();
-            if(v) { let f = [...rFF]; if(!f.includes(v)) { f.push(v); db.ref('rotasFinalFila').set(f); alert("Rota Penalizada!"); } document.getElementById('inputFinalFila').value = ''; }
+            let vRota = document.getElementById('inputFinalFila').value.trim().toUpperCase();
+            if(vRota) { 
+                // 1. Aplica a punição padrão na Rota
+                let f = [...rFF]; 
+                if(!f.includes(vRota)) { 
+                    f.push(vRota); 
+                    db.ref('rotasFinalFila').set(f); 
+                    alert("Rota Penalizada!"); 
+                } 
+
+                // 2. Tira a Rota automaticamente da mesa se ela estiver 'Em Análise'
+                let vt = [...veiculos];
+                let modificado = false;
+                vt.forEach(x => {
+                    if(x.rota === vRota && x.status === 'EM_ATENDIMENTO') {
+                        x.status = 'FINALIZADO';
+                        x.horaFinalizado = Date.now();
+                        modificado = true;
+                    }
+                });
+                
+                if(modificado) {
+                    db.ref('veiculos').set(vt);
+                }
+
+                document.getElementById('inputFinalFila').value = ''; 
+            }
         };
 
         window.liberarFinalFila = function(id) {
@@ -483,20 +515,34 @@
             });
         }
 
+        // ========================================================
+        // RENDERIZAÇÃO GERAL E CÁLCULO DE MÉDIA DE TEMPO
+        // ========================================================
         function renderizarTelas() {
             const tD = document.getElementById('tabelaDashboard'), tA = document.querySelector('#tabelaAguardandoMesa tbody'), 
                   tM = document.getElementById('tabelaMinhaMesa'), tF = document.getElementById('tabelaFinalFilaAdmin');
             
             const lAtendTV = document.getElementById('tvEmAtendimentoLista');
             const lFilaTV = document.getElementById('tvFinalFilaLista');
+            const elTempoMedio = document.getElementById('displayTempoMedio');
 
             [tD, tA, tM, tF].forEach(t => { if(t) t.innerHTML = ''; });
             let ag = Date.now();
             let aguardando = ordenarAlfanumerica(veiculos.filter(v => v.status === 'AGUARDANDO'));
             
+            let totalTempoMs = 0;
+            let qtdFinalizados = 0;
+
             veiculos.forEach(v => {
                 if(v.status === 'NO_PERÍMETRO') return;
+                
                 let dur = (v.status === 'FINALIZADO') ? (v.horaFinalizado - v.horaChamada) : (ag - (v.horaChamada || v.chegada));
+                
+                // Soma tempo apenas para veículos 100% finalizados para a média do Radar
+                if(v.status === 'FINALIZADO' && v.horaFinalizado && v.horaChamada) {
+                    totalTempoMs += (v.horaFinalizado - v.horaChamada);
+                    qtdFinalizados++;
+                }
                 
                 if(tD) tD.innerHTML += `<tr><td>${v.rota}<br><small>${v.nome}</small></td><td>${v.mesaResponsavel || '-'}</td><td>${v.status}</td><td>${formatarTempoLive(dur)}</td></tr>`;
                 
@@ -512,6 +558,15 @@
 
                 if(v.status === 'FINAL_FILA' && tF) tF.innerHTML += `<tr><td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td><td>${new Date(v.chegada).toLocaleTimeString()}</td><td align="right"><button type="button" class="btn-padrao" onclick="liberarFinalFila('${v.id}')">LIBERAR</button></td></tr>`;
             });
+
+            // Atualiza o Card do Tempo Médio na aba Radar
+            if(elTempoMedio) {
+                if(qtdFinalizados > 0) {
+                    elTempoMedio.innerText = formatarTempoLive(totalTempoMs / qtdFinalizados);
+                } else {
+                    elTempoMedio.innerText = "00m 00s";
+                }
+            }
 
             aguardando.forEach(v => { if(tA) tA.innerHTML += `<tr><td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td><td><button type="button" class="btn-padrao" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td></tr>`; });
 
@@ -541,9 +596,6 @@
             }
         }
 
-        // ========================================================
-        // PREVENÇÃO DE GHOST SUBMIT BLINDADA
-        // ========================================================
         document.getElementById('coletor')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault(); 
@@ -570,7 +622,6 @@
                         let spanRota = `<span class="log-rota-neon">${v.rota}</span>`;
                         let msg = rFF.includes(v.rota) ? `⚠️ ROTA PENALIZADA: ${spanRota}` : `CHECK-IN OK: ${spanRota}`;
                         let cor = rFF.includes(v.rota) ? "log-erro" : "log-ok";
-                        
                         consoleBox.innerHTML += `<div class="log-linha ${cor}">[${dataHora}] > ${msg}</div>`;
                     }
                     consoleBox.scrollTop = consoleBox.scrollHeight;
