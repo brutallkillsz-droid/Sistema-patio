@@ -54,6 +54,28 @@
         input[type="text"]:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
         input:disabled { background: #0b101a; color: #64748b; border-color: #ef4444; cursor: not-allowed; }
 
+        /* ============================================================
+           SINAL DE TRÂNSITO: DESTAQUE NEON NO CAMPO DE CHECK-IN
+           ============================================================ */
+        #coletor { 
+            border: 2px solid #10b981 !important; 
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4) !important; 
+            transition: all 0.3s ease; 
+        }
+        #coletor:focus { 
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.8) !important; 
+            background: rgba(16, 185, 129, 0.05) !important; 
+        }
+        #coletor:disabled { 
+            border: 2px solid #ff0000 !important; 
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.9) !important; 
+            background: rgba(255, 0, 0, 0.1) !important; 
+            color: #ff0000 !important; 
+            cursor: wait !important; 
+        }
+        #coletor::placeholder { color: rgba(255,255,255,0.5); }
+        #coletor:disabled::placeholder { color: #ff0000; opacity: 0.9; }
+
         .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #1e293b; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
         table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
         th { position: sticky; top: 0; background: #0f172a; padding: 14px; text-align: left; border-bottom: 1px solid #334155; color: #94a3b8; z-index: 2; font-weight: 600; font-size: 13px; text-transform: uppercase;}
@@ -64,17 +86,13 @@
         .card-decor { grid-column: 2 / 3; grid-row: 1 / 2; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #1e293b; border-radius: 8px; color: #cbd5e1; text-align: center; padding: 20px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .card-analise { grid-column: 2 / 3; grid-row: 2 / 3; display: flex; flex-direction: column; background: transparent; min-height: 0; }
 
-        /* ============================================================
-           MELHORIAS VISUAIS: FILA DE ESPERA E EFEITO HOVER
-           ============================================================ */
         .is-mesa-operacao #tabelaAguardandoMesa .rota-text { font-size: 24px !important; color: #fff !important; font-weight: bold; }
         .is-mesa-operacao #tabelaAguardandoMesa .nome-text { font-size: 16px !important; color: #cbd5e1 !important; }
         .is-mesa-operacao #tabelaAguardandoMesa .tempo-text { font-size: 20px !important; color: #f59e0b !important; }
 
-        /* Linhas mais visíveis e efeito de foco (hover) na tabela de espera */
         #tabelaAguardandoMesa tr { transition: background 0.2s ease; }
-        #tabelaAguardandoMesa td { border-bottom: 1px solid rgba(56, 189, 248, 0.25); } /* Linha mais forte */
-        #tabelaAguardandoMesa tr:hover { background: rgba(56, 189, 248, 0.08); } /* Túnel de visão */
+        #tabelaAguardandoMesa td { border-bottom: 1px solid rgba(56, 189, 248, 0.25); }
+        #tabelaAguardandoMesa tr:hover { background: rgba(56, 189, 248, 0.08); }
 
         .ff-box { width: 100%; margin-top: 15px; padding: 12px; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; background: rgba(239, 68, 68, 0.05); }
         .ff-box label { font-size: 11px; color: #ef4444; font-weight: bold; letter-spacing: 1px; display: block; margin-bottom: 8px; }
@@ -524,9 +542,6 @@
             });
         }
 
-        // ========================================================
-        // RENDERIZAÇÃO COM DELAY VISUAL PARA EVITAR "LAYOUT SHIFT"
-        // ========================================================
         function renderizarTelas() {
             const tD = document.getElementById('tabelaDashboard'), tA = document.querySelector('#tabelaAguardandoMesa tbody'), 
                   tM = document.getElementById('tabelaMinhaMesa'), tF = document.getElementById('tabelaFinalFilaAdmin');
@@ -538,7 +553,6 @@
             [tD, tA, tM, tF].forEach(t => { if(t) t.innerHTML = ''; });
             let ag = Date.now();
             
-            // INTELIGÊNCIA DO DELAY: Mantém na tabela "Aguardando" as rotas puxadas nos últimos 7 segundos (7000 ms)
             let aguardando = veiculos.filter(v => 
                 v.status === 'AGUARDANDO' || 
                 (v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 7000))
@@ -581,19 +595,16 @@
                 }
             }
 
-            // GERAÇÃO DA TABELA AGUARDANDO COM O CARD RED (FANTASMA DE 7 SEGUNDOS)
             aguardando.forEach(v => { 
                 let isCongelado = v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 7000);
                 
                 if (isCongelado) {
-                    // CARD RED: Linha levemente vermelha e botão totalmente vermelho e vazio
                     if(tA) tA.innerHTML += `<tr style="background: rgba(239, 68, 68, 0.1);">
                         <td class="rota-text" style="opacity: 0.5;">${v.rota}<br><span class="nome-text">${v.nome}</span></td>
                         <td class="tempo-text" style="opacity: 0.5;">${formatarTempoLive(ag - v.chegada)}</td>
                         <td><div style="background:#ef4444; border: 1px solid #ef4444; border-radius:4px; height: 35px; width: 100%; box-sizing: border-box; box-shadow: 0 0 10px rgba(239,68,68,0.4);"></div></td>
                     </tr>`;
                 } else {
-                    // LINHA NORMAL
                     if(tA) tA.innerHTML += `<tr>
                         <td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td>
                         <td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td>
@@ -635,7 +646,7 @@
                 const id = this.value.trim().toUpperCase();
                 if(id) {
                     this.disabled = true; 
-                    let placeholderOriginal = this.placeholder;
+                    let placeholderOriginal = "> BIPE OU DIGITE O ID AQUI E APERTE ENTER...";
                     this.placeholder = "PROCESSANDO... AGUARDE 3 SEGUNDOS.";
 
                     let vt = [...veiculos], v = vt.find(x => x.id === id);
