@@ -80,7 +80,7 @@
             box-shadow: 0 0 50px rgba(16, 185, 129, 1), inset 0 0 25px rgba(16, 185, 129, 0.5) !important; 
             background: rgba(16, 185, 129, 0.15) !important; 
             outline: none;
-            animation: none; /* Para a pulsação ao focar para não distrair a digitação */
+            animation: none; 
         }
         
         #coletor:disabled { 
@@ -90,7 +90,7 @@
             color: #ff0000 !important; 
             text-shadow: 0 0 15px rgba(255, 0, 0, 0.8) !important;
             cursor: wait !important; 
-            animation: pulsaVermelho 0.4s infinite alternate; /* Pisca rápido estilo sirene */
+            animation: pulsaVermelho 0.4s infinite alternate; 
         }
 
         @keyframes pulsaVermelho {
@@ -102,9 +102,6 @@
         #coletor:focus::placeholder { color: transparent; }
         #coletor:disabled::placeholder { color: #ff0000; opacity: 1; text-shadow: 0 0 10px rgba(255, 0, 0, 0.8); }
 
-        /* ============================================================
-           TABELAS E RESTANTE DO LAYOUT
-           ============================================================ */
         .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #1e293b; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
         table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
         th { position: sticky; top: 0; background: #0f172a; padding: 14px; text-align: left; border-bottom: 1px solid #334155; color: #94a3b8; z-index: 2; font-weight: 600; font-size: 13px; text-transform: uppercase;}
@@ -476,19 +473,25 @@
             } else { setTimeout(() => { estaFalando = false; processarFilaAudio(); }, 5000); }
         }
 
+        // ========================================================
+        // CORREÇÃO: PUNIÇÃO INVISÍVEL ATÉ O MOTORISTA BIPAR
+        // ========================================================
         window.addRotaFinalFila = function() {
             let vRota = document.getElementById('inputFinalFila').value.trim().toUpperCase();
             if(vRota) { 
                 let vt = [...veiculos];
                 let atualizouVeiculo = false;
 
+                // 1. Finaliza a rota se o operador estiver atendendo ela AGORA
                 vt.forEach(x => { 
                     if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { 
                         x.status = 'FINALIZADO'; 
                         x.horaFinalizado = Date.now(); 
                         atualizouVeiculo = true;
                     }
-                    if(x.rota === vRota && (x.status === 'AGUARDANDO' || x.status === 'NO_PERÍMETRO')) {
+                    
+                    // 2. Se a rota JÁ ESTIVER aguardando no pátio, manda pro final da fila
+                    if(x.rota === vRota && x.status === 'AGUARDANDO') {
                         x.status = 'FINAL_FILA';
                         x.chegada = Date.now(); 
                         atualizouVeiculo = true;
@@ -499,12 +502,16 @@
                     db.ref('veiculos').set(vt);
                 }
 
+                // 3. Guarda a regra na nuvem. Se ele for 'NO_PERIMETRO' (não chegou), ele não sofre
+                // alteração de status agora. Ele vai tomar a punição apenas na hora do check-in.
                 let f = [...rFF]; 
                 if(!f.includes(vRota)) { 
                     f.push(vRota); 
                     db.ref('rotasFinalFila').set(f); 
-                    alert("Rota Penalizada!"); 
-                } 
+                    alert("Rota Penalizada! O motorista irá para o final da fila quando bipar (ou se já estiver aguardando)."); 
+                } else {
+                    alert("Esta rota já possui regra de punição ativa.");
+                }
 
                 document.getElementById('inputFinalFila').value = ''; 
             }
