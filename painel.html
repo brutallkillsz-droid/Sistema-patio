@@ -55,27 +55,56 @@
         input:disabled { background: #0b101a; color: #64748b; border-color: #ef4444; cursor: not-allowed; }
 
         /* ============================================================
-           SINAL DE TRÂNSITO: DESTAQUE NEON NO CAMPO DE CHECK-IN
+           SINAL DE TRÂNSITO: DESTAQUE NEON MÁXIMO NO CHECK-IN
            ============================================================ */
         #coletor { 
-            border: 2px solid #10b981 !important; 
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4) !important; 
+            font-size: 28px !important; 
+            font-weight: bold;
+            padding: 25px !important; 
+            border: 4px solid #10b981 !important; 
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6), inset 0 0 15px rgba(16, 185, 129, 0.2) !important; 
+            background: rgba(16, 185, 129, 0.1) !important; 
+            color: #10b981 !important;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            text-align: center; 
             transition: all 0.3s ease; 
+            animation: pulsaVerde 2s infinite alternate; 
         }
-        #coletor:focus { 
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.8) !important; 
-            background: rgba(16, 185, 129, 0.05) !important; 
+        
+        @keyframes pulsaVerde {
+            0% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), inset 0 0 10px rgba(16, 185, 129, 0.1); }
+            100% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.8), inset 0 0 20px rgba(16, 185, 129, 0.3); }
         }
-        #coletor:disabled { 
-            border: 2px solid #ff0000 !important; 
-            box-shadow: 0 0 25px rgba(255, 0, 0, 0.9) !important; 
-            background: rgba(255, 0, 0, 0.1) !important; 
-            color: #ff0000 !important; 
-            cursor: wait !important; 
-        }
-        #coletor::placeholder { color: rgba(255,255,255,0.5); }
-        #coletor:disabled::placeholder { color: #ff0000; opacity: 0.9; }
 
+        #coletor:focus { 
+            box-shadow: 0 0 50px rgba(16, 185, 129, 1), inset 0 0 25px rgba(16, 185, 129, 0.5) !important; 
+            background: rgba(16, 185, 129, 0.15) !important; 
+            outline: none;
+            animation: none; /* Para a pulsação ao focar para não distrair a digitação */
+        }
+        
+        #coletor:disabled { 
+            border: 5px solid #ff0000 !important; 
+            box-shadow: 0 0 50px rgba(255, 0, 0, 1), inset 0 0 30px rgba(255, 0, 0, 0.4) !important; 
+            background: rgba(255, 0, 0, 0.15) !important; 
+            color: #ff0000 !important; 
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.8) !important;
+            cursor: wait !important; 
+            animation: pulsaVermelho 0.4s infinite alternate; /* Pisca rápido estilo sirene */
+        }
+
+        @keyframes pulsaVermelho {
+            0% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6), inset 0 0 15px rgba(255, 0, 0, 0.2); }
+            100% { box-shadow: 0 0 60px rgba(255, 0, 0, 1), inset 0 0 30px rgba(255, 0, 0, 0.5); }
+        }
+
+        #coletor::placeholder { color: rgba(16, 185, 129, 0.7); font-weight: bold; }
+        #coletor:focus::placeholder { color: transparent; }
+        #coletor:disabled::placeholder { color: #ff0000; opacity: 1; text-shadow: 0 0 10px rgba(255, 0, 0, 0.8); }
+
+        /* ============================================================
+           TABELAS E RESTANTE DO LAYOUT
+           ============================================================ */
         .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #1e293b; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
         table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
         th { position: sticky; top: 0; background: #0f172a; padding: 14px; text-align: left; border-bottom: 1px solid #334155; color: #94a3b8; z-index: 2; font-weight: 600; font-size: 13px; text-transform: uppercase;}
@@ -195,7 +224,7 @@
             <div id="abaCheckin" class="aba">
                 <h2>PORTARIA DE ACESSO (CHECK-IN)</h2>
                 <p style="color:#94a3b8; font-size:14px; margin-bottom: 20px;">Realize a leitura do ID do motorista para enviá-lo ao radar.</p>
-                <input type="text" id="coletor" placeholder="> BIPE OU DIGITE O ID AQUI E APERTE ENTER..." autocomplete="off">
+                <input type="text" id="coletor" placeholder="VERDE: PODE BIPAR O ID AQUI..." autocomplete="off">
                 <div style="margin-top: 25px;">
                     <label style="font-family: 'Segoe UI'; font-weight: 600; font-size: 12px; color: #64748b; letter-spacing: 1px;">CONSOLE DE REGISTRO:</label>
                     <div class="console-box" id="consoleLog">
@@ -646,7 +675,7 @@
                 const id = this.value.trim().toUpperCase();
                 if(id) {
                     this.disabled = true; 
-                    let placeholderOriginal = "> BIPE OU DIGITE O ID AQUI E APERTE ENTER...";
+                    let placeholderOriginal = "VERDE: PODE BIPAR O ID AQUI...";
                     this.placeholder = "PROCESSANDO... AGUARDE 3 SEGUNDOS.";
 
                     let vt = [...veiculos], v = vt.find(x => x.id === id);
