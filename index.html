@@ -29,7 +29,6 @@
 <body>
 
     <script>
-        // AUTO-REDIRECT: Se já estiver logado, não deixa ficar na tela de login e joga direto pro painel
         if (sessionStorage.getItem('usuarioLogado')) {
             window.location.href = "painel.html";
         }
@@ -53,6 +52,9 @@
     <script>
         const TOTAL_DE_MESAS = 15;
 
+        // ==========================================
+        // CONFIGURAÇÃO ATIVA: UBERABA
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyDFQPqoRF6BZm76yAioqhaoOzf8aSjijyU",
             authDomain: "gestao-de-doca.firebaseapp.com",
@@ -68,6 +70,7 @@
         const db = firebase.database();
 
         let mesasOcupadas = [];
+        let mesasCarregadas = false; 
 
         db.ref('.info/connected').on('value', function(connectedSnap) {
             if (connectedSnap.val() === true) {
@@ -80,7 +83,19 @@
         db.ref('mesasOcupadas').on('value', (snapshot) => {
             mesasOcupadas = snapshot.val() || [];
             carregarMesasLivres();
+            mesasCarregadas = true;
+        }, (error) => {
+            console.warn("Regras do Firebase podem estar bloqueadas ainda. Forçando exibição.", error);
+            carregarMesasLivres();
+            mesasCarregadas = true;
         });
+
+        setTimeout(() => {
+            if(!mesasCarregadas) {
+                console.warn("Firebase demorou a responder. Forçando carregamento das mesas.");
+                carregarMesasLivres();
+            }
+        }, 3000);
 
         function carregarMesasLivres() {
             const selectLugar = document.getElementById('lugarLogin');
@@ -138,6 +153,8 @@
                     db.ref('mesasOcupadas').set(atuais).then(() => {
                         logarComo(lugar.toUpperCase(), 'operador', lugar);
                     });
+                }).catch(() => {
+                    logarComo(lugar.toUpperCase(), 'operador', lugar);
                 });
             } else { 
                 alert("Acesso Negado: Senha da Mesa incorreta!"); 
@@ -145,7 +162,6 @@
         }
 
         function logarComo(usuario, role, lugar) {
-            // TROCADO PARA SESSION STORAGE PARA PROTEGER O F5
             sessionStorage.setItem('usuarioLogado', usuario);
             sessionStorage.setItem('roleLogado', role);
             sessionStorage.setItem('lugarLogado', lugar);
