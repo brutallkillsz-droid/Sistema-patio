@@ -300,6 +300,9 @@
     </div>
 
     <script>
+        // ==========================================
+        // CONFIGURAÇÃO ATIVA: UBERABA
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyDFQPqoRF6BZm76yAioqhaoOzf8aSjijyU",
             authDomain: "gestao-de-doca.firebaseapp.com",
@@ -323,9 +326,23 @@
 
         const bA=document.getElementById('btnTabAdmin'), bC=document.getElementById('btnTabCheckin'), bT=document.getElementById('btnTabTv'), bM=document.getElementById('btnTabMesas'), bR=document.getElementById('btnTabRadar'), bF=document.getElementById('btnTabFinalFila'), bCtrl=document.getElementById('btnTabControle');
 
+        // ==========================================
+        // CONTROLE DE ACESSO: ADMIN, MESA 15 E OPERADOR
+        // ==========================================
         if(lAtu === 'Admin') { 
             [bA, bC, bT, bM, bR, bF, bCtrl].forEach(b => { if(b) b.style.display = 'flex'; }); 
             if(bA) bA.click(); 
+        } else if (lAtu === 'Mesa 15') {
+            document.body.classList.add('is-mesa-operacao'); 
+            if(bF) { bF.style.display = 'flex'; bF.click(); } 
+            
+            if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
+            if(bM) bM.remove(); if(bR) bR.remove(); if(bCtrl) bCtrl.remove();
+
+            db.ref('mesasOcupadas').once('value').then(s => {
+                let ocupadas = s.val() || [];
+                if(!ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
+            }).catch(e => console.warn("Permissão de Firebase ainda não liberada no painel."));
         } else { 
             document.body.classList.add('is-mesa-operacao'); 
             if(bM) { bM.style.display = 'flex'; bM.click(); }
@@ -337,11 +354,8 @@
 
             db.ref('mesasOcupadas').once('value').then(s => {
                 let ocupadas = s.val() || [];
-                if(lAtu && !ocupadas.includes(lAtu)) {
-                    ocupadas.push(lAtu);
-                    db.ref('mesasOcupadas').set(ocupadas);
-                }
-            });
+                if(!ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
+            }).catch(e => console.warn("Permissão de Firebase ainda não liberada no painel."));
         }
 
         db.ref('veiculos').on('value', s => { veiculos = s.val() || []; renderizarTelas(); });
@@ -371,6 +385,9 @@
                         sessionStorage.clear(); 
                         window.location.href = "index.html"; 
                     });
+                }).catch(() => {
+                    sessionStorage.clear(); 
+                    window.location.href = "index.html"; 
                 });
             } else {
                 sessionStorage.clear(); 
@@ -473,24 +490,18 @@
             } else { setTimeout(() => { estaFalando = false; processarFilaAudio(); }, 5000); }
         }
 
-        // ========================================================
-        // CORREÇÃO: PUNIÇÃO INVISÍVEL ATÉ O MOTORISTA BIPAR
-        // ========================================================
         window.addRotaFinalFila = function() {
             let vRota = document.getElementById('inputFinalFila').value.trim().toUpperCase();
             if(vRota) { 
                 let vt = [...veiculos];
                 let atualizouVeiculo = false;
 
-                // 1. Finaliza a rota se o operador estiver atendendo ela AGORA
                 vt.forEach(x => { 
                     if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { 
                         x.status = 'FINALIZADO'; 
                         x.horaFinalizado = Date.now(); 
                         atualizouVeiculo = true;
                     }
-                    
-                    // 2. Se a rota JÁ ESTIVER aguardando no pátio, manda pro final da fila
                     if(x.rota === vRota && x.status === 'AGUARDANDO') {
                         x.status = 'FINAL_FILA';
                         x.chegada = Date.now(); 
@@ -502,8 +513,6 @@
                     db.ref('veiculos').set(vt);
                 }
 
-                // 3. Guarda a regra na nuvem. Se ele for 'NO_PERIMETRO' (não chegou), ele não sofre
-                // alteração de status agora. Ele vai tomar a punição apenas na hora do check-in.
                 let f = [...rFF]; 
                 if(!f.includes(vRota)) { 
                     f.push(vRota); 
@@ -620,7 +629,19 @@
                     </tr>`;
                 }
 
-                if(v.status === 'FINAL_FILA' && tF) tF.innerHTML += `<tr><td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td><td>${new Date(v.chegada).toLocaleTimeString()}</td><td align="right"><button type="button" class="btn-padrao" onclick="liberarFinalFila('${v.id}')">LIBERAR</button></td></tr>`;
+                // ==========================================
+                // BOTÃO "PUXAR" ADICIONADO AQUI NO FINAL DE FILA
+                // ==========================================
+                if(v.status === 'FINAL_FILA' && tF) {
+                    tF.innerHTML += `<tr>
+                        <td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td>
+                        <td>${new Date(v.chegada).toLocaleTimeString()}</td>
+                        <td align="right">
+                            <button type="button" class="btn-padrao" onclick="liberarFinalFila('${v.id}')" title="Devolver para Fila Normal">LIBERAR</button>
+                            <button type="button" class="btn-padrao btn-acao" style="margin-left: 5px;" onclick="chamarVeiculo('${v.id}')" title="Puxar Direto para Mesa">PUXAR</button>
+                        </td>
+                    </tr>`;
+                }
             });
 
             if(elTempoMedio) {
