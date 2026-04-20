@@ -4,23 +4,22 @@
     <meta charset="UTF-8">
     <title>Acesso - Gestão de Pátio</title>
     <style>
-        /* DESIGN NEON EQUILIBRADO E FONTES HARMONIZADAS */
-        body { margin: 0; font-family: 'Consolas', 'Courier New', monospace; background-color: #07090f; display: flex; justify-content: center; align-items: center; height: 100vh; color: #00f0ff; }
-        .caixa-login { background: #0b101a; padding: 40px; border-radius: 12px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.05); width: 350px; text-align: center; border: 1px solid rgba(0, 240, 255, 0.2); position: relative; overflow: hidden;}
-        .caixa-login::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #00f0ff; box-shadow: 0 0 15px #00f0ff; }
-        .logo-icon { font-size: 35px; margin-bottom: 10px; color: #00f0ff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.5); }
+        /* DESIGN NEON EQUILIBRADO E TEMA SHOPEE XPRESS (LARANJA) */
+        body { margin: 0; font-family: 'Consolas', 'Courier New', monospace; background-color: #07090f; display: flex; justify-content: center; align-items: center; height: 100vh; color: #ee4d2d; }
+        .caixa-login { background: #0b101a; padding: 40px; border-radius: 12px; box-shadow: 0 0 25px rgba(238, 77, 45, 0.05); width: 350px; text-align: center; border: 1px solid rgba(238, 77, 45, 0.2); position: relative; overflow: hidden;}
+        .caixa-login::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #ee4d2d; box-shadow: 0 0 15px #ee4d2d; }
         
-        h2 { margin: 0 0 25px 0; color: #fff; font-weight: 600; font-size: 22px; font-family: 'Segoe UI', sans-serif; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); text-transform: uppercase;}
+        h2 { margin: 0 0 25px 0; color: #fff; font-weight: 600; font-size: 22px; font-family: 'Segoe UI', sans-serif; letter-spacing: 2px; text-shadow: 0 0 10px rgba(238, 77, 45, 0.3); text-transform: uppercase;}
         
-        input, select { width: 100%; padding: 14px; margin: 10px 0; background: rgba(0,0,0,0.6); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 6px; box-sizing: border-box; font-size: 15px; color: #fff; outline: none; transition: all 0.3s ease; font-family: inherit;}
+        input, select { width: 100%; padding: 14px; margin: 10px 0; background: rgba(0,0,0,0.6); border: 1px solid rgba(238, 77, 45, 0.3); border-radius: 6px; box-sizing: border-box; font-size: 15px; color: #fff; outline: none; transition: all 0.3s ease; font-family: inherit;}
         input::placeholder { color: #4a5568; }
-        input:focus, select:focus { border-color: #00f0ff; box-shadow: 0 0 12px rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); }
+        input:focus, select:focus { border-color: #ee4d2d; box-shadow: 0 0 12px rgba(238, 77, 45, 0.2); background: rgba(238, 77, 45, 0.02); }
         
-        select { font-weight: bold; text-transform: uppercase; color: #38bdf8; text-align: center;}
+        select { font-weight: bold; text-transform: uppercase; color: #ee4d2d; text-align: center;}
         option { background: #0b101a; color: #fff; }
 
-        .btn { width: 100%; padding: 14px; background: rgba(0, 240, 255, 0.1); color: #00f0ff; border: 1px solid #00f0ff; border-radius: 6px; font-family: 'Segoe UI', sans-serif; font-size: 15px; cursor: pointer; font-weight: bold; margin-top: 20px; transition: all 0.2s; letter-spacing: 1px; text-transform: uppercase;}
-        .btn:hover { background: #00f0ff; color: #000; box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+        .btn { width: 100%; padding: 14px; background: rgba(238, 77, 45, 0.1); color: #ee4d2d; border: 1px solid #ee4d2d; border-radius: 6px; font-family: 'Segoe UI', sans-serif; font-size: 15px; cursor: pointer; font-weight: bold; margin-top: 20px; transition: all 0.2s; letter-spacing: 1px; text-transform: uppercase;}
+        .btn:hover { background: #ee4d2d; color: #fff; box-shadow: 0 0 15px rgba(238, 77, 45, 0.6); }
     </style>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -29,6 +28,7 @@
 <body>
 
     <script>
+        // Redireciona automaticamente se já estiver logado
         if (sessionStorage.getItem('usuarioLogado')) {
             window.location.href = "painel.html";
         }
@@ -36,7 +36,8 @@
 
     <div class="caixa-login">
         <div id="formLogin">
-            <div class="logo-icon">💠</div>
+            <img src="Shopee-Express-Logo-Small.png" alt="Shopee Xpress" style="max-width: 180px; margin-bottom: 15px;">
+            
             <h2 id="statusNuvem" style="color: #f1c40f;">CONECTANDO...</h2>
             
             <select id="lugarLogin">
@@ -65,13 +66,6 @@
             appId: "1:574246315988:web:eacaaef9a2fc82393e9841",
             measurementId: "G-QWJNRFZBX5"
         };
-
-        // Outras bases comentadas para backup
-        /*
-        Uberlândia: fila-driver-44.firebaseapp.com
-        Patos de Minas: fila-afc58.firebaseapp.com
-        Divinópolis: filadriver.firebaseapp.com
-        */
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -136,7 +130,7 @@
                 temMesaLivre = true;
             }
 
-            // CRIANDO AS 15 MESAS NORMAIS
+            // CRIANDO AS MESAS NORMAIS
             for(let i = 1; i <= TOTAL_DE_MESAS; i++) {
                 let nomeMesa = 'Mesa ' + i;
                 if(!mesasOcupadas.includes(nomeMesa)) {
@@ -171,7 +165,6 @@
                 return;
             }
 
-            // O mesmo acesso de operador funciona tanto para Mesas quanto para os Logins Final de Fila
             if (s === 'Seagroup.com') {
                 db.ref('mesasOcupadas').once('value').then((snapshot) => {
                     let atuais = snapshot.val() || [];
