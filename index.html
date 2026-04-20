@@ -66,6 +66,13 @@
             measurementId: "G-QWJNRFZBX5"
         };
 
+        // Outras bases comentadas para backup
+        /*
+        Uberlândia: fila-driver-44.firebaseapp.com
+        Patos de Minas: fila-afc58.firebaseapp.com
+        Divinópolis: filadriver.firebaseapp.com
+        */
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -85,7 +92,7 @@
             carregarMesasLivres();
             mesasCarregadas = true;
         }, (error) => {
-            console.warn("Regras do Firebase podem estar bloqueadas ainda. Forçando exibição.", error);
+            console.warn("Regras do Firebase podem estar bloqueadas. Forçando exibição.", error);
             carregarMesasLivres();
             mesasCarregadas = true;
         });
@@ -109,6 +116,27 @@
             selectLugar.appendChild(optionAdmin);
             
             let temMesaLivre = false;
+
+            // ===============================================
+            // CRIANDO AS OPÇÕES: FINAL DE FILA 1 E 2
+            // ===============================================
+            if(!mesasOcupadas.includes('Final de Fila 1')) {
+                let optionFF1 = document.createElement('option');
+                optionFF1.value = 'Final de Fila 1';
+                optionFF1.text = '🚨 FINAL DE FILA 1';
+                selectLugar.appendChild(optionFF1);
+                temMesaLivre = true;
+            }
+
+            if(!mesasOcupadas.includes('Final de Fila 2')) {
+                let optionFF2 = document.createElement('option');
+                optionFF2.value = 'Final de Fila 2';
+                optionFF2.text = '🚨 FINAL DE FILA 2';
+                selectLugar.appendChild(optionFF2);
+                temMesaLivre = true;
+            }
+
+            // CRIANDO AS 15 MESAS NORMAIS
             for(let i = 1; i <= TOTAL_DE_MESAS; i++) {
                 let nomeMesa = 'Mesa ' + i;
                 if(!mesasOcupadas.includes(nomeMesa)) {
@@ -143,11 +171,12 @@
                 return;
             }
 
+            // O mesmo acesso de operador funciona tanto para Mesas quanto para os Logins Final de Fila
             if (s === 'Seagroup.com') {
                 db.ref('mesasOcupadas').once('value').then((snapshot) => {
                     let atuais = snapshot.val() || [];
                     if(atuais.includes(lugar)) {
-                        return alert("Esta mesa acabou de ser acessada por outro operador. Escolha outra.");
+                        return alert("Este acesso já está em uso por outro operador. Escolha outro.");
                     }
                     atuais.push(lugar);
                     db.ref('mesasOcupadas').set(atuais).then(() => {
