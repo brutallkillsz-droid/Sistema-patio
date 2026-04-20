@@ -327,34 +327,40 @@
         const bA=document.getElementById('btnTabAdmin'), bC=document.getElementById('btnTabCheckin'), bT=document.getElementById('btnTabTv'), bM=document.getElementById('btnTabMesas'), bR=document.getElementById('btnTabRadar'), bF=document.getElementById('btnTabFinalFila'), bCtrl=document.getElementById('btnTabControle');
 
         // ==========================================
-        // CONTROLE DE ACESSO: ADMIN, MESA 15 E OPERADOR
+        // CONTROLE DE ACESSO
         // ==========================================
         if(lAtu === 'Admin') { 
             [bA, bC, bT, bM, bR, bF, bCtrl].forEach(b => { if(b) b.style.display = 'flex'; }); 
             if(bA) bA.click(); 
-        } else if (lAtu === 'Mesa 15') {
+
+        } else if (lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') {
+            // Lógica exclusiva para os Logins de Final de Fila
             document.body.classList.add('is-mesa-operacao'); 
             if(bF) { bF.style.display = 'flex'; bF.click(); } 
             
+            // Esconde todas as outras abas
             if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
             if(bM) bM.remove(); if(bR) bR.remove(); if(bCtrl) bCtrl.remove();
 
             db.ref('mesasOcupadas').once('value').then(s => {
                 let ocupadas = s.val() || [];
-                if(!ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
+                if(lAtu && !ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
             }).catch(e => console.warn("Permissão de Firebase ainda não liberada no painel."));
+
         } else { 
+            // Mesas Normais (1 a 15)
             document.body.classList.add('is-mesa-operacao'); 
             if(bM) { bM.style.display = 'flex'; bM.click(); }
             let dNome = document.getElementById('displayNomeMesaGrande');
             if(dNome && lAtu) dNome.innerText = lAtu.toUpperCase(); 
 
+            // Esconde abas proibidas para mesas normais
             if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
             if(bR) bR.remove(); if(bF) bF.remove(); if(bCtrl) bCtrl.remove();
 
             db.ref('mesasOcupadas').once('value').then(s => {
                 let ocupadas = s.val() || [];
-                if(!ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
+                if(lAtu && !ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
             }).catch(e => console.warn("Permissão de Firebase ainda não liberada no painel."));
         }
 
@@ -533,6 +539,7 @@
 
         window.chamarVeiculo = function(id) {
             let vt = [...veiculos];
+            // Finaliza o que estiver em atendimento pela mesma mesa/role que está puxando o novo
             vt.forEach(x => { if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { x.status = 'FINALIZADO'; x.horaFinalizado = Date.now(); }});
             let v = vt.find(x => x.id === id);
             if(v) { v.status = 'EM_ATENDIMENTO'; v.mesaResponsavel = lAtu; v.horaChamada = Date.now(); db.ref('veiculos').set(vt); db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, data: Date.now() }); }
@@ -633,12 +640,18 @@
                 // BOTÃO "PUXAR" ADICIONADO AQUI NO FINAL DE FILA
                 // ==========================================
                 if(v.status === 'FINAL_FILA' && tF) {
+                    let btnPuxar = '';
+                    // Mostra botão puxar apenas para quem tem acesso a essa tela e pode atender
+                    if (lAtu === 'Admin' || lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') {
+                        btnPuxar = `<button type="button" class="btn-padrao btn-acao" style="margin-left: 5px;" onclick="chamarVeiculo('${v.id}')" title="Puxar Direto para a TV">PUXAR</button>`;
+                    }
+
                     tF.innerHTML += `<tr>
                         <td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td>
                         <td>${new Date(v.chegada).toLocaleTimeString()}</td>
                         <td align="right">
                             <button type="button" class="btn-padrao" onclick="liberarFinalFila('${v.id}')" title="Devolver para Fila Normal">LIBERAR</button>
-                            <button type="button" class="btn-padrao btn-acao" style="margin-left: 5px;" onclick="chamarVeiculo('${v.id}')" title="Puxar Direto para Mesa">PUXAR</button>
+                            ${btnPuxar}
                         </td>
                     </tr>`;
                 }
