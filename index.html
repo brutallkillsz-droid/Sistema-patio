@@ -9,6 +9,18 @@
         .caixa-login { background: #0b101a; padding: 40px; border-radius: 12px; box-shadow: 0 0 25px rgba(238, 77, 45, 0.05); width: 350px; text-align: center; border: 1px solid rgba(238, 77, 45, 0.2); position: relative; overflow: hidden;}
         .caixa-login::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #ee4d2d; box-shadow: 0 0 15px #ee4d2d; }
         
+        /* O ESPAÇO RESERVADO PARA A LOGO PNG */
+        .logo-shopee {
+            width: 100%;
+            max-width: 200px;
+            height: 60px;
+            margin: 0 auto 15px auto;
+            background-image: url('Shopee-Express-Logo-Small.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
         h2 { margin: 0 0 25px 0; color: #fff; font-weight: 600; font-size: 22px; font-family: 'Segoe UI', sans-serif; letter-spacing: 2px; text-shadow: 0 0 10px rgba(238, 77, 45, 0.3); text-transform: uppercase;}
         
         input, select { width: 100%; padding: 14px; margin: 10px 0; background: rgba(0,0,0,0.6); border: 1px solid rgba(238, 77, 45, 0.3); border-radius: 6px; box-sizing: border-box; font-size: 15px; color: #fff; outline: none; transition: all 0.3s ease; font-family: inherit;}
@@ -28,7 +40,6 @@
 <body>
 
     <script>
-        // Redireciona automaticamente se já estiver logado
         if (sessionStorage.getItem('usuarioLogado')) {
             window.location.href = "painel.html";
         }
@@ -36,7 +47,7 @@
 
     <div class="caixa-login">
         <div id="formLogin">
-            <img src="Shopee-Express-Logo-Small.png" alt="Shopee Xpress" style="max-width: 180px; margin-bottom: 15px;">
+            <div class="logo-shopee"></div>
             
             <h2 id="statusNuvem" style="color: #f1c40f;">CONECTANDO...</h2>
             
@@ -53,18 +64,15 @@
     <script>
         const TOTAL_DE_MESAS = 15;
 
-        // ==========================================
-        // CONFIGURAÇÃO ATIVA: UBERABA
-        // ==========================================
         const firebaseConfig = {
-            apiKey: "AIzaSyDFQPqoRF6BZm76yAioqhaoOzf8aSjijyU",
-            authDomain: "gestao-de-doca.firebaseapp.com",
-            databaseURL: "https://gestao-de-doca-default-rtdb.firebaseio.com",
-            projectId: "gestao-de-doca",
-            storageBucket: "gestao-de-doca.firebasestorage.app",
-            messagingSenderId: "574246315988",
-            appId: "1:574246315988:web:eacaaef9a2fc82393e9841",
-            measurementId: "G-QWJNRFZBX5"
+            apiKey: "AIzaSyD5x5FCQj3CsNGOjAs-RfgA4ZHzFbUcrA0",
+            authDomain: "filadriver.firebaseapp.com",
+            databaseURL: "https://filadriver-default-rtdb.firebaseio.com",
+            projectId: "filadriver",
+            storageBucket: "filadriver.firebasestorage.app",
+            messagingSenderId: "91440295084",
+            appId: "1:91440295084:web:57104a472c60365dc84309",
+            measurementId: "G-WS5GB1LENK"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -111,9 +119,6 @@
             
             let temMesaLivre = false;
 
-            // ===============================================
-            // CRIANDO AS OPÇÕES: FINAL DE FILA 1 E 2
-            // ===============================================
             if(!mesasOcupadas.includes('Final de Fila 1')) {
                 let optionFF1 = document.createElement('option');
                 optionFF1.value = 'Final de Fila 1';
@@ -130,7 +135,6 @@
                 temMesaLivre = true;
             }
 
-            // CRIANDO AS MESAS NORMAIS
             for(let i = 1; i <= TOTAL_DE_MESAS; i++) {
                 let nomeMesa = 'Mesa ' + i;
                 if(!mesasOcupadas.includes(nomeMesa)) {
