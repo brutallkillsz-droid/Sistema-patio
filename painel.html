@@ -2,15 +2,15 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Gestão de Pátio - Shopee Xpress</title>
+    <title>Gestão de Pátio</title>
     <style>
         /* ============================================================
-           DESIGN ORIGINAL BLINDADO + TEMA SHOPEE XPRESS (LARANJA #ee4d2d)
+           DESIGN ORIGINAL PRESERVADO E BLINDADO
            ============================================================ */
         body { margin: 0; padding: 0; background-color: #0f172a; color: #cbd5e1; font-family: 'Consolas', 'Courier New', monospace; height: 100vh; display: flex; overflow: hidden; }
         ::-webkit-scrollbar { width: 8px; height: 8px; } 
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; } 
-        ::-webkit-scrollbar-thumb { background: #ee4d2d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
 
         .sidebar { width: 260px; background: #0b132b; border-right: 1px solid #1e293b; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 10; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
         .sidebar.collapsed { width: 80px; }
@@ -19,6 +19,19 @@
         .brand { padding: 20px 15px; border-bottom: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; background: #080f26; }
         .brand-text { display: flex; flex-direction: column; align-items: center; transition: opacity 0.2s; width: 100%;}
         .sidebar.collapsed .brand-text { opacity: 0; pointer-events: none; display: none; }
+        
+        /* O ESPAÇO RESERVADO PARA A LOGO PNG */
+        .logo-shopee {
+            width: 100%;
+            max-width: 180px;
+            height: 55px;
+            margin: 0 auto 10px auto;
+            background-image: url('Shopee-Express-Logo-Small.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
         .brand p { margin: 5px 0 0 0; font-size: 12px; color: #94a3b8; }
         .status-led { display: inline-block; width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); margin-right: 5px; }
 
@@ -35,7 +48,6 @@
         .sidebar.collapsed .nav-btn { justify-content: center; padding: 16px 0; border-left: 4px solid transparent; }
         .sidebar.collapsed .nav-icon { margin-right: 0; }
 
-        /* Substituindo foco Azul pelo Laranja Shopee */
         .nav-btn:hover { background: rgba(238, 77, 45, 0.05); color: #f8fafc; }
         .nav-btn.active { background: rgba(238, 77, 45, 0.1); color: #ee4d2d; border-left: 3px solid #ee4d2d; }
         #btnTabFinalFila.active { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-left: 3px solid #ef4444; }
@@ -55,7 +67,7 @@
         input:disabled { background: #0b101a; color: #64748b; border-color: #ef4444; cursor: not-allowed; }
 
         /* ============================================================
-           SINAL DE TRÂNSITO: DESTAQUE NEON MÁXIMO NO CHECK-IN (MANTIDO)
+           SINAL DE TRÂNSITO: DESTAQUE NEON MÁXIMO NO CHECK-IN
            ============================================================ */
         #coletor { 
             font-size: 28px !important; 
@@ -117,8 +129,8 @@
         .is-mesa-operacao #tabelaAguardandoMesa .tempo-text { font-size: 20px !important; color: #f59e0b !important; }
 
         #tabelaAguardandoMesa tr { transition: background 0.2s ease; }
-        #tabelaAguardandoMesa td { border-bottom: 1px solid rgba(238, 77, 45, 0.25); } /* Laranja */
-        #tabelaAguardandoMesa tr:hover { background: rgba(238, 77, 45, 0.08); } /* Laranja hover */
+        #tabelaAguardandoMesa td { border-bottom: 1px solid rgba(238, 77, 45, 0.25); }
+        #tabelaAguardandoMesa tr:hover { background: rgba(238, 77, 45, 0.08); } 
 
         .ff-box { width: 100%; margin-top: 15px; padding: 12px; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; background: rgba(239, 68, 68, 0.05); }
         .ff-box label { font-size: 11px; color: #ef4444; font-weight: bold; letter-spacing: 1px; display: block; margin-bottom: 8px; }
@@ -129,7 +141,7 @@
         .log-linha { margin: 10px 0; border-bottom: 1px dashed #1e293b; padding-bottom: 10px; line-height: 1.5; }
         .log-ok { color: #10b981; }
         .log-erro { color: #ef4444; }
-        .log-rota-neon { font-size: 34px; font-weight: 900; color: #ee4d2d; text-shadow: 0 0 15px rgba(238, 77, 45, 0.8); margin-left: 10px; vertical-align: middle; letter-spacing: 2px;} /* Laranja */
+        .log-rota-neon { font-size: 34px; font-weight: 900; color: #ee4d2d; text-shadow: 0 0 15px rgba(238, 77, 45, 0.8); margin-left: 10px; vertical-align: middle; letter-spacing: 2px;} 
 
         /* ============================================================
            TV DESIGN - PRESERVADO
@@ -143,14 +155,14 @@
         .hist-nome-tv { color: #fff; font-size: 11px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
         .alerta-tv { font-size: clamp(30px, 4vw, 45px); color: #f59e0b; margin-bottom: 2vh; font-family: 'Segoe UI', sans-serif; font-weight: bold; letter-spacing: 4px; text-transform: uppercase; width: 100%; text-align: center;}
         @keyframes piscaAlerta { 0% { opacity: 0.5; color: #ef4444;} 100% { opacity: 1; color: #ff0000; text-shadow: 0 0 20px #ef4444; } }
-        .placa-tv { font-size: clamp(60px, 7vw, 130px); font-weight: bold; background: #0f172a; padding: 2vh 5vw; border: 2px solid #ee4d2d; border-radius: 15px; margin-bottom: 2vh; color: #f8fafc; font-family: 'Segoe UI', sans-serif; max-width: 95%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-sizing: border-box;} /* Laranja */
+        .placa-tv { font-size: clamp(60px, 7vw, 130px); font-weight: bold; background: #0f172a; padding: 2vh 5vw; border: 2px solid #ee4d2d; border-radius: 15px; margin-bottom: 2vh; color: #f8fafc; font-family: 'Segoe UI', sans-serif; max-width: 95%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-sizing: border-box;} 
         .nome-mtr { font-size: clamp(25px, 3vw, 45px); color: #94a3b8; margin-bottom: 3vh; text-transform: uppercase; font-family: 'Segoe UI', sans-serif; max-width: 95%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         #displayBancadaContainer { font-family: 'Segoe UI', sans-serif; font-weight:bold; margin-top: 1vh; text-transform: uppercase; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; max-width: 100%; }
         #prefixoMesa { color: #cbd5e1; font-size: clamp(35px, 4vw, 55px); margin-right: 15px; }
         #displayBancada { font-size: clamp(70px, 8vw, 120px); background-image: linear-gradient(to bottom, #10b981, #77ff77); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 8px rgba(16, 185, 129, 0.5); line-height: 1;}
 
-        .btn-padrao { background: transparent; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 8px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; transition: 0.2s; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;} /* Laranja */
-        .btn-padrao:hover { background: #ee4d2d; color: #fff; } /* Laranja hover */
+        .btn-padrao { background: transparent; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 8px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; transition: 0.2s; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;} 
+        .btn-padrao:hover { background: #ee4d2d; color: #fff; } 
         .btn-critico { border-color: #ef4444; color: #ef4444; }
         .btn-critico:hover { background: #ef4444; color: #fff; }
         .btn-acao { border-color: #10b981; color: #10b981; }
@@ -166,7 +178,7 @@
     <div class="sidebar" id="sidebar">
         <div class="brand">
             <div class="brand-text">
-                <img src="Shopee-Express-Logo-Small.png" alt="Shopee Xpress" style="max-width: 180px; margin-bottom: 10px;">
+                <div class="logo-shopee"></div>
                 
                 <p><span class="status-led"></span><span id="txtServidor">CONECTANDO...</span></p>
                 <p style="color:#ee4d2d; font-weight:900; margin-top:15px; font-size: 16px; letter-spacing: 1px; text-shadow: 0 0 10px rgba(238, 77, 45, 0.8); text-transform: uppercase;">OP: <span id="dispUser" style="color: #fff; text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);"></span></p>
@@ -302,18 +314,15 @@
     </div>
 
     <script>
-        // ==========================================
-        // CONFIGURAÇÃO ATIVA: UBERABA
-        // ==========================================
         const firebaseConfig = {
-            apiKey: "AIzaSyDFQPqoRF6BZm76yAioqhaoOzf8aSjijyU",
-            authDomain: "gestao-de-doca.firebaseapp.com",
-            databaseURL: "https://gestao-de-doca-default-rtdb.firebaseio.com",
-            projectId: "gestao-de-doca",
-            storageBucket: "gestao-de-doca.firebasestorage.app",
-            messagingSenderId: "574246315988",
-            appId: "1:574246315988:web:eacaaef9a2fc82393e9841",
-            measurementId: "G-QWJNRFZBX5"
+            apiKey: "AIzaSyD5x5FCQj3CsNGOjAs-RfgA4ZHzFbUcrA0",
+            authDomain: "filadriver.firebaseapp.com",
+            databaseURL: "https://filadriver-default-rtdb.firebaseio.com",
+            projectId: "filadriver",
+            storageBucket: "filadriver.firebasestorage.app",
+            messagingSenderId: "91440295084",
+            appId: "1:91440295084:web:57104a472c60365dc84309",
+            measurementId: "G-WS5GB1LENK"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -328,9 +337,6 @@
 
         const bA=document.getElementById('btnTabAdmin'), bC=document.getElementById('btnTabCheckin'), bT=document.getElementById('btnTabTv'), bM=document.getElementById('btnTabMesas'), bR=document.getElementById('btnTabRadar'), bF=document.getElementById('btnTabFinalFila'), bCtrl=document.getElementById('btnTabControle');
 
-        // ==========================================
-        // CONTROLE DE ACESSO
-        // ==========================================
         if(lAtu === 'Admin') { 
             [bA, bC, bT, bM, bR, bF, bCtrl].forEach(b => { if(b) b.style.display = 'flex'; }); 
             if(bA) bA.click(); 
@@ -592,14 +598,20 @@
         }
 
         function renderizarTelas() {
-            const tD = document.getElementById('tabelaDashboard'), tA = document.querySelector('#tabelaAguardandoMesa tbody'), 
-                  tM = document.getElementById('tabelaMinhaMesa'), tF = document.getElementById('tabelaFinalFilaAdmin');
+            const tD = document.getElementById('tDashboard') ? document.getElementById('tDashboard') : document.querySelector('#tabelaDashboard');
+            const tA = document.querySelector('#tabelaAguardandoMesa tbody'); 
+            const tM = document.getElementById('tabelaMinhaMesa');
+            const tF = document.getElementById('tabelaFinalFilaAdmin');
             
             const lAtendTV = document.getElementById('tvEmAtendimentoLista');
             const lFilaTV = document.getElementById('tvFinalFilaLista');
             const elTempoMedio = document.getElementById('displayTempoMedio');
 
-            [tD, tA, tM, tF].forEach(t => { if(t) t.innerHTML = ''; });
+            if(tD) tD.innerHTML = '';
+            if(tA) tA.innerHTML = '';
+            if(tM) tM.innerHTML = '';
+            if(tF) tF.innerHTML = '';
+            
             let ag = Date.now();
             
             let aguardando = veiculos.filter(v => 
