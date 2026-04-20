@@ -2,15 +2,15 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Gestão de Pátio</title>
+    <title>Gestão de Pátio - Shopee Xpress</title>
     <style>
         /* ============================================================
-           DESIGN ORIGINAL PRESERVADO E BLINDADO
+           DESIGN ORIGINAL BLINDADO + TEMA SHOPEE XPRESS (LARANJA #ee4d2d)
            ============================================================ */
         body { margin: 0; padding: 0; background-color: #0f172a; color: #cbd5e1; font-family: 'Consolas', 'Courier New', monospace; height: 100vh; display: flex; overflow: hidden; }
         ::-webkit-scrollbar { width: 8px; height: 8px; } 
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; } 
-        ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #ee4d2d; border-radius: 4px; }
 
         .sidebar { width: 260px; background: #0b132b; border-right: 1px solid #1e293b; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 10; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
         .sidebar.collapsed { width: 80px; }
@@ -19,7 +19,6 @@
         .brand { padding: 20px 15px; border-bottom: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; background: #080f26; }
         .brand-text { display: flex; flex-direction: column; align-items: center; transition: opacity 0.2s; width: 100%;}
         .sidebar.collapsed .brand-text { opacity: 0; pointer-events: none; display: none; }
-        .brand h1 { margin: 0; font-size: 18px; letter-spacing: 2px; color: #f8fafc; font-family: 'Segoe UI', sans-serif;}
         .brand p { margin: 5px 0 0 0; font-size: 12px; color: #94a3b8; }
         .status-led { display: inline-block; width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); margin-right: 5px; }
 
@@ -36,11 +35,12 @@
         .sidebar.collapsed .nav-btn { justify-content: center; padding: 16px 0; border-left: 4px solid transparent; }
         .sidebar.collapsed .nav-icon { margin-right: 0; }
 
-        .nav-btn:hover { background: rgba(56, 189, 248, 0.05); color: #f8fafc; }
-        .nav-btn.active { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-left: 3px solid #38bdf8; }
+        /* Substituindo foco Azul pelo Laranja Shopee */
+        .nav-btn:hover { background: rgba(238, 77, 45, 0.05); color: #f8fafc; }
+        .nav-btn.active { background: rgba(238, 77, 45, 0.1); color: #ee4d2d; border-left: 3px solid #ee4d2d; }
         #btnTabFinalFila.active { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-left: 3px solid #ef4444; }
         
-        .toggle-btn-bottom { width: 100%; background: #080f26; border: none; border-top: 1px solid #1e293b; color: #38bdf8; font-size: 24px; cursor: pointer; transition: 0.3s; padding: 15px 0; display: flex; justify-content: center; align-items: center; margin-top: auto; }
+        .toggle-btn-bottom { width: 100%; background: #080f26; border: none; border-top: 1px solid #1e293b; color: #ee4d2d; font-size: 24px; cursor: pointer; transition: 0.3s; padding: 15px 0; display: flex; justify-content: center; align-items: center; margin-top: auto; }
 
         .tab-content-area { flex-grow: 1; padding: 25px; position: relative; overflow: hidden; background: transparent; display: flex; flex-direction: column; }
         .aba { display: none; height: 100%; flex-direction: column; animation: fadeIn 0.3s ease-in-out; }
@@ -48,14 +48,14 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         h2 { margin-top: 0; color: #f8fafc; font-weight: 600; font-size: 22px; font-family: 'Segoe UI', sans-serif;}
-        h3 { color: #38bdf8; font-size: 15px; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; font-family: 'Segoe UI', sans-serif; margin-top: 0; font-weight: 600;}
+        h3 { color: #ee4d2d; font-size: 15px; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; font-family: 'Segoe UI', sans-serif; margin-top: 0; font-weight: 600;}
         
         input[type="text"], input[type="file"] { width: 100%; padding: 15px; font-size: 18px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; font-family: inherit; box-sizing: border-box; outline: none; transition: 0.3s; border-radius: 6px;}
-        input[type="text"]:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+        input[type="text"]:focus { border-color: #ee4d2d; box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.2); }
         input:disabled { background: #0b101a; color: #64748b; border-color: #ef4444; cursor: not-allowed; }
 
         /* ============================================================
-           SINAL DE TRÂNSITO: DESTAQUE NEON MÁXIMO NO CHECK-IN
+           SINAL DE TRÂNSITO: DESTAQUE NEON MÁXIMO NO CHECK-IN (MANTIDO)
            ============================================================ */
         #coletor { 
             font-size: 28px !important; 
@@ -117,8 +117,8 @@
         .is-mesa-operacao #tabelaAguardandoMesa .tempo-text { font-size: 20px !important; color: #f59e0b !important; }
 
         #tabelaAguardandoMesa tr { transition: background 0.2s ease; }
-        #tabelaAguardandoMesa td { border-bottom: 1px solid rgba(56, 189, 248, 0.25); }
-        #tabelaAguardandoMesa tr:hover { background: rgba(56, 189, 248, 0.08); }
+        #tabelaAguardandoMesa td { border-bottom: 1px solid rgba(238, 77, 45, 0.25); } /* Laranja */
+        #tabelaAguardandoMesa tr:hover { background: rgba(238, 77, 45, 0.08); } /* Laranja hover */
 
         .ff-box { width: 100%; margin-top: 15px; padding: 12px; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; background: rgba(239, 68, 68, 0.05); }
         .ff-box label { font-size: 11px; color: #ef4444; font-weight: bold; letter-spacing: 1px; display: block; margin-bottom: 8px; }
@@ -129,7 +129,7 @@
         .log-linha { margin: 10px 0; border-bottom: 1px dashed #1e293b; padding-bottom: 10px; line-height: 1.5; }
         .log-ok { color: #10b981; }
         .log-erro { color: #ef4444; }
-        .log-rota-neon { font-size: 34px; font-weight: 900; color: #00f0ff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.8); margin-left: 10px; vertical-align: middle; letter-spacing: 2px;}
+        .log-rota-neon { font-size: 34px; font-weight: 900; color: #ee4d2d; text-shadow: 0 0 15px rgba(238, 77, 45, 0.8); margin-left: 10px; vertical-align: middle; letter-spacing: 2px;} /* Laranja */
 
         /* ============================================================
            TV DESIGN - PRESERVADO
@@ -143,15 +143,16 @@
         .hist-nome-tv { color: #fff; font-size: 11px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
         .alerta-tv { font-size: clamp(30px, 4vw, 45px); color: #f59e0b; margin-bottom: 2vh; font-family: 'Segoe UI', sans-serif; font-weight: bold; letter-spacing: 4px; text-transform: uppercase; width: 100%; text-align: center;}
         @keyframes piscaAlerta { 0% { opacity: 0.5; color: #ef4444;} 100% { opacity: 1; color: #ff0000; text-shadow: 0 0 20px #ef4444; } }
-        .placa-tv { font-size: clamp(60px, 7vw, 130px); font-weight: bold; background: #0f172a; padding: 2vh 5vw; border: 2px solid #38bdf8; border-radius: 15px; margin-bottom: 2vh; color: #f8fafc; font-family: 'Segoe UI', sans-serif; max-width: 95%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-sizing: border-box;}
+        .placa-tv { font-size: clamp(60px, 7vw, 130px); font-weight: bold; background: #0f172a; padding: 2vh 5vw; border: 2px solid #ee4d2d; border-radius: 15px; margin-bottom: 2vh; color: #f8fafc; font-family: 'Segoe UI', sans-serif; max-width: 95%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-sizing: border-box;} /* Laranja */
         .nome-mtr { font-size: clamp(25px, 3vw, 45px); color: #94a3b8; margin-bottom: 3vh; text-transform: uppercase; font-family: 'Segoe UI', sans-serif; max-width: 95%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         #displayBancadaContainer { font-family: 'Segoe UI', sans-serif; font-weight:bold; margin-top: 1vh; text-transform: uppercase; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; max-width: 100%; }
         #prefixoMesa { color: #cbd5e1; font-size: clamp(35px, 4vw, 55px); margin-right: 15px; }
         #displayBancada { font-size: clamp(70px, 8vw, 120px); background-image: linear-gradient(to bottom, #10b981, #77ff77); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 8px rgba(16, 185, 129, 0.5); line-height: 1;}
 
-        .btn-padrao { background: transparent; color: #38bdf8; border: 1px solid #38bdf8; padding: 8px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; transition: 0.2s; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;}
-        .btn-padrao:hover { background: #38bdf8; color: #0f172a; }
+        .btn-padrao { background: transparent; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 8px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; transition: 0.2s; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;} /* Laranja */
+        .btn-padrao:hover { background: #ee4d2d; color: #fff; } /* Laranja hover */
         .btn-critico { border-color: #ef4444; color: #ef4444; }
+        .btn-critico:hover { background: #ef4444; color: #fff; }
         .btn-acao { border-color: #10b981; color: #10b981; }
         .btn-acao:hover { background: #10b981; color: #fff; }
     </style>
@@ -165,9 +166,10 @@
     <div class="sidebar" id="sidebar">
         <div class="brand">
             <div class="brand-text">
-                <h1>GESTÃO DE PÁTIO</h1>
+                <img src="Shopee-Express-Logo-Small.png" alt="Shopee Xpress" style="max-width: 180px; margin-bottom: 10px;">
+                
                 <p><span class="status-led"></span><span id="txtServidor">CONECTANDO...</span></p>
-                <p style="color:#38bdf8; font-weight:900; margin-top:15px; font-size: 16px; letter-spacing: 1px; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); text-transform: uppercase;">OP: <span id="dispUser" style="color: #fff; text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);"></span></p>
+                <p style="color:#ee4d2d; font-weight:900; margin-top:15px; font-size: 16px; letter-spacing: 1px; text-shadow: 0 0 10px rgba(238, 77, 45, 0.8); text-transform: uppercase;">OP: <span id="dispUser" style="color: #fff; text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);"></span></p>
             </div>
             <button type="button" class="btn-sair-mini" onclick="confirmarLogout()" title="Sair do Sistema">
                 <span class="nav-icon nav-icon-logout" style="margin-right: 8px;">🚪</span><span class="nav-text">LOGOUT</span>
@@ -202,7 +204,7 @@
             </div>
 
             <div id="abaControle" class="aba">
-                <h2 style="color: #38bdf8;">🔐 CONTROLE DE MESAS</h2>
+                <h2 style="color: #ee4d2d;">🔐 CONTROLE DE MESAS</h2>
                 <p style="color:#94a3b8; font-size:12px; margin-top:5px;">Gerencie e libere mesas que ficaram presas no servidor.</p>
                 <div style="display: flex; gap: 20px; margin-top: 15px; height: 100%;">
                     <div style="flex: 1; background: #0b132b; border: 1px solid #1e293b; border-radius: 8px; padding: 20px; display: flex; flex-direction: column;">
@@ -237,7 +239,7 @@
                         <div class="table-wrapper"><table id="tabelaAguardandoMesa"><thead><tr><th>ROTA / MOTORISTA</th><th>ESPERA</th><th>AÇÃO</th></tr></thead><tbody></tbody></table></div>
                     </div>
                     <div class="card-decor">
-                        <div style="font-size: 35px; color: #38bdf8;">🖥️</div>
+                        <div style="font-size: 35px; color: #ee4d2d;">🖥️</div>
                         <h3 id="displayNomeMesaGrande">MESA</h3>
                         <div class="ff-box">
                             <label>🚨 FINAL DE FILA (ROTA)</label>
@@ -261,7 +263,7 @@
                     </div>
 
                     <div class="tv-main">
-                        <button type="button" id="btnAtivarVoz" onclick="ativarVozTV()" style="padding:10px; background:#38bdf8; border:none; cursor:pointer; border-radius:4px; font-weight:bold; position:absolute; top:20px; left:20px; z-index:100;">Ligar Áudio da TV</button>
+                        <button type="button" id="btnAtivarVoz" onclick="ativarVozTV()" style="padding:10px; background:#ee4d2d; color:#fff; border:none; cursor:pointer; border-radius:4px; font-weight:bold; position:absolute; top:20px; left:20px; z-index:100;">Ligar Áudio da TV</button>
                         <div class="alerta-tv" id="textoAlerta">PAINEL STANDBY</div>
                         <div class="placa-tv" id="displayPlaca">---</div>
                         <div class="nome-mtr" id="displayNomeMotorista">AGUARDANDO...</div>
@@ -284,7 +286,7 @@
                     <h2 style="margin: 0;">RADAR GLOBAL (TEMPO REAL)</h2>
                     <div style="background: #1e293b; border: 1px solid #334155; padding: 10px 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
                         <div style="font-size: 11px; color: #94a3b8; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">TEMPO MÉD. ATENDIMENTO</div>
-                        <div id="displayTempoMedio" style="font-size: 22px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);">00m 00s</div>
+                        <div id="displayTempoMedio" style="font-size: 22px; font-weight: bold; color: #ee4d2d; text-shadow: 0 0 10px rgba(238, 77, 45, 0.3);">00m 00s</div>
                     </div>
                 </div>
                 <div class="table-wrapper"><table><thead><tr><th>ROTA / MOTORISTA</th><th>MESA</th><th>STATUS</th><th>DURAÇÃO</th></tr></thead><tbody id="tabelaDashboard"></tbody></table></div>
@@ -334,11 +336,9 @@
             if(bA) bA.click(); 
 
         } else if (lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') {
-            // Lógica exclusiva para os Logins de Final de Fila
             document.body.classList.add('is-mesa-operacao'); 
             if(bF) { bF.style.display = 'flex'; bF.click(); } 
             
-            // Esconde todas as outras abas
             if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
             if(bM) bM.remove(); if(bR) bR.remove(); if(bCtrl) bCtrl.remove();
 
@@ -348,13 +348,11 @@
             }).catch(e => console.warn("Permissão de Firebase ainda não liberada no painel."));
 
         } else { 
-            // Mesas Normais (1 a 15)
             document.body.classList.add('is-mesa-operacao'); 
             if(bM) { bM.style.display = 'flex'; bM.click(); }
             let dNome = document.getElementById('displayNomeMesaGrande');
             if(dNome && lAtu) dNome.innerText = lAtu.toUpperCase(); 
 
-            // Esconde abas proibidas para mesas normais
             if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
             if(bR) bR.remove(); if(bF) bF.remove(); if(bCtrl) bCtrl.remove();
 
@@ -470,7 +468,7 @@
             if(!tM) return;
             tM.innerHTML = '';
             if(listaMesas.length === 0) { tM.innerHTML = `<tr><td colspan="2" align="center" style="color:#64748b; padding: 20px;">TODAS AS MESAS ESTÃO LIVRES.</td></tr>`; } 
-            else { listaMesas.forEach(m => { tM.innerHTML += `<tr><td style="color:#38bdf8; font-weight:bold;">${m.toUpperCase()}</td><td align="right"><button type="button" class="btn-padrao btn-critico" style="padding: 4px 8px; font-size:10px;" onclick="desconectarMesa('${m}')">DESLOGAR</button></td></tr>`; }); }
+            else { listaMesas.forEach(m => { tM.innerHTML += `<tr><td style="color:#ee4d2d; font-weight:bold;">${m.toUpperCase()}</td><td align="right"><button type="button" class="btn-padrao btn-critico" style="padding: 4px 8px; font-size:10px;" onclick="desconectarMesa('${m}')">DESLOGAR</button></td></tr>`; }); }
         }
 
         window.desconectarMesa = function(m) { if(confirm(`Liberar a ${m}?`)) { let t = listaMesas.filter(x => x !== m); db.ref('mesasOcupadas').set(t); } };
@@ -539,7 +537,6 @@
 
         window.chamarVeiculo = function(id) {
             let vt = [...veiculos];
-            // Finaliza o que estiver em atendimento pela mesma mesa/role que está puxando o novo
             vt.forEach(x => { if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { x.status = 'FINALIZADO'; x.horaFinalizado = Date.now(); }});
             let v = vt.find(x => x.id === id);
             if(v) { v.status = 'EM_ATENDIMENTO'; v.mesaResponsavel = lAtu; v.horaChamada = Date.now(); db.ref('veiculos').set(vt); db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, data: Date.now() }); }
@@ -636,12 +633,8 @@
                     </tr>`;
                 }
 
-                // ==========================================
-                // BOTÃO "PUXAR" ADICIONADO AQUI NO FINAL DE FILA
-                // ==========================================
                 if(v.status === 'FINAL_FILA' && tF) {
                     let btnPuxar = '';
-                    // Mostra botão puxar apenas para quem tem acesso a essa tela e pode atender
                     if (lAtu === 'Admin' || lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') {
                         btnPuxar = `<button type="button" class="btn-padrao btn-acao" style="margin-left: 5px;" onclick="chamarVeiculo('${v.id}')" title="Puxar Direto para a TV">PUXAR</button>`;
                     }
