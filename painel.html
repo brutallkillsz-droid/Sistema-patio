@@ -20,16 +20,17 @@
         .brand-text { display: flex; flex-direction: column; align-items: center; transition: opacity 0.2s; width: 100%;}
         .sidebar.collapsed .brand-text { opacity: 0; pointer-events: none; display: none; }
         
-        /* O ESPAÇO RESERVADO PARA A NOVA LOGO PNG (AMPLIADO) */
+        /* O ESPAÇO RESERVADO PARA A LOGO (COM ZOOM DE 50%) */
         .logo-shopee {
             width: 100%;
-            max-width: 220px;
-            height: 85px;
-            margin: 0 auto 5px auto;
+            max-width: 200px;
+            height: 50px;
+            margin: 15px auto 10px auto;
             background-image: url('https://i.imgur.com/Z0lEejO.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
+            transform: scale(1.5); /* Aumenta 50% ignorando fundo vazio */
         }
 
         .brand p { margin: 5px 0 0 0; font-size: 12px; color: #94a3b8; }
