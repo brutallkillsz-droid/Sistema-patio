@@ -12,12 +12,10 @@
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; } 
         ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
 
-        /* MUDANÇA: Fundo da Sidebar agora é Preto (#000000) */
         .sidebar { width: 260px; background: #000000; border-right: 1px solid #1e293b; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 10; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
         .sidebar.collapsed { width: 80px; }
         .main-panel { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; background: radial-gradient(circle at top right, #0d1424 0%, #07090f 100%); transition: margin-left 0.4s ease; }
 
-        /* MUDANÇA: Fundo do cabeçalho da marca agora é Preto (#000000) */
         .brand { padding: 20px 15px; border-bottom: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; background: #000000; }
         .brand-text { display: flex; flex-direction: column; align-items: center; transition: opacity 0.2s; width: 100%;}
         .sidebar.collapsed .brand-text { opacity: 0; pointer-events: none; display: none; }
@@ -27,12 +25,12 @@
             width: 100%;
             max-width: 220px;
             height: 50px;
-            margin: 30px auto 30px auto; /* Margens aumentadas para a logo imensa não bater nos cantos */
+            margin: 30px auto 30px auto; 
             background-image: url('https://i.imgur.com/Z0lEejO.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            transform: scale(4.0); /* Escala aumentada drasticamente para atingir os +80% pedidos */
+            transform: scale(4.0); 
         }
 
         .brand p { margin: 5px 0 0 0; font-size: 12px; color: #94a3b8; }
@@ -55,7 +53,6 @@
         .nav-btn.active { background: rgba(238, 77, 45, 0.1); color: #ee4d2d; border-left: 3px solid #ee4d2d; }
         #btnTabFinalFila.active { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-left: 3px solid #ef4444; }
         
-        /* MUDANÇA: Botão toggle inferior agora é Preto (#000000) */
         .toggle-btn-bottom { width: 100%; background: #000000; border: none; border-top: 1px solid #1e293b; color: #ee4d2d; font-size: 24px; cursor: pointer; transition: 0.3s; padding: 15px 0; display: flex; justify-content: center; align-items: center; margin-top: auto; }
 
         .tab-content-area { flex-grow: 1; padding: 25px; position: relative; overflow: hidden; background: transparent; display: flex; flex-direction: column; }
@@ -71,52 +68,71 @@
         input:disabled { background: #0b101a; color: #64748b; border-color: #ef4444; cursor: not-allowed; }
 
         /* ============================================================
-           SINAL DE TRÂNSITO: DESTAQUE NEON MÁXIMO NO CHECK-IN
+           MEGA DISPLAY DE CHECK-IN: REFEITO PARA HARMONIA VISUAL
            ============================================================ */
-        #coletor { 
-            font-size: 28px !important; 
-            font-weight: bold;
-            padding: 25px !important; 
-            border: 4px solid #10b981 !important; 
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6), inset 0 0 15px rgba(16, 185, 129, 0.2) !important; 
-            background: rgba(16, 185, 129, 0.1) !important; 
-            color: #10b981 !important;
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        #displayMegaCheckin {
+            font-size: 24px; /* Tamanho base quando inativo */
+            font-weight: 900; 
             text-align: center; 
-            transition: all 0.3s ease; 
-            animation: pulsaVerde 2s infinite alternate; 
-        }
-        
-        @keyframes pulsaVerde {
-            0% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), inset 0 0 10px rgba(16, 185, 129, 0.1); }
-            100% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.8), inset 0 0 20px rgba(16, 185, 129, 0.3); }
-        }
-
-        #coletor:focus { 
-            box-shadow: 0 0 50px rgba(16, 185, 129, 1), inset 0 0 25px rgba(16, 185, 129, 0.5) !important; 
-            background: rgba(16, 185, 129, 0.15) !important; 
-            outline: none;
-            animation: none; 
-        }
-        
-        #coletor:disabled { 
-            border: 5px solid #ff0000 !important; 
-            box-shadow: 0 0 50px rgba(255, 0, 0, 1), inset 0 0 30px rgba(255, 0, 0, 0.4) !important; 
-            background: rgba(255, 0, 0, 0.15) !important; 
-            color: #ff0000 !important; 
-            text-shadow: 0 0 15px rgba(255, 0, 0, 0.8) !important;
-            cursor: wait !important; 
-            animation: pulsaVermelho 0.4s infinite alternate; 
+            padding: 50px 30px; /* Mais espaço para o texto respirar */
+            border-radius: 15px; 
+            background: #0b132b; 
+            border: 3px dashed #334155; 
+            color: #64748b; 
+            margin-bottom: 25px; 
+            text-transform: uppercase; 
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 250px; /* Altura generosa para acomodar 2 a 3 linhas */
+            gap: 15px; /* Separação natural entre o Nome e o Status */
         }
 
-        @keyframes pulsaVermelho {
-            0% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6), inset 0 0 15px rgba(255, 0, 0, 0.2); }
+        /* Sucesso: Verde Neon */
+        #displayMegaCheckin.checkin-sucesso {
+            background: rgba(16, 185, 129, 0.1);
+            border: 4px solid #10b981;
+            color: #10b981;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Erro/Não Escalado: Laranja Neon Forte */
+        #displayMegaCheckin.checkin-erro-laranja {
+            background: rgba(255, 102, 0, 0.1); 
+            border: 4px solid #ff6600;
+            color: #ff6600;
+            text-shadow: 0 0 20px rgba(255, 102, 0, 0.8);
+            box-shadow: 0 0 40px rgba(255, 102, 0, 0.4), inset 0 0 20px rgba(255, 102, 0, 0.2);
+            animation: piscaLaranja 0.5s infinite alternate;
+        }
+
+        /* Erro/Final de Fila: Vermelho Neon */
+        #displayMegaCheckin.checkin-final-fila {
+            background: rgba(255, 0, 0, 0.1);
+            border: 4px solid #ff0000;
+            color: #ff0000;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.2);
+            animation: piscaMegaVermelho 0.5s infinite alternate;
+        }
+
+        @keyframes piscaLaranja {
+            0% { box-shadow: 0 0 20px rgba(255, 102, 0, 0.4), inset 0 0 10px rgba(255, 102, 0, 0.1); }
+            100% { box-shadow: 0 0 60px rgba(255, 102, 0, 1), inset 0 0 30px rgba(255, 102, 0, 0.5); }
+        }
+
+        @keyframes piscaMegaVermelho {
+            0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.4), inset 0 0 10px rgba(255, 0, 0, 0.1); }
             100% { box-shadow: 0 0 60px rgba(255, 0, 0, 1), inset 0 0 30px rgba(255, 0, 0, 0.5); }
         }
 
-        #coletor::placeholder { color: rgba(16, 185, 129, 0.7); font-weight: bold; }
-        #coletor:focus::placeholder { color: transparent; }
-        #coletor:disabled::placeholder { color: #ff0000; opacity: 1; text-shadow: 0 0 10px rgba(255, 0, 0, 0.8); }
+        #coletor { font-size: 20px !important; font-weight: bold; text-align: center; }
+        #coletor:disabled { border: 2px solid #ff0000 !important; cursor: wait !important; }
 
         .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #1e293b; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
         table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
@@ -183,7 +199,6 @@
         <div class="brand">
             <div class="brand-text">
                 <div class="logo-shopee"></div>
-                
                 <p><span class="status-led"></span><span id="txtServidor">CONECTANDO...</span></p>
                 <p style="color:#ee4d2d; font-weight:900; margin-top:15px; font-size: 16px; letter-spacing: 1px; text-shadow: 0 0 10px rgba(238, 77, 45, 0.8); text-transform: uppercase;">OP: <span id="dispUser" style="color: #fff; text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);"></span></p>
             </div>
@@ -238,8 +253,14 @@
 
             <div id="abaCheckin" class="aba">
                 <h2>PORTARIA DE ACESSO (CHECK-IN)</h2>
-                <p style="color:#94a3b8; font-size:14px; margin-bottom: 20px;">Realize a leitura do ID do motorista para enviá-lo ao radar.</p>
-                <input type="text" id="coletor" placeholder="VERDE: PODE BIPAR O ID AQUI..." autocomplete="off">
+
+                <div id="displayMegaCheckin">
+                    <span style="font-size: 24px; letter-spacing: 3px;">AGUARDANDO BIPE...</span>
+                </div>
+
+                <p style="color:#94a3b8; font-size:14px; margin-bottom: 10px; text-align: center;">Bipe o crachá do motorista abaixo para realizar o check-in.</p>
+                <input type="text" id="coletor" placeholder="PODE BIPAR O ID AQUI..." autocomplete="off">
+                
                 <div style="margin-top: 25px;">
                     <label style="font-family: 'Segoe UI'; font-weight: 600; font-size: 12px; color: #64748b; letter-spacing: 1px;">CONSOLE DE REGISTRO:</label>
                     <div class="console-box" id="consoleLog">
@@ -718,6 +739,9 @@
             }
         }
 
+        // ============================================================
+        // LÓGICA DE NOME GIGANTE NO CHECK-IN - AJUSTE DE HIERARQUIA
+        // ============================================================
         document.getElementById('coletor')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault(); 
@@ -725,35 +749,73 @@
                 const id = this.value.trim().toUpperCase();
                 if(id) {
                     this.disabled = true; 
-                    let placeholderOriginal = "VERDE: PODE BIPAR O ID AQUI...";
-                    this.placeholder = "PROCESSANDO... AGUARDE 3 SEGUNDOS.";
+                    let placeholderOriginal = "PODE BIPAR O ID AQUI...";
+                    this.placeholder = "PROCESSANDO...";
 
                     let vt = [...veiculos], v = vt.find(x => x.id === id);
                     const consoleBox = document.getElementById('consoleLog');
+                    const dMega = document.getElementById('displayMegaCheckin');
                     const dataHora = new Date().toLocaleTimeString();
 
                     if (!v) {
                         consoleBox.innerHTML += `<div class="log-linha log-erro">[${dataHora}] > ERRO: ID [${id}] NÃO ENCONTRADO.</div>`;
+                        dMega.className = 'checkin-erro-laranja';
+                        dMega.innerHTML = `
+                            <span style="font-size: clamp(35px, 4vw, 50px); color: #fff; line-height: 1.2; word-break: break-word;">ID: ${id}</span>
+                            <span style="font-size: clamp(20px, 3vw, 30px); letter-spacing: 3px; font-weight: bold;">MOTORISTA NÃO ESCALADO</span>
+                        `;
                     } else if (v.status !== 'NO_PERÍMETRO') {
                         consoleBox.innerHTML += `<div class="log-linha" style="color: #f59e0b;">[${dataHora}] > AVISO: MOTORISTA JÁ FEZ CHECK-IN.</div>`;
+                        dMega.className = 'checkin-erro-laranja';
+                        dMega.style.borderColor = '#f59e0b';
+                        dMega.style.color = '#f59e0b';
+                        dMega.style.boxShadow = '0 0 40px rgba(245, 158, 11, 0.4), inset 0 0 20px rgba(245, 158, 11, 0.2)';
+                        dMega.innerHTML = `
+                            <span style="font-size: clamp(40px, 5vw, 65px); color: #fff; line-height: 1.1; word-break: break-word; text-shadow: 0 0 15px rgba(255,255,255,0.3);">${v.nome}</span>
+                            <span style="font-size: clamp(20px, 3vw, 30px); letter-spacing: 3px; font-weight: bold;">JÁ ESTÁ NO PÁTIO</span>
+                        `;
+                        dMega.style.animation = 'none'; 
                     } else {
-                        v.status = rFF.includes(v.rota) ? 'FINAL_FILA' : 'AGUARDANDO'; 
+                        // CHECK-IN BEM SUCEDIDO
+                        let isPenalizado = rFF.includes(v.rota);
+                        v.status = isPenalizado ? 'FINAL_FILA' : 'AGUARDANDO'; 
                         v.chegada = Date.now(); 
                         db.ref('veiculos').set(vt); 
                         
                         let spanRota = `<span class="log-rota-neon">${v.rota}</span>`;
-                        let msg = rFF.includes(v.rota) ? `⚠️ ROTA PENALIZADA: ${spanRota}` : `CHECK-IN OK: ${spanRota}`;
-                        let cor = rFF.includes(v.rota) ? "log-erro" : "log-ok";
+                        let msg = isPenalizado ? `⚠️ ROTA PENALIZADA: ${spanRota}` : `CHECK-IN OK: ${spanRota}`;
+                        let cor = isPenalizado ? "log-erro" : "log-ok";
                         consoleBox.innerHTML += `<div class="log-linha ${cor}">[${dataHora}] > ${msg}</div>`;
+
+                        // EXIBE NOME GIGANTE COM HIERARQUIA
+                        if (isPenalizado) {
+                            dMega.className = 'checkin-final-fila';
+                            dMega.innerHTML = `
+                                <span style="font-size: clamp(40px, 5vw, 65px); color: #fff; line-height: 1.1; word-break: break-word; text-shadow: 0 0 15px rgba(255,255,255,0.4);">${v.nome}</span>
+                                <span style="font-size: clamp(22px, 3vw, 35px); letter-spacing: 3px; font-weight: bold;">🚨 FINAL DE FILA</span>
+                            `;
+                        } else {
+                            dMega.className = 'checkin-sucesso';
+                            dMega.innerHTML = `
+                                <span style="font-size: clamp(40px, 5vw, 65px); color: #fff; line-height: 1.1; word-break: break-word; text-shadow: 0 0 15px rgba(255,255,255,0.4);">${v.nome}</span>
+                                <span style="font-size: clamp(22px, 3vw, 35px); letter-spacing: 3px; font-weight: bold;">CHECK-IN CONFIRMADO</span>
+                            `;
+                        }
                     }
+                    
                     consoleBox.scrollTop = consoleBox.scrollHeight;
 
+                    // O painel fica travado mostrando o nome por 4.5 segundos para o motorista conseguir ler
                     setTimeout(() => {
                         this.value = '';
                         this.placeholder = placeholderOriginal;
                         this.disabled = false;
                         this.focus();
-                    }, 3000);
+                        
+                        dMega.className = '';
+                        dMega.style = '';
+                        dMega.innerHTML = `<span style="font-size: 24px; letter-spacing: 3px;">AGUARDANDO BIPE...</span>`;
+                    }, 4500);
                 }
             }
         });
