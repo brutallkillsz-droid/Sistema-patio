@@ -9,16 +9,25 @@
         .caixa-login { background: #0b101a; padding: 40px; border-radius: 12px; box-shadow: 0 0 25px rgba(238, 77, 45, 0.05); width: 350px; text-align: center; border: 1px solid rgba(238, 77, 45, 0.2); position: relative; overflow: hidden;}
         .caixa-login::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #ee4d2d; box-shadow: 0 0 15px #ee4d2d; }
         
-        /* O ESPAÇO RESERVADO PARA A LOGO (+70% DE ZOOM) */
+        /* O ESPAÇO RESERVADO PARA A LOGO (COM MEGA ZOOM DA ÚLTIMA ATUALIZAÇÃO) */
         .logo-shopee {
             width: 100%;
             height: 60px; 
-            margin: 20px auto 60px auto; /* Margem inferior bem maior para compensar o zoom extremo */
+            margin: 20px auto 45px auto; /* Margem ajustada para dar espaço ao GIF */
             background-image: url('https://i.imgur.com/Z0lEejO.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            transform: scale(4.0); /* Escala aumentada drasticamente */
+            transform: scale(4.0); 
+        }
+
+        /* ESPAÇO RESERVADO PARA O SEU GIF ANIMADO */
+        .mascote-gif {
+            width: 100%;
+            max-width: 130px; /* Altere aqui se quiser o cachorrinho maior ou menor */
+            height: auto;
+            margin: -10px auto 15px auto; 
+            display: block;
         }
         
         h2 { margin: 0 0 25px 0; color: #fff; font-weight: 600; font-size: 14px; font-family: 'Segoe UI', sans-serif; letter-spacing: 2px; text-shadow: 0 0 10px rgba(238, 77, 45, 0.3); text-transform: uppercase;}
@@ -48,6 +57,8 @@
     <div class="caixa-login">
         <div id="formLogin">
             <div class="logo-shopee"></div>
+
+            <img src="mascote.gif" alt="Mascote Operação" class="mascote-gif" onerror="this.style.display='none'">
             
             <h2 id="statusNuvem" style="color: #f1c40f;">CONECTANDO...</h2>
             
@@ -65,17 +76,17 @@
         const TOTAL_DE_MESAS = 15;
 
         // ==========================================
-        // NOVA CONFIGURAÇÃO (DIVINÓPOLIS - ATIVA)
+        // CONFIGURAÇÃO ATIVA: UBERABA
         // ==========================================
         const firebaseConfig = {
-            apiKey: "AIzaSyD5x5FCQj3CsNGOjAs-RfgA4ZHzFbUcrA0",
-            authDomain: "filadriver.firebaseapp.com",
-            databaseURL: "https://filadriver-default-rtdb.firebaseio.com",
-            projectId: "filadriver",
-            storageBucket: "filadriver.firebasestorage.app",
-            messagingSenderId: "91440295084",
-            appId: "1:91440295084:web:57104a472c60365dc84309",
-            measurementId: "G-WS5GB1LENK"
+            apiKey: "AIzaSyDFQPqoRF6BZm76yAioqhaoOzf8aSjijyU",
+            authDomain: "gestao-de-doca.firebaseapp.com",
+            databaseURL: "https://gestao-de-doca-default-rtdb.firebaseio.com",
+            projectId: "gestao-de-doca",
+            storageBucket: "gestao-de-doca.firebasestorage.app",
+            messagingSenderId: "574246315988",
+            appId: "1:574246315988:web:eacaaef9a2fc82393e9841",
+            measurementId: "G-QWJNRFZBX5"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -122,6 +133,9 @@
             
             let temMesaLivre = false;
 
+            // ==========================================
+            // LOGINS EXCLUSIVOS DE FINAL DE FILA 1 E 2
+            // ==========================================
             if(!mesasOcupadas.includes('Final de Fila 1')) {
                 let optionFF1 = document.createElement('option');
                 optionFF1.value = 'Final de Fila 1';
@@ -138,6 +152,7 @@
                 temMesaLivre = true;
             }
 
+            // MESAS NORMAIS (1 A 15)
             for(let i = 1; i <= TOTAL_DE_MESAS; i++) {
                 let nomeMesa = 'Mesa ' + i;
                 if(!mesasOcupadas.includes(nomeMesa)) {
