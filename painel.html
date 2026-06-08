@@ -20,7 +20,6 @@
         .brand-text { display: flex; flex-direction: column; align-items: center; transition: opacity 0.2s; width: 100%;}
         .sidebar.collapsed .brand-text { opacity: 0; pointer-events: none; display: none; }
         
-        /* O ESPAÇO RESERVADO PARA A LOGO (+80% DE ZOOM) */
         .logo-shopee {
             width: 100%;
             max-width: 220px;
@@ -65,10 +64,9 @@
         
         input[type="text"], input[type="file"] { width: 100%; padding: 15px; font-size: 18px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; font-family: inherit; box-sizing: border-box; outline: none; transition: 0.3s; border-radius: 6px;}
         input[type="text"]:focus { border-color: #ee4d2d; box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.2); }
-        /* input:disabled removido daqui, pois o leitor não será mais travado */
 
         /* ============================================================
-           MEGA DISPLAY DE CHECK-IN: REFEITO PARA HARMONIA VISUAL
+           MEGA DISPLAY DE CHECK-IN
            ============================================================ */
         #displayMegaCheckin {
             font-size: 24px; 
@@ -93,28 +91,19 @@
         }
 
         #displayMegaCheckin.checkin-sucesso {
-            background: rgba(16, 185, 129, 0.1);
-            border: 4px solid #10b981;
-            color: #10b981;
-            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
-            box-shadow: 0 0 40px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.1); border: 4px solid #10b981; color: #10b981;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6); box-shadow: 0 0 40px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(16, 185, 129, 0.2);
         }
 
         #displayMegaCheckin.checkin-erro-laranja {
-            background: rgba(255, 102, 0, 0.1); 
-            border: 4px solid #ff6600;
-            color: #ff6600;
-            text-shadow: 0 0 20px rgba(255, 102, 0, 0.8);
-            box-shadow: 0 0 40px rgba(255, 102, 0, 0.4), inset 0 0 20px rgba(255, 102, 0, 0.2);
+            background: rgba(255, 102, 0, 0.1); border: 4px solid #ff6600; color: #ff6600;
+            text-shadow: 0 0 20px rgba(255, 102, 0, 0.8); box-shadow: 0 0 40px rgba(255, 102, 0, 0.4), inset 0 0 20px rgba(255, 102, 0, 0.2);
             animation: piscaLaranja 0.5s infinite alternate;
         }
 
         #displayMegaCheckin.checkin-final-fila {
-            background: rgba(255, 0, 0, 0.1);
-            border: 4px solid #ff0000;
-            color: #ff0000;
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.2);
+            background: rgba(255, 0, 0, 0.1); border: 4px solid #ff0000; color: #ff0000;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8); box-shadow: 0 0 40px rgba(255, 0, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.2);
             animation: piscaMegaVermelho 0.5s infinite alternate;
         }
 
@@ -122,7 +111,6 @@
             0% { box-shadow: 0 0 20px rgba(255, 102, 0, 0.4), inset 0 0 10px rgba(255, 102, 0, 0.1); }
             100% { box-shadow: 0 0 60px rgba(255, 102, 0, 1), inset 0 0 30px rgba(255, 102, 0, 0.5); }
         }
-
         @keyframes piscaMegaVermelho {
             0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.4), inset 0 0 10px rgba(255, 0, 0, 0.1); }
             100% { box-shadow: 0 0 60px rgba(255, 0, 0, 1), inset 0 0 30px rgba(255, 0, 0, 0.5); }
@@ -354,7 +342,12 @@
         const uAtu = sessionStorage.getItem('usuarioLogado'), lAtu = sessionStorage.getItem('lugarLogado');
         
         let veiculos = [], rFF = [], listaMesas = [];
-        let audioFila = [], estaFalando = false, uDataChamada = 0;
+        let audioFila = [], estaFalando = false;
+
+        // Controle infalível da fila da TV
+        let ultimoComandoHash = null;
+        let tvComandoInicial = true; 
+        let fallbackTimer = null;
 
         if (!uAtu) window.location.href = "index.html";
         document.getElementById('dispUser').innerText = uAtu;
@@ -364,28 +357,22 @@
         if(lAtu === 'Admin') { 
             [bA, bC, bT, bM, bR, bF, bCtrl].forEach(b => { if(b) b.style.display = 'flex'; }); 
             if(bA) bA.click(); 
-
         } else if (lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') {
             document.body.classList.add('is-mesa-operacao'); 
             if(bF) { bF.style.display = 'flex'; bF.click(); } 
-            
             if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
             if(bM) bM.remove(); if(bR) bR.remove(); if(bCtrl) bCtrl.remove();
-
             db.ref('mesasOcupadas').once('value').then(s => {
                 let ocupadas = s.val() || [];
                 if(lAtu && !ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
             }).catch(e => console.warn("Permissão de Firebase ainda não liberada no painel."));
-
         } else { 
             document.body.classList.add('is-mesa-operacao'); 
             if(bM) { bM.style.display = 'flex'; bM.click(); }
             let dNome = document.getElementById('displayNomeMesaGrande');
             if(dNome && lAtu) dNome.innerText = lAtu.toUpperCase(); 
-
             if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
             if(bR) bR.remove(); if(bF) bF.remove(); if(bCtrl) bCtrl.remove();
-
             db.ref('mesasOcupadas').once('value').then(s => {
                 let ocupadas = s.val() || [];
                 if(lAtu && !ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
@@ -396,9 +383,19 @@
         db.ref('rotasFinalFila').on('value', s => { rFF = s.val() || []; });
         db.ref('mesasOcupadas').on('value', s => { listaMesas = s.val() || []; renderizarControleMesas(); });
         
+        // NOVO LISTENER DE TV: Bloqueia perda de dados por colisão de tempo
         db.ref('tvComando').on('value', s => { 
             const d = s.val(); 
-            if(d && d.data > uDataChamada) { uDataChamada = d.data; audioFila.push(d); processarFilaAudio(); }
+            if (tvComandoInicial) {
+                tvComandoInicial = false;
+                if(d) ultimoComandoHash = d.hash; // Ignora comando velho preso no BD ao carregar a página
+                return;
+            }
+            if(d && d.hash !== ultimoComandoHash) { 
+                ultimoComandoHash = d.hash; 
+                audioFila.push(d); 
+                processarFilaAudio(); 
+            }
         });
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
@@ -438,58 +435,31 @@
                 try {
                     let data = new Uint8Array(evento.target.result);
                     let workbook = XLSX.read(data, {type: 'array'});
-                    
                     let nomeAbaCorreta = workbook.SheetNames.find(n => n.trim().toUpperCase() === 'PÁTIO' || n.trim().toUpperCase() === 'PATIO');
-                    
-                    if (!nomeAbaCorreta) {
-                        return alert("ERRO: A aba 'Pátio' não foi encontrada no arquivo Excel. Renomeie a aba e tente novamente.");
-                    }
-
+                    if (!nomeAbaCorreta) return alert("ERRO: A aba 'Pátio' não foi encontrada no arquivo Excel. Renomeie a aba e tente novamente.");
                     let sheet = workbook.Sheets[nomeAbaCorreta];
                     let linhas = XLSX.utils.sheet_to_json(sheet, {header: 1, defval: ""}); 
-
                     let dbTemp = [...veiculos];
                     let count = 0;
 
                     for(let i = 1; i < linhas.length; i++) {
                         let colunas = linhas[i];
                         if(!colunas || colunas.length === 0) continue;
-
                         let nome = String(colunas[0] || "").trim().toUpperCase();
                         let id = String(colunas[1] || "").trim().toUpperCase();
                         let rota = String(colunas[2] || "").trim().toUpperCase();
 
                         if(id && id !== 'ID' && !dbTemp.find(v => v.id === id)) {
-                            dbTemp.push({ 
-                                id: id, 
-                                rota: rota || "SEM ROTA", 
-                                nome: nome || "MOTORISTA DESCONHECIDO", 
-                                status: 'NO_PERÍMETRO', 
-                                chegada: null, 
-                                horaChamada: null, 
-                                horaFinalizado: null, 
-                                finalizado: false, 
-                                mesaResponsavel: '' 
-                            });
+                            dbTemp.push({ id: id, rota: rota || "SEM ROTA", nome: nome || "MOTORISTA DESCONHECIDO", status: 'NO_PERÍMETRO', chegada: null, horaChamada: null, horaFinalizado: null, finalizado: false, mesaResponsavel: '' });
                             count++;
                         }
                     }
 
-                    if(count > 0) {
-                        db.ref('veiculos').set(dbTemp);
-                        alert(`✅ IMPORTAÇÃO DO EXCEL CONCLUÍDA!\n${count} motoristas adicionados com sucesso.`);
-                    } else {
-                        alert("⚠️ Nenhum registro importado. Verifique se há dados a partir da linha 2 e se a Coluna B possui IDs.");
-                    }
-                    
+                    if(count > 0) { db.ref('veiculos').set(dbTemp); alert(`✅ IMPORTAÇÃO DO EXCEL CONCLUÍDA!\n${count} motoristas adicionados com sucesso.`); } 
+                    else { alert("⚠️ Nenhum registro importado. Verifique se há dados a partir da linha 2 e se a Coluna B possui IDs."); }
                     input.value = '';
-
-                } catch (error) {
-                    alert("Erro ao processar o arquivo Excel. Verifique se o arquivo não está corrompido.");
-                    console.error(error);
-                }
+                } catch (error) { alert("Erro ao processar o arquivo Excel."); console.error(error); }
             };
-            
             reader.readAsArrayBuffer(input.files[0]);
         }
 
@@ -508,6 +478,7 @@
             if (estaFalando || audioFila.length === 0) return;
             estaFalando = true;
             const d = audioFila.shift();
+            
             document.getElementById('displayPlaca').innerText = d.rota;
             document.getElementById('displayNomeMotorista').innerText = d.nome;
             document.getElementById('displayBancada').innerText = d.mesa.toUpperCase().replace('MESA ', '');
@@ -517,11 +488,39 @@
             
             let abaTv = document.getElementById('abaTv');
             if (lAtu === 'Admin' && abaTv && abaTv.classList.contains('active')) {
-                window.speechSynthesis.cancel();
-                let u = new SpeechSynthesisUtterance(`Atenção motorista ${d.nome}, rota ${d.rota}. Dirija-se à ${d.mesa}.`);
-                u.lang = 'pt-BR'; u.onend = () => { estaFalando = false; setTimeout(processarFilaAudio, 1000); };
+                
+                // Formatação: Ex: "Mesa 2" vira "02".
+                let numStr = d.mesa.replace(/[^0-9]/g, '');
+                let numMesa = numStr ? (numStr.length === 1 ? '0' + numStr : numStr) : d.mesa.replace('MESA ', '');
+                
+                // NOVO TEXTO DE ÁUDIO (Militar e direto)
+                let textoAudio = `Driver da rota ${d.rota}, dirija-se à mesa ${numMesa}.`;
+                
+                let u = new SpeechSynthesisUtterance(textoAudio);
+                u.lang = 'pt-BR'; 
+                u.rate = 0.9; 
+
+                window.utteranceGuard = u; // Salva globalmente para o Chrome não matar o aúdio no meio
+                
+                let liberouFila = false;
+                let onFinalizaAudio = () => {
+                    if(liberouFila) return;
+                    liberouFila = true;
+                    estaFalando = false;
+                    if(fallbackTimer) clearTimeout(fallbackTimer);
+                    setTimeout(processarFilaAudio, 1500); 
+                };
+
+                u.onend = onFinalizaAudio;
+                u.onerror = onFinalizaAudio;
                 window.speechSynthesis.speak(u);
-            } else { setTimeout(() => { estaFalando = false; processarFilaAudio(); }, 5000); }
+
+                // Trava de Segurança: Se o Chrome bugar e não enviar onend, destrava em 7 segundos
+                fallbackTimer = setTimeout(onFinalizaAudio, 7000);
+
+            } else { 
+                setTimeout(() => { estaFalando = false; processarFilaAudio(); }, 5000); 
+            }
         }
 
         window.addRotaFinalFila = function() {
@@ -531,31 +530,15 @@
                 let atualizouVeiculo = false;
 
                 vt.forEach(x => { 
-                    if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { 
-                        x.status = 'FINALIZADO'; 
-                        x.horaFinalizado = Date.now(); 
-                        atualizouVeiculo = true;
-                    }
-                    if(x.rota === vRota && x.status === 'AGUARDANDO') {
-                        x.status = 'FINAL_FILA';
-                        x.chegada = Date.now(); 
-                        atualizouVeiculo = true;
-                    }
+                    if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { x.status = 'FINALIZADO'; x.horaFinalizado = Date.now(); atualizouVeiculo = true; }
+                    if(x.rota === vRota && x.status === 'AGUARDANDO') { x.status = 'FINAL_FILA'; x.chegada = Date.now(); atualizouVeiculo = true; }
                 });
 
-                if(atualizouVeiculo) {
-                    db.ref('veiculos').set(vt);
-                }
+                if(atualizouVeiculo) { db.ref('veiculos').set(vt); }
 
                 let f = [...rFF]; 
-                if(!f.includes(vRota)) { 
-                    f.push(vRota); 
-                    db.ref('rotasFinalFila').set(f); 
-                    alert("Rota Penalizada! O motorista irá para o final da fila quando bipar (ou se já estiver aguardando)."); 
-                } else {
-                    alert("Esta rota já possui regra de punição ativa.");
-                }
-
+                if(!f.includes(vRota)) { f.push(vRota); db.ref('rotasFinalFila').set(f); alert("Rota Penalizada!"); } 
+                else { alert("Esta rota já possui regra de punição ativa."); }
                 document.getElementById('inputFinalFila').value = ''; 
             }
         };
@@ -569,7 +552,11 @@
             let vt = [...veiculos];
             vt.forEach(x => { if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { x.status = 'FINALIZADO'; x.horaFinalizado = Date.now(); }});
             let v = vt.find(x => x.id === id);
-            if(v) { v.status = 'EM_ATENDIMENTO'; v.mesaResponsavel = lAtu; v.horaChamada = Date.now(); db.ref('veiculos').set(vt); db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, data: Date.now() }); }
+            if(v) { 
+                v.status = 'EM_ATENDIMENTO'; v.mesaResponsavel = lAtu; v.horaChamada = Date.now(); db.ref('veiculos').set(vt); 
+                // ENVIA PARA A TV COM HASH ÚNICO PARA GARANTIR 100% DA FILA DE ÁUDIO
+                db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, hash: Math.random() }); 
+            }
         };
 
         window.penalizarVeiculo = function(id) {
@@ -577,32 +564,22 @@
                 let vt = [...veiculos];
                 let v = vt.find(x => x.id === id);
                 if(v) {
-                    v.status = 'FINAL_FILA';
-                    v.chegada = Date.now();
-                    v.mesaResponsavel = '';
-                    db.ref('veiculos').set(vt);
-                    let f = [...rFF];
-                    if(!f.includes(v.rota)) { f.push(v.rota); db.ref('rotasFinalFila').set(f); }
+                    v.status = 'FINAL_FILA'; v.chegada = Date.now(); v.mesaResponsavel = ''; db.ref('veiculos').set(vt);
+                    let f = [...rFF]; if(!f.includes(v.rota)) { f.push(v.rota); db.ref('rotasFinalFila').set(f); }
                 }
             }
         };
 
         window.limparDados = function() { 
             if(confirm("ATENÇÃO: Isso apagará TODOS os dados, histórico e check-ins do dia. Deseja continuar?")) { 
-                db.ref('veiculos').set(null); 
-                db.ref('rotasFinalFila').set(null); 
-                db.ref('tvComando').set(null);
-
+                db.ref('veiculos').set(null); db.ref('rotasFinalFila').set(null); db.ref('tvComando').set(null);
                 const consoleBox = document.getElementById('consoleLog');
                 if(consoleBox) consoleBox.innerHTML = '<div class="log-linha">SISTEMA ZERADO. AGUARDANDO NOVA IMPORTAÇÃO.</div>';
-
                 const dPlaca = document.getElementById('displayPlaca');
                 if(dPlaca) {
-                    dPlaca.innerText = "---";
-                    document.getElementById('displayNomeMotorista').innerText = "AGUARDANDO...";
+                    dPlaca.innerText = "---"; document.getElementById('displayNomeMotorista').innerText = "AGUARDANDO...";
                     document.getElementById('displayBancadaContainer').style.display = 'none';
-                    document.getElementById('textoAlerta').innerText = "PAINEL STANDBY";
-                    document.getElementById('textoAlerta').style.animation = 'none';
+                    document.getElementById('textoAlerta').innerText = "PAINEL STANDBY"; document.getElementById('textoAlerta').style.animation = 'none';
                 }
                 alert("Sistema zerado com sucesso! Pronto para o próximo dia.");
             }
@@ -638,35 +615,20 @@
             
             let ag = Date.now();
             
-            let aguardando = veiculos.filter(v => 
-                v.status === 'AGUARDANDO' || 
-                (v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 7000))
-            );
+            let aguardando = veiculos.filter(v => v.status === 'AGUARDANDO' || (v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 7000)));
             aguardando = ordenarAlfanumerica(aguardando);
             
-            let totalTempoMs = 0;
-            let qtdFinalizados = 0;
+            let totalTempoMs = 0; let qtdFinalizados = 0;
 
             veiculos.forEach(v => {
                 if(v.status === 'NO_PERÍMETRO') return;
-                
                 let dur = (v.status === 'FINALIZADO') ? (v.horaFinalizado - v.horaChamada) : (ag - (v.horaChamada || v.chegada));
                 
-                if(v.status === 'FINALIZADO' && v.horaFinalizado && v.horaChamada) {
-                    totalTempoMs += (v.horaFinalizado - v.horaChamada);
-                    qtdFinalizados++;
-                }
-                
+                if(v.status === 'FINALIZADO' && v.horaFinalizado && v.horaChamada) { totalTempoMs += (v.horaFinalizado - v.horaChamada); qtdFinalizados++; }
                 if(tD) tD.innerHTML += `<tr><td>${v.rota}<br><small>${v.nome}</small></td><td>${v.mesaResponsavel || '-'}</td><td>${v.status}</td><td>${formatarTempoLive(dur)}</td></tr>`;
                 
                 if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lAtu && tM) {
-                    tM.innerHTML += `<tr>
-                        <td>${v.rota}</td>
-                        <td>${formatarTempoLive(ag - v.horaChamada)}</td>
-                        <td align="right">
-                            <button type="button" class="btn-padrao" style="border-color:#f59e0b; color:#f59e0b;" onclick="penalizarVeiculo('${v.id}')" title="Enviar para Final de Fila">RETIDO</button>
-                        </td>
-                    </tr>`;
+                    tM.innerHTML += `<tr><td>${v.rota}</td><td>${formatarTempoLive(ag - v.horaChamada)}</td><td align="right"><button type="button" class="btn-padrao" style="border-color:#f59e0b; color:#f59e0b;" onclick="penalizarVeiculo('${v.id}')" title="Enviar para Final de Fila">RETIDO</button></td></tr>`;
                 }
 
                 if(v.status === 'FINAL_FILA' && tF) {
@@ -674,66 +636,32 @@
                     if (lAtu === 'Admin' || lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') {
                         btnPuxar = `<button type="button" class="btn-padrao btn-acao" style="margin-left: 5px;" onclick="chamarVeiculo('${v.id}')" title="Puxar Direto para a TV">PUXAR</button>`;
                     }
-
-                    tF.innerHTML += `<tr>
-                        <td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td>
-                        <td>${new Date(v.chegada).toLocaleTimeString()}</td>
-                        <td align="right">
-                            <button type="button" class="btn-padrao" onclick="liberarFinalFila('${v.id}')" title="Devolver para Fila Normal">LIBERAR</button>
-                            ${btnPuxar}
-                        </td>
-                    </tr>`;
+                    tF.innerHTML += `<tr><td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td><td>${new Date(v.chegada).toLocaleTimeString()}</td><td align="right"><button type="button" class="btn-padrao" onclick="liberarFinalFila('${v.id}')" title="Devolver para Fila Normal">LIBERAR</button>${btnPuxar}</td></tr>`;
                 }
             });
 
-            if(elTempoMedio) {
-                if(qtdFinalizados > 0) {
-                    elTempoMedio.innerText = formatarTempoLive(totalTempoMs / qtdFinalizados);
-                } else {
-                    elTempoMedio.innerText = "00m 00s";
-                }
-            }
+            if(elTempoMedio) { elTempoMedio.innerText = qtdFinalizados > 0 ? formatarTempoLive(totalTempoMs / qtdFinalizados) : "00m 00s"; }
 
             aguardando.forEach(v => { 
                 let isCongelado = v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 7000);
-                
                 if (isCongelado) {
-                    if(tA) tA.innerHTML += `<tr style="background: rgba(239, 68, 68, 0.1);">
-                        <td class="rota-text" style="opacity: 0.5;">${v.rota}<br><span class="nome-text">${v.nome}</span></td>
-                        <td class="tempo-text" style="opacity: 0.5;">${formatarTempoLive(ag - v.chegada)}</td>
-                        <td><div style="background:#ef4444; border: 1px solid #ef4444; border-radius:4px; height: 35px; width: 100%; box-sizing: border-box; box-shadow: 0 0 10px rgba(239,68,68,0.4);"></div></td>
-                    </tr>`;
+                    if(tA) tA.innerHTML += `<tr style="background: rgba(239, 68, 68, 0.1);"><td class="rota-text" style="opacity: 0.5;">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text" style="opacity: 0.5;">${formatarTempoLive(ag - v.chegada)}</td><td><div style="background:#ef4444; border: 1px solid #ef4444; border-radius:4px; height: 35px; width: 100%; box-sizing: border-box; box-shadow: 0 0 10px rgba(239,68,68,0.4);"></div></td></tr>`;
                 } else {
-                    if(tA) tA.innerHTML += `<tr>
-                        <td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td>
-                        <td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td>
-                        <td><button type="button" class="btn-padrao" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td>
-                    </tr>`; 
+                    if(tA) tA.innerHTML += `<tr><td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td><td><button type="button" class="btn-padrao" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td></tr>`; 
                 }
             });
 
             if(lAtendTV) {
                 let atendTV = veiculos.filter(v => v.status === 'EM_ATENDIMENTO').sort((a, b) => b.horaChamada - a.horaChamada).slice(0, 14);
                 let hAtend = '';
-                atendTV.forEach(v => {
-                    hAtend += `<div class="hist-item-tv atend">
-                                  <span class="hist-rota-tv" style="color:#10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">${v.rota}</span>
-                                  <span class="hist-nome-tv" style="font-size:11px;">${v.nome}</span>
-                                  <span style="color:#10b981; font-size:26px; font-weight:bold; display:block; margin-top:5px; letter-spacing:1px; text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">${v.mesaResponsavel.toUpperCase()}</span>
-                               </div>`;
-                });
+                atendTV.forEach(v => { hAtend += `<div class="hist-item-tv atend"><span class="hist-rota-tv" style="color:#10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">${v.rota}</span><span class="hist-nome-tv" style="font-size:11px;">${v.nome}</span><span style="color:#10b981; font-size:26px; font-weight:bold; display:block; margin-top:5px; letter-spacing:1px; text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">${v.mesaResponsavel.toUpperCase()}</span></div>`; });
                 lAtendTV.innerHTML = hAtend || '<center style="color:#4a5568; margin-top:20px;">NENHUM EM ATENDIMENTO</center>';
             }
 
             if(lFilaTV) {
                 let finalTV = veiculos.filter(v => v.status === 'FINAL_FILA').sort((a, b) => a.chegada - b.chegada).slice(0, 10);
                 let hFim = '';
-                finalTV.forEach(v => {
-                    hFim += `<div class="hist-item-tv">
-                               <span class="hist-rota-tv">${v.rota}</span>
-                               <span class="hist-nome-tv" style="font-size:11px;">${v.nome}</span>
-                             </div>`;
-                });
+                finalTV.forEach(v => { hFim += `<div class="hist-item-tv"><span class="hist-rota-tv">${v.rota}</span><span class="hist-nome-tv" style="font-size:11px;">${v.nome}</span></div>`; });
                 lFilaTV.innerHTML = hFim || '<center style="color:#4a5568; margin-top:20px;">NENHUM RETIDO</center>';
             }
         }
@@ -747,7 +675,6 @@
                 
                 const id = this.value.trim().toUpperCase();
                 if(id) {
-                    // O campo não é mais desabilitado, permitindo bipar sem parar!
                     let vt = [...veiculos], v = vt.find(x => x.id === id);
                     const consoleBox = document.getElementById('consoleLog');
                     const dMega = document.getElementById('displayMegaCheckin');
@@ -772,7 +699,6 @@
                         `;
                         dMega.style.animation = 'none'; 
                     } else {
-                        // CHECK-IN BEM SUCEDIDO
                         let isPenalizado = rFF.includes(v.rota);
                         v.status = isPenalizado ? 'FINAL_FILA' : 'AGUARDANDO'; 
                         v.chegada = Date.now(); 
@@ -783,33 +709,22 @@
                         let cor = isPenalizado ? "log-erro" : "log-ok";
                         consoleBox.innerHTML += `<div class="log-linha ${cor}">[${dataHora}] > ${msg}</div>`;
 
-                        // EXIBE NOME GIGANTE COM HIERARQUIA
                         if (isPenalizado) {
                             dMega.className = 'checkin-final-fila';
-                            dMega.innerHTML = `
-                                <span style="font-size: clamp(40px, 5vw, 65px); color: #fff; line-height: 1.1; word-break: break-word; text-shadow: 0 0 15px rgba(255,255,255,0.4);">${v.nome}</span>
-                                <span style="font-size: clamp(22px, 3vw, 35px); letter-spacing: 3px; font-weight: bold;">🚨 FINAL DE FILA</span>
-                            `;
+                            dMega.innerHTML = `<span style="font-size: clamp(40px, 5vw, 65px); color: #fff; line-height: 1.1; word-break: break-word; text-shadow: 0 0 15px rgba(255,255,255,0.4);">${v.nome}</span><span style="font-size: clamp(22px, 3vw, 35px); letter-spacing: 3px; font-weight: bold;">🚨 FINAL DE FILA</span>`;
                         } else {
                             dMega.className = 'checkin-sucesso';
-                            dMega.innerHTML = `
-                                <span style="font-size: clamp(40px, 5vw, 65px); color: #fff; line-height: 1.1; word-break: break-word; text-shadow: 0 0 15px rgba(255,255,255,0.4);">${v.nome}</span>
-                                <span style="font-size: clamp(22px, 3vw, 35px); letter-spacing: 3px; font-weight: bold;">CHECK-IN CONFIRMADO</span>
-                            `;
+                            dMega.innerHTML = `<span style="font-size: clamp(40px, 5vw, 65px); color: #fff; line-height: 1.1; word-break: break-word; text-shadow: 0 0 15px rgba(255,255,255,0.4);">${v.nome}</span><span style="font-size: clamp(22px, 3vw, 35px); letter-spacing: 3px; font-weight: bold;">CHECK-IN CONFIRMADO</span>`;
                         }
                     }
                     
                     consoleBox.scrollTop = consoleBox.scrollHeight;
-
-                    // Limpa o campo NA HORA para o próximo bipe, sem travar o leitor
                     this.value = '';
                     this.focus();
 
-                    // O painel visual ainda reseta depois de um tempinho, mas se bipar outro antes, ele se sobrepõe imediatamente
                     if(window.timerBipe) clearTimeout(window.timerBipe);
                     window.timerBipe = setTimeout(() => {
-                        dMega.className = '';
-                        dMega.style = '';
+                        dMega.className = ''; dMega.style = '';
                         dMega.innerHTML = `<span style="font-size: 24px; letter-spacing: 3px;">AGUARDANDO BIPE...</span>`;
                     }, 3000);
                 }
