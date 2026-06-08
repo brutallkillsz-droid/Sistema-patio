@@ -65,7 +65,7 @@
         
         input[type="text"], input[type="file"] { width: 100%; padding: 15px; font-size: 18px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; font-family: inherit; box-sizing: border-box; outline: none; transition: 0.3s; border-radius: 6px;}
         input[type="text"]:focus { border-color: #ee4d2d; box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.2); }
-        input:disabled { background: #0b101a; color: #64748b; border-color: #ef4444; cursor: not-allowed; }
+        /* input:disabled removido daqui, pois o leitor não será mais travado */
 
         /* ============================================================
            MEGA DISPLAY DE CHECK-IN: REFEITO PARA HARMONIA VISUAL
@@ -129,7 +129,6 @@
         }
 
         #coletor { font-size: 20px !important; font-weight: bold; text-align: center; }
-        #coletor:disabled { border: 2px solid #ff0000 !important; cursor: wait !important; }
 
         .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #1e293b; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
         table { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
@@ -492,7 +491,7 @@
             };
             
             reader.readAsArrayBuffer(input.files[0]);
-        };
+        }
 
         function renderizarControleMesas() {
             const tM = document.getElementById('tabelaMesasAdmin');
@@ -740,7 +739,7 @@
         }
 
         // ============================================================
-        // LÓGICA DE NOME GIGANTE NO CHECK-IN - AJUSTE DE HIERARQUIA
+        // LÓGICA DE NOME GIGANTE NO CHECK-IN - SEM DELAY NO BIPE
         // ============================================================
         document.getElementById('coletor')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -748,10 +747,7 @@
                 
                 const id = this.value.trim().toUpperCase();
                 if(id) {
-                    this.disabled = true; 
-                    let placeholderOriginal = "PODE BIPAR O ID AQUI...";
-                    this.placeholder = "PROCESSANDO...";
-
+                    // O campo não é mais desabilitado, permitindo bipar sem parar!
                     let vt = [...veiculos], v = vt.find(x => x.id === id);
                     const consoleBox = document.getElementById('consoleLog');
                     const dMega = document.getElementById('displayMegaCheckin');
@@ -805,17 +801,17 @@
                     
                     consoleBox.scrollTop = consoleBox.scrollHeight;
 
-                    // O painel fica travado mostrando o nome por 4.5 segundos para o motorista conseguir ler
-                    setTimeout(() => {
-                        this.value = '';
-                        this.placeholder = placeholderOriginal;
-                        this.disabled = false;
-                        this.focus();
-                        
+                    // Limpa o campo NA HORA para o próximo bipe, sem travar o leitor
+                    this.value = '';
+                    this.focus();
+
+                    // O painel visual ainda reseta depois de um tempinho, mas se bipar outro antes, ele se sobrepõe imediatamente
+                    if(window.timerBipe) clearTimeout(window.timerBipe);
+                    window.timerBipe = setTimeout(() => {
                         dMega.className = '';
                         dMega.style = '';
                         dMega.innerHTML = `<span style="font-size: 24px; letter-spacing: 3px;">AGUARDANDO BIPE...</span>`;
-                    }, 4500);
+                    }, 3000);
                 }
             }
         });
