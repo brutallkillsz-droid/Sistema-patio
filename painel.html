@@ -133,16 +133,20 @@
         .btn-acao:hover { background: #10b981; color: #fff; }
 
         /* ============================================================
-           CARDS DE CONTROLE DE ROTAS (AJUSTADOS PARA SEREM BEM MENORES E CORES EXATAS)
+           CARDS DE CONTROLE DE ROTAS (PEQUENOS, COM BOTÃO DE TROCA E CORES EXATAS)
            ============================================================ */
         .grid-rotas-container { display: flex; gap: 10px; padding: 15px 0; overflow-x: auto; overflow-y: hidden; height: calc(100% - 40px); align-items: flex-start; }
         .letra-group { background: #0b132b; border: 1px solid #1e293b; border-radius: 8px; padding: 6px; min-width: 110px; max-height: 100%; display: flex; flex-direction: column; }
         .letra-header { color: #38bdf8; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 6px; border-bottom: 1px dashed #334155; padding-bottom: 4px; letter-spacing: 1px; }
         .letra-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; overflow-y: auto; padding-right: 2px; }
         
-        .card-rota { background: #1e293b; border: 1px solid #334155; border-radius: 4px; padding: 4px 2px; text-align: center; cursor: help; transition: 0.3s; display: flex; flex-direction: column; gap: 1px; font-family: 'Segoe UI', sans-serif;}
+        .card-rota { position: relative; background: #1e293b; border: 1px solid #334155; border-radius: 4px; padding: 8px 4px 4px 4px; text-align: center; cursor: help; transition: 0.3s; display: flex; flex-direction: column; gap: 1px; font-family: 'Segoe UI', sans-serif;}
         .card-rota .rota-title { font-size: 11px; font-weight: bold; color: #94a3b8; transition: 0.3s;}
         .card-rota .id-title { font-size: 8px; color: #64748b; font-weight: 600; letter-spacing: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: 0.3s;}
+
+        /* BOTÃO DE TROCA DE MOTORISTA (+) */
+        .btn-troca { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.3); border: 1px solid #334155; color: #94a3b8; border-radius: 3px; width: 14px; height: 14px; font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; padding: 0; line-height: 1; z-index: 5;}
+        .btn-troca:hover { background: #38bdf8; color: #fff; border-color: #38bdf8; }
 
         /* STATUS: AGUARDANDO / FINAL FILA / EM ANÁLISE (AMARELO - Check-in feito) */
         .card-rota.status-aguardando { background: rgba(245, 158, 11, 0.1); border-color: #f59e0b; box-shadow: 0 0 4px rgba(245, 158, 11, 0.2); }
@@ -158,6 +162,16 @@
         .card-rota.status-finalizado { background: rgba(16, 185, 129, 0.1); border-color: #10b981; box-shadow: 0 0 4px rgba(16, 185, 129, 0.2); }
         .card-rota.status-finalizado .rota-title { color: #10b981; text-shadow: 0 0 3px rgba(16, 185, 129, 0.3);}
         .card-rota.status-finalizado .id-title { color: #34d399; }
+
+        /* ============================================================
+           MODAL DE TROCA DE MOTORISTA
+           ============================================================ */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 25px; width: 320px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.8); font-family: 'Segoe UI', sans-serif;}
+        .modal-box h3 { color: #38bdf8; margin: 0; border-bottom: 1px dashed #334155; padding-bottom: 10px; font-size: 18px; text-align: center;}
+        .modal-box input { width: 100%; padding: 12px; font-size: 14px; background: #1e293b; border: 1px solid #334155; color: #f8fafc; border-radius: 4px; outline: none; box-sizing: border-box;}
+        .modal-box input:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 10px;}
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -225,7 +239,7 @@
 
             <div id="abaControleRotas" class="aba">
                 <h2 style="color: #10b981;">📦 CONTROLE DE ROTAS</h2>
-                <p style="color:#94a3b8; font-size:12px; margin-top:5px;">Status Visual: 🟨 Check-in | 🟦 Chamado TV | 🟩 Finalizado.</p>
+                <p style="color:#94a3b8; font-size:12px; margin-top:5px;">Status Visual: 🟨 Check-in | 🟦 Chamado TV | 🟩 Finalizado. Clique no [+] para trocar o motorista.</p>
                 <div class="grid-rotas-container" id="gridControleRotas"></div>
             </div>
 
@@ -312,6 +326,19 @@
                 <div class="table-wrapper" style="border-color: rgba(239,68,68,0.3);">
                     <table><thead><tr><th>ROTA / MOTORISTA</th><th>CHECK-IN</th><th align="right">AÇÃO</th></tr></thead><tbody id="tabelaFinalFilaAdmin"></tbody></table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalTroca" class="modal-overlay">
+        <div class="modal-box">
+            <h3 id="tituloModalTroca">🔄 TROCA DE MOTORISTA</h3>
+            <input type="hidden" id="trocaIdAtual">
+            <input type="text" id="trocaNovoId" placeholder="NOVO ID (Ex: 93570)..." autocomplete="off" oninput="this.value = this.value.toUpperCase()">
+            <input type="text" id="trocaNovoNome" placeholder="NOVO NOME DO MOTORISTA..." autocomplete="off" oninput="this.value = this.value.toUpperCase()">
+            <div class="modal-buttons">
+                <button type="button" class="btn-padrao btn-critico" style="flex:1;" onclick="fecharModalTroca()">CANCELAR</button>
+                <button type="button" class="btn-padrao btn-acao" style="flex:1;" onclick="salvarTroca()">SALVAR TROCA</button>
             </div>
         </div>
     </div>
@@ -536,7 +563,6 @@
             if(v) { v.status = 'AGUARDANDO'; v.chegada = Date.now(); db.ref('veiculos').set(vt); }
         };
 
-        // PASSO 1: PUXAR PARA A MESA (EM ANÁLISE)
         window.puxarVeiculo = function(id) {
             let vt = [...veiculos];
             let v = vt.find(x => x.id === id);
@@ -548,7 +574,6 @@
             }
         };
 
-        // PASSO 2: CHAMAR NA TV (EM ATENDIMENTO)
         window.chamarNaTv = function(id) {
             let vt = [...veiculos];
             vt.forEach(x => { if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { x.status = 'FINALIZADO'; x.horaFinalizado = Date.now(); }});
@@ -561,7 +586,6 @@
             }
         };
 
-        // PASSO 3: DEVOLVER VEÍCULO PARA FILA
         window.devolverVeiculo = function(id) {
             let vt = [...veiculos];
             let v = vt.find(x => x.id === id);
@@ -598,6 +622,55 @@
             }
         };
 
+        // ============================================================
+        // FUNÇÕES DA NOVA LÓGICA DE TROCA DE MOTORISTA
+        // ============================================================
+        window.abrirModalTroca = function(idAtual) {
+            let v = veiculos.find(x => x.id === idAtual);
+            if(v) {
+                document.getElementById('trocaIdAtual').value = v.id;
+                document.getElementById('tituloModalTroca').innerText = `🔄 TROCA - ${v.rota}`;
+                document.getElementById('trocaNovoId').value = '';
+                document.getElementById('trocaNovoNome').value = '';
+                document.getElementById('modalTroca').style.display = 'flex';
+                document.getElementById('trocaNovoId').focus();
+            }
+        };
+
+        window.fecharModalTroca = function() {
+            document.getElementById('modalTroca').style.display = 'none';
+        };
+
+        window.salvarTroca = function() {
+            let idAtual = document.getElementById('trocaIdAtual').value;
+            let novoId = document.getElementById('trocaNovoId').value.trim().toUpperCase();
+            let novoNome = document.getElementById('trocaNovoNome').value.trim().toUpperCase();
+
+            if(!novoId || !novoNome) {
+                alert("Preencha o ID e o Nome para realizar a troca.");
+                return;
+            }
+
+            let vt = [...veiculos];
+            let index = vt.findIndex(x => x.id === idAtual);
+            
+            if(index !== -1) {
+                // Verifica se o ID novo já existe em OUTRA rota para evitar bugs
+                let idExiste = vt.find(x => x.id === novoId && x.id !== idAtual);
+                if(idExiste) {
+                    alert("ERRO: Este ID já está vinculado à rota " + idExiste.rota + ".");
+                    return;
+                }
+
+                vt[index].id = novoId;
+                vt[index].nome = novoNome;
+                db.ref('veiculos').set(vt);
+                
+                fecharModalTroca();
+                alert("✅ Troca de motorista realizada com sucesso!");
+            }
+        };
+
         function formatarTempoLive(ms) { if(!ms || ms < 0) return "0m 00s"; let s = Math.floor(ms/1000), m = Math.floor(s/60); return `${m}m ${s%60 < 10 ? '0' : ''}${s%60}s`; }
 
         function ordenarAlfanumerica(lista) {
@@ -611,9 +684,6 @@
             });
         }
 
-        // ============================================================
-        // FUNÇÃO DE RENDERIZAÇÃO: AGRUPAMENTO POR LETRA E CORES
-        // ============================================================
         function renderizarControleRotas() {
             const container = document.getElementById('gridControleRotas');
             if(!container) return;
@@ -647,11 +717,6 @@
                     let classeStatus = '';
                     let nomeStatusDisplay = v.status;
                     
-                    // Ajuste de cores conforme instrução:
-                    // Check-in feito ou Puxado (Em análise) -> Amarelo
-                    // Chamou na TV (Em atendimento) -> Azul
-                    // Finalizado (Chamou o próximo) -> Verde
-                    // "Voltar" -> Volta pra Aguardando (Amarelo)
                     if (v.status === 'AGUARDANDO' || v.status === 'FINAL_FILA' || v.status === 'EM_ANALISE') {
                         classeStatus = 'status-aguardando';
                     } else if (v.status === 'EM_ATENDIMENTO') {
@@ -662,6 +727,7 @@
 
                     html += `
                         <div class="card-rota ${classeStatus}" title="Motorista: ${v.nome} | Status: ${nomeStatusDisplay}">
+                            <button class="btn-troca" onclick="abrirModalTroca('${v.id}')" title="Trocar Motorista desta Rota">➕</button>
                             <div class="rota-title">${v.rota}</div>
                             <div class="id-title">${v.id}</div>
                         </div>
@@ -766,9 +832,6 @@
             }
         }
 
-        // ============================================================
-        // LÓGICA DE NOME GIGANTE NO CHECK-IN - SEM DELAY NO BIPE
-        // ============================================================
         document.getElementById('coletor')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault(); 
