@@ -68,53 +68,13 @@
         /* ============================================================
            MEGA DISPLAY DE CHECK-IN
            ============================================================ */
-        #displayMegaCheckin {
-            font-size: 24px; 
-            font-weight: 900; 
-            text-align: center; 
-            padding: 50px 30px; 
-            border-radius: 15px; 
-            background: #0b132b; 
-            border: 3px dashed #334155; 
-            color: #64748b; 
-            margin-bottom: 25px; 
-            text-transform: uppercase; 
-            font-family: 'Segoe UI', sans-serif;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 250px; 
-            gap: 15px; 
-        }
+        #displayMegaCheckin { font-size: 24px; font-weight: 900; text-align: center; padding: 50px 30px; border-radius: 15px; background: #0b132b; border: 3px dashed #334155; color: #64748b; margin-bottom: 25px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif; transition: all 0.3s ease; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 250px; gap: 15px; }
+        #displayMegaCheckin.checkin-sucesso { background: rgba(16, 185, 129, 0.1); border: 4px solid #10b981; color: #10b981; text-shadow: 0 0 20px rgba(16, 185, 129, 0.6); box-shadow: 0 0 40px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(16, 185, 129, 0.2); }
+        #displayMegaCheckin.checkin-erro-laranja { background: rgba(255, 102, 0, 0.1); border: 4px solid #ff6600; color: #ff6600; text-shadow: 0 0 20px rgba(255, 102, 0, 0.8); box-shadow: 0 0 40px rgba(255, 102, 0, 0.4), inset 0 0 20px rgba(255, 102, 0, 0.2); animation: piscaLaranja 0.5s infinite alternate; }
+        #displayMegaCheckin.checkin-final-fila { background: rgba(255, 0, 0, 0.1); border: 4px solid #ff0000; color: #ff0000; text-shadow: 0 0 20px rgba(255, 0, 0, 0.8); box-shadow: 0 0 40px rgba(255, 0, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.2); animation: piscaMegaVermelho 0.5s infinite alternate; }
 
-        #displayMegaCheckin.checkin-sucesso {
-            background: rgba(16, 185, 129, 0.1); border: 4px solid #10b981; color: #10b981;
-            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6); box-shadow: 0 0 40px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(16, 185, 129, 0.2);
-        }
-
-        #displayMegaCheckin.checkin-erro-laranja {
-            background: rgba(255, 102, 0, 0.1); border: 4px solid #ff6600; color: #ff6600;
-            text-shadow: 0 0 20px rgba(255, 102, 0, 0.8); box-shadow: 0 0 40px rgba(255, 102, 0, 0.4), inset 0 0 20px rgba(255, 102, 0, 0.2);
-            animation: piscaLaranja 0.5s infinite alternate;
-        }
-
-        #displayMegaCheckin.checkin-final-fila {
-            background: rgba(255, 0, 0, 0.1); border: 4px solid #ff0000; color: #ff0000;
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8); box-shadow: 0 0 40px rgba(255, 0, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.2);
-            animation: piscaMegaVermelho 0.5s infinite alternate;
-        }
-
-        @keyframes piscaLaranja {
-            0% { box-shadow: 0 0 20px rgba(255, 102, 0, 0.4), inset 0 0 10px rgba(255, 102, 0, 0.1); }
-            100% { box-shadow: 0 0 60px rgba(255, 102, 0, 1), inset 0 0 30px rgba(255, 102, 0, 0.5); }
-        }
-        @keyframes piscaMegaVermelho {
-            0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.4), inset 0 0 10px rgba(255, 0, 0, 0.1); }
-            100% { box-shadow: 0 0 60px rgba(255, 0, 0, 1), inset 0 0 30px rgba(255, 0, 0, 0.5); }
-        }
+        @keyframes piscaLaranja { 0% { box-shadow: 0 0 20px rgba(255, 102, 0, 0.4), inset 0 0 10px rgba(255, 102, 0, 0.1); } 100% { box-shadow: 0 0 60px rgba(255, 102, 0, 1), inset 0 0 30px rgba(255, 102, 0, 0.5); } }
+        @keyframes piscaMegaVermelho { 0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.4), inset 0 0 10px rgba(255, 0, 0, 0.1); } 100% { box-shadow: 0 0 60px rgba(255, 0, 0, 1), inset 0 0 30px rgba(255, 0, 0, 0.5); } }
 
         #coletor { font-size: 20px !important; font-weight: bold; text-align: center; }
 
@@ -171,6 +131,38 @@
         .btn-critico:hover { background: #ef4444; color: #fff; }
         .btn-acao { border-color: #10b981; color: #10b981; }
         .btn-acao:hover { background: #10b981; color: #fff; }
+
+        /* ============================================================
+           CARDS DE CONTROLE DE ROTAS (AJUSTADOS PARA SEREM BEM MENORES)
+           ============================================================ */
+        .grid-rotas-container { display: flex; gap: 10px; padding: 15px 0; overflow-x: auto; overflow-y: hidden; height: calc(100% - 40px); align-items: flex-start; }
+        .letra-group { background: #0b132b; border: 1px solid #1e293b; border-radius: 8px; padding: 6px; min-width: 110px; max-height: 100%; display: flex; flex-direction: column; }
+        .letra-header { color: #38bdf8; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 6px; border-bottom: 1px dashed #334155; padding-bottom: 4px; letter-spacing: 1px; }
+        .letra-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; overflow-y: auto; padding-right: 2px; }
+        
+        .card-rota { background: #1e293b; border: 1px solid #334155; border-radius: 4px; padding: 4px 2px; text-align: center; cursor: help; transition: 0.3s; display: flex; flex-direction: column; gap: 1px; font-family: 'Segoe UI', sans-serif;}
+        .card-rota .rota-title { font-size: 11px; font-weight: bold; color: #94a3b8; transition: 0.3s;}
+        .card-rota .id-title { font-size: 8px; color: #64748b; font-weight: 600; letter-spacing: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: 0.3s;}
+
+        /* STATUS: AGUARDANDO / CHECK-IN (AMARELO) */
+        .card-rota.status-aguardando { background: rgba(245, 158, 11, 0.1); border-color: #f59e0b; box-shadow: 0 0 4px rgba(245, 158, 11, 0.2); }
+        .card-rota.status-aguardando .rota-title { color: #f59e0b; text-shadow: 0 0 3px rgba(245, 158, 11, 0.3);}
+        .card-rota.status-aguardando .id-title { color: #fbbf24; }
+
+        /* STATUS: MESA PUXOU = EM ANÁLISE (AZUL) */
+        .card-rota.status-analise { background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; box-shadow: 0 0 4px rgba(56, 189, 248, 0.2); }
+        .card-rota.status-analise .rota-title { color: #38bdf8; text-shadow: 0 0 3px rgba(56, 189, 248, 0.3);}
+        .card-rota.status-analise .id-title { color: #7dd3fc; }
+
+        /* STATUS: CHAMADO NA TV = EM ATENDIMENTO (VERDE) */
+        .card-rota.status-atendimento { background: rgba(16, 185, 129, 0.1); border-color: #10b981; box-shadow: 0 0 4px rgba(16, 185, 129, 0.2); }
+        .card-rota.status-atendimento .rota-title { color: #10b981; text-shadow: 0 0 3px rgba(16, 185, 129, 0.3);}
+        .card-rota.status-atendimento .id-title { color: #34d399; }
+
+        /* STATUS: FINALIZADO (CINZA ESCURO) */
+        .card-rota.status-finalizado { background: rgba(100, 116, 139, 0.1); border-color: #475569; }
+        .card-rota.status-finalizado .rota-title { color: #64748b; }
+        .card-rota.status-finalizado .id-title { color: #475569; }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -194,6 +186,7 @@
         <div class="nav-menu">
             <button type="button" class="nav-btn" id="btnTabAdmin" onclick="mudarAba('abaAdmin', this)" title="Importação"><span class="nav-icon">📂</span><span class="nav-text">IMPORTAÇÃO</span></button>
             <button type="button" class="nav-btn" id="btnTabCheckin" onclick="mudarAba('abaCheckin', this)" title="Check-in Portaria"><span class="nav-icon">🛂</span><span class="nav-text">CHECK-IN</span></button>
+            <button type="button" class="nav-btn" id="btnTabControleRotas" onclick="mudarAba('abaControleRotas', this)" title="Status das Rotas"><span class="nav-icon">📦</span><span class="nav-text">CONTROLE ROTAS</span></button>
             <button type="button" class="nav-btn" id="btnTabTv" onclick="mudarAba('abaTv', this)" title="Monitor TV"><span class="nav-icon">📺</span><span class="nav-text">MONITOR TV</span></button>
             <button type="button" class="nav-btn" id="btnTabMesas" onclick="mudarAba('abaMesas', this)" title="Atendimento"><span class="nav-icon">🎯</span><span class="nav-text">ATENDIMENTO</span></button>
             <button type="button" class="nav-btn" id="btnTabRadar" onclick="mudarAba('abaRadar', this)" title="Radar Global"><span class="nav-icon">🌍</span><span class="nav-text">RADAR GLOBAL</span></button>
@@ -235,6 +228,12 @@
                 </div>
             </div>
 
+            <div id="abaControleRotas" class="aba">
+                <h2 style="color: #10b981;">📦 CONTROLE DE ROTAS</h2>
+                <p style="color:#94a3b8; font-size:12px; margin-top:5px;">Status Visual: 🟨 Check-in | 🟦 Puxado p/ Análise | 🟩 Chamado TV | ⬛ Finalizado.</p>
+                <div class="grid-rotas-container" id="gridControleRotas"></div>
+            </div>
+
             <div id="abaCheckin" class="aba">
                 <h2>PORTARIA DE ACESSO (CHECK-IN)</h2>
 
@@ -269,8 +268,8 @@
                         </div>
                     </div>
                     <div class="card-analise">
-                        <h3 style="color: #10b981;">🟢 EM ANÁLISE</h3>
-                        <div class="table-wrapper"><table><thead><tr><th>ROTA</th><th>TEMPO</th><th align="right">AÇÃO</th></tr></thead><tbody id="tabelaMinhaMesa"></tbody></table></div>
+                        <h3 style="color: #10b981;">🟢 EM ANÁLISE / ATENDIMENTO</h3>
+                        <div class="table-wrapper"><table><thead><tr><th>ROTA</th><th>TEMPO</th><th align="right">AÇÕES DA MESA</th></tr></thead><tbody id="tabelaMinhaMesa"></tbody></table></div>
                     </div>
                 </div>
             </div>
@@ -344,7 +343,6 @@
         let veiculos = [], rFF = [], listaMesas = [];
         let audioFila = [], estaFalando = false;
 
-        // Controle infalível da fila da TV
         let ultimoComandoHash = null;
         let tvComandoInicial = true; 
         let fallbackTimer = null;
@@ -352,16 +350,16 @@
         if (!uAtu) window.location.href = "index.html";
         document.getElementById('dispUser').innerText = uAtu;
 
-        const bA=document.getElementById('btnTabAdmin'), bC=document.getElementById('btnTabCheckin'), bT=document.getElementById('btnTabTv'), bM=document.getElementById('btnTabMesas'), bR=document.getElementById('btnTabRadar'), bF=document.getElementById('btnTabFinalFila'), bCtrl=document.getElementById('btnTabControle');
+        const bA=document.getElementById('btnTabAdmin'), bC=document.getElementById('btnTabCheckin'), bT=document.getElementById('btnTabTv'), bM=document.getElementById('btnTabMesas'), bR=document.getElementById('btnTabRadar'), bF=document.getElementById('btnTabFinalFila'), bCtrl=document.getElementById('btnTabControle'), bCRotas=document.getElementById('btnTabControleRotas');
 
         if(lAtu === 'Admin') { 
-            [bA, bC, bT, bM, bR, bF, bCtrl].forEach(b => { if(b) b.style.display = 'flex'; }); 
+            [bA, bC, bT, bM, bR, bF, bCtrl, bCRotas].forEach(b => { if(b) b.style.display = 'flex'; }); 
             if(bA) bA.click(); 
         } else if (lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') {
             document.body.classList.add('is-mesa-operacao'); 
             if(bF) { bF.style.display = 'flex'; bF.click(); } 
             if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
-            if(bM) bM.remove(); if(bR) bR.remove(); if(bCtrl) bCtrl.remove();
+            if(bM) bM.remove(); if(bR) bR.remove(); if(bCtrl) bCtrl.remove(); if(bCRotas) bCRotas.remove();
             db.ref('mesasOcupadas').once('value').then(s => {
                 let ocupadas = s.val() || [];
                 if(lAtu && !ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
@@ -372,23 +370,22 @@
             let dNome = document.getElementById('displayNomeMesaGrande');
             if(dNome && lAtu) dNome.innerText = lAtu.toUpperCase(); 
             if(bA) bA.remove(); if(bC) bC.remove(); if(bT) bT.remove(); 
-            if(bR) bR.remove(); if(bF) bF.remove(); if(bCtrl) bCtrl.remove();
+            if(bR) bR.remove(); if(bF) bF.remove(); if(bCtrl) bCtrl.remove(); if(bCRotas) bCRotas.remove();
             db.ref('mesasOcupadas').once('value').then(s => {
                 let ocupadas = s.val() || [];
                 if(lAtu && !ocupadas.includes(lAtu)) { ocupadas.push(lAtu); db.ref('mesasOcupadas').set(ocupadas); }
             }).catch(e => console.warn("Permissão de Firebase ainda não liberada no painel."));
         }
 
-        db.ref('veiculos').on('value', s => { veiculos = s.val() || []; renderizarTelas(); });
+        db.ref('veiculos').on('value', s => { veiculos = s.val() || []; renderizarTelas(); renderizarControleRotas(); });
         db.ref('rotasFinalFila').on('value', s => { rFF = s.val() || []; });
         db.ref('mesasOcupadas').on('value', s => { listaMesas = s.val() || []; renderizarControleMesas(); });
         
-        // NOVO LISTENER DE TV: Bloqueia perda de dados por colisão de tempo
         db.ref('tvComando').on('value', s => { 
             const d = s.val(); 
             if (tvComandoInicial) {
                 tvComandoInicial = false;
-                if(d) ultimoComandoHash = d.hash; // Ignora comando velho preso no BD ao carregar a página
+                if(d) ultimoComandoHash = d.hash; 
                 return;
             }
             if(d && d.hash !== ultimoComandoHash) { 
@@ -450,7 +447,7 @@
                         let rota = String(colunas[2] || "").trim().toUpperCase();
 
                         if(id && id !== 'ID' && !dbTemp.find(v => v.id === id)) {
-                            dbTemp.push({ id: id, rota: rota || "SEM ROTA", nome: nome || "MOTORISTA DESCONHECIDO", status: 'NO_PERÍMETRO', chegada: null, horaChamada: null, horaFinalizado: null, finalizado: false, mesaResponsavel: '' });
+                            dbTemp.push({ id: id, rota: rota || "SEM ROTA", nome: nome || "MOTORISTA DESCONHECIDO", status: 'NO_PERÍMETRO', chegada: null, horaChamada: null, horaPuxado: null, horaFinalizado: null, finalizado: false, mesaResponsavel: '' });
                             count++;
                         }
                     }
@@ -489,18 +486,15 @@
             let abaTv = document.getElementById('abaTv');
             if (lAtu === 'Admin' && abaTv && abaTv.classList.contains('active')) {
                 
-                // Formatação: Ex: "Mesa 2" vira "02".
                 let numStr = d.mesa.replace(/[^0-9]/g, '');
                 let numMesa = numStr ? (numStr.length === 1 ? '0' + numStr : numStr) : d.mesa.replace('MESA ', '');
-                
-                // NOVO TEXTO DE ÁUDIO (Militar e direto)
                 let textoAudio = `Driver da rota ${d.rota}, dirija-se à mesa ${numMesa}.`;
                 
                 let u = new SpeechSynthesisUtterance(textoAudio);
                 u.lang = 'pt-BR'; 
                 u.rate = 0.9; 
 
-                window.utteranceGuard = u; // Salva globalmente para o Chrome não matar o aúdio no meio
+                window.utteranceGuard = u; 
                 
                 let liberouFila = false;
                 let onFinalizaAudio = () => {
@@ -515,7 +509,6 @@
                 u.onerror = onFinalizaAudio;
                 window.speechSynthesis.speak(u);
 
-                // Trava de Segurança: Se o Chrome bugar e não enviar onend, destrava em 7 segundos
                 fallbackTimer = setTimeout(onFinalizaAudio, 7000);
 
             } else { 
@@ -548,14 +541,42 @@
             if(v) { v.status = 'AGUARDANDO'; v.chegada = Date.now(); db.ref('veiculos').set(vt); }
         };
 
-        window.chamarVeiculo = function(id) {
+        // PASSO 1: PUXAR PARA A MESA (EM ANÁLISE) - NÃO CHAMA NA TV
+        window.puxarVeiculo = function(id) {
             let vt = [...veiculos];
+            let v = vt.find(x => x.id === id);
+            if(v) { 
+                v.status = 'EM_ANALISE'; 
+                v.mesaResponsavel = lAtu; 
+                v.horaPuxado = Date.now(); 
+                db.ref('veiculos').set(vt); 
+            }
+        };
+
+        // PASSO 2: CHAMAR NA TV (EM ATENDIMENTO) - ACIONA TV E FINALIZA OUTRO ATENDIMENTO
+        window.chamarNaTv = function(id) {
+            let vt = [...veiculos];
+            // Finaliza qualquer outro veículo que já estava em atendimento nesta mesa
             vt.forEach(x => { if(x.status === 'EM_ATENDIMENTO' && x.mesaResponsavel === lAtu) { x.status = 'FINALIZADO'; x.horaFinalizado = Date.now(); }});
             let v = vt.find(x => x.id === id);
             if(v) { 
-                v.status = 'EM_ATENDIMENTO'; v.mesaResponsavel = lAtu; v.horaChamada = Date.now(); db.ref('veiculos').set(vt); 
-                // ENVIA PARA A TV COM HASH ÚNICO PARA GARANTIR 100% DA FILA DE ÁUDIO
+                v.status = 'EM_ATENDIMENTO'; 
+                v.horaChamada = Date.now(); 
+                db.ref('veiculos').set(vt); 
+                // Envia comando obrigatório para a TV
                 db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, hash: Math.random() }); 
+            }
+        };
+
+        // PASSO 3: DEVOLVER VEÍCULO PARA FILA
+        window.devolverVeiculo = function(id) {
+            let vt = [...veiculos];
+            let v = vt.find(x => x.id === id);
+            if(v) {
+                // Devolve para final de fila se tiver regra, se não, volta pra aguardando normal
+                v.status = rFF.includes(v.rota) ? 'FINAL_FILA' : 'AGUARDANDO';
+                v.mesaResponsavel = '';
+                db.ref('veiculos').set(vt);
             }
         };
 
@@ -598,6 +619,69 @@
             });
         }
 
+        // ============================================================
+        // FUNÇÃO DE RENDERIZAÇÃO: AGRUPAMENTO POR LETRA E CORES
+        // ============================================================
+        function renderizarControleRotas() {
+            const container = document.getElementById('gridControleRotas');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(veiculos.length === 0) {
+                container.innerHTML = '<div style="color: #64748b; text-align: center; width: 100%; margin-top: 20px;">Nenhuma rota importada ainda.</div>';
+                return;
+            }
+
+            let rotasOrdenadas = [...veiculos];
+            rotasOrdenadas = ordenarAlfanumerica(rotasOrdenadas);
+
+            let grupos = {};
+            rotasOrdenadas.forEach(v => {
+                let match = v.rota.match(/^[A-Z]+/i);
+                let letra = match ? match[0].toUpperCase() : '#';
+                if(!grupos[letra]) grupos[letra] = [];
+                grupos[letra].push(v);
+            });
+
+            let html = '';
+            for (let letra of Object.keys(grupos).sort()) {
+                html += `
+                    <div class="letra-group">
+                        <div class="letra-header">LETRA ${letra}</div>
+                        <div class="letra-grid">
+                `;
+                
+                grupos[letra].forEach(v => {
+                    let classeStatus = '';
+                    let nomeStatusDisplay = v.status;
+                    
+                    if (v.status === 'AGUARDANDO' || v.status === 'FINAL_FILA') {
+                        classeStatus = 'status-aguardando';
+                    } else if (v.status === 'EM_ANALISE') {
+                        classeStatus = 'status-analise';
+                    } else if (v.status === 'EM_ATENDIMENTO') {
+                        classeStatus = 'status-atendimento';
+                    } else if (v.status === 'FINALIZADO') {
+                        classeStatus = 'status-finalizado';
+                    }
+
+                    html += `
+                        <div class="card-rota ${classeStatus}" title="Motorista: ${v.nome} | Status: ${nomeStatusDisplay}">
+                            <div class="rota-title">${v.rota}</div>
+                            <div class="id-title">${v.id}</div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
         function renderizarTelas() {
             const tD = document.getElementById('tDashboard') ? document.getElementById('tDashboard') : document.querySelector('#tabelaDashboard');
             const tA = document.querySelector('#tabelaAguardandoMesa tbody'); 
@@ -615,7 +699,8 @@
             
             let ag = Date.now();
             
-            let aguardando = veiculos.filter(v => v.status === 'AGUARDANDO' || (v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 7000)));
+            // Agora a fila de espera só mostra os que estão AGUARDANDO, ou os que acabaram de ser Puxados (pisca vermelho por 7s)
+            let aguardando = veiculos.filter(v => v.status === 'AGUARDANDO' || (v.status === 'EM_ANALISE' && (ag - v.horaPuxado < 7000)));
             aguardando = ordenarAlfanumerica(aguardando);
             
             let totalTempoMs = 0; let qtdFinalizados = 0;
@@ -627,14 +712,36 @@
                 if(v.status === 'FINALIZADO' && v.horaFinalizado && v.horaChamada) { totalTempoMs += (v.horaFinalizado - v.horaChamada); qtdFinalizados++; }
                 if(tD) tD.innerHTML += `<tr><td>${v.rota}<br><small>${v.nome}</small></td><td>${v.mesaResponsavel || '-'}</td><td>${v.status}</td><td>${formatarTempoLive(dur)}</td></tr>`;
                 
-                if(v.status === 'EM_ATENDIMENTO' && v.mesaResponsavel === lAtu && tM) {
-                    tM.innerHTML += `<tr><td>${v.rota}</td><td>${formatarTempoLive(ag - v.horaChamada)}</td><td align="right"><button type="button" class="btn-padrao" style="border-color:#f59e0b; color:#f59e0b;" onclick="penalizarVeiculo('${v.id}')" title="Enviar para Final de Fila">RETIDO</button></td></tr>`;
+                // RENDERIZAÇÃO DA MESA DO OPERADOR (MOSTRA EM ANÁLISE E EM ATENDIMENTO)
+                if((v.status === 'EM_ANALISE' || v.status === 'EM_ATENDIMENTO') && v.mesaResponsavel === lAtu && tM) {
+                    if (v.status === 'EM_ANALISE') {
+                        tM.innerHTML += `
+                            <tr>
+                                <td>${v.rota}</td>
+                                <td style="color:#38bdf8; font-size:12px;">ANALISANDO...</td>
+                                <td align="right">
+                                    <button type="button" class="btn-padrao btn-acao" style="margin-right:5px; padding: 6px 10px; font-size:11px;" onclick="chamarNaTv('${v.id}')">📺 CHAMAR</button>
+                                    <button type="button" class="btn-padrao" style="border-color:#64748b; color:#64748b; padding: 6px 10px; font-size:11px;" onclick="devolverVeiculo('${v.id}')">🔙 VOLTAR</button>
+                                </td>
+                            </tr>
+                        `;
+                    } else {
+                        tM.innerHTML += `
+                            <tr>
+                                <td><span style="color:#10b981; font-weight:bold;">${v.rota}</span></td>
+                                <td>${formatarTempoLive(ag - v.horaChamada)}</td>
+                                <td align="right">
+                                    <button type="button" class="btn-padrao" style="border-color:#f59e0b; color:#f59e0b; padding: 6px 10px; font-size:11px;" onclick="penalizarVeiculo('${v.id}')" title="Enviar para Final de Fila">RETIDO (FIM FILA)</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
                 }
 
                 if(v.status === 'FINAL_FILA' && tF) {
                     let btnPuxar = '';
                     if (lAtu === 'Admin' || lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') {
-                        btnPuxar = `<button type="button" class="btn-padrao btn-acao" style="margin-left: 5px;" onclick="chamarVeiculo('${v.id}')" title="Puxar Direto para a TV">PUXAR</button>`;
+                        btnPuxar = `<button type="button" class="btn-padrao btn-acao" style="margin-left: 5px;" onclick="puxarVeiculo('${v.id}')" title="Puxar para Análise">PUXAR</button>`;
                     }
                     tF.innerHTML += `<tr><td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td><td>${new Date(v.chegada).toLocaleTimeString()}</td><td align="right"><button type="button" class="btn-padrao" onclick="liberarFinalFila('${v.id}')" title="Devolver para Fila Normal">LIBERAR</button>${btnPuxar}</td></tr>`;
                 }
@@ -643,11 +750,11 @@
             if(elTempoMedio) { elTempoMedio.innerText = qtdFinalizados > 0 ? formatarTempoLive(totalTempoMs / qtdFinalizados) : "00m 00s"; }
 
             aguardando.forEach(v => { 
-                let isCongelado = v.status === 'EM_ATENDIMENTO' && (ag - v.horaChamada < 7000);
+                let isCongelado = v.status === 'EM_ANALISE' && (ag - v.horaPuxado < 7000);
                 if (isCongelado) {
-                    if(tA) tA.innerHTML += `<tr style="background: rgba(239, 68, 68, 0.1);"><td class="rota-text" style="opacity: 0.5;">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text" style="opacity: 0.5;">${formatarTempoLive(ag - v.chegada)}</td><td><div style="background:#ef4444; border: 1px solid #ef4444; border-radius:4px; height: 35px; width: 100%; box-sizing: border-box; box-shadow: 0 0 10px rgba(239,68,68,0.4);"></div></td></tr>`;
+                    if(tA) tA.innerHTML += `<tr style="background: rgba(239, 68, 68, 0.1);"><td class="rota-text" style="opacity: 0.5;">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text" style="opacity: 0.5;">Puxado...</td><td><div style="background:#ef4444; border: 1px solid #ef4444; border-radius:4px; height: 35px; width: 100%; box-sizing: border-box; box-shadow: 0 0 10px rgba(239,68,68,0.4);"></div></td></tr>`;
                 } else {
-                    if(tA) tA.innerHTML += `<tr><td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td><td><button type="button" class="btn-padrao" onclick="chamarVeiculo('${v.id}')">PUXAR</button></td></tr>`; 
+                    if(tA) tA.innerHTML += `<tr><td class="rota-text">${v.rota}<br><span class="nome-text">${v.nome}</span></td><td class="tempo-text">${formatarTempoLive(ag - v.chegada)}</td><td><button type="button" class="btn-padrao" onclick="puxarVeiculo('${v.id}')">PUXAR</button></td></tr>`; 
                 }
             });
 
