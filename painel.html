@@ -797,10 +797,14 @@
                     }
                 }
 
+                // ==========================================
+                // FIX: MESA FINAL DE FILA 1 E 2 CHAMA DIRETO
+                // ==========================================
                 if(v.status === 'FINAL_FILA' && tF) {
                     let btnPuxar = '';
                     if (lAtu === 'Admin' || lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') {
-                        btnPuxar = `<button type="button" class="btn-padrao btn-acao" style="margin-left: 5px;" onclick="puxarVeiculo('${v.id}')" title="Puxar para Análise">PUXAR</button>`;
+                        let funcPuxar = (lAtu === 'Final de Fila 1' || lAtu === 'Final de Fila 2') ? `chamarNaTv('${v.id}')` : `puxarVeiculo('${v.id}')`;
+                        btnPuxar = `<button type="button" class="btn-padrao btn-acao" style="margin-left: 5px;" onclick="${funcPuxar}" title="Puxar Motorista">PUXAR</button>`;
                     }
                     tF.innerHTML += `<tr><td style="color:#ef4444; font-weight:bold;">${v.rota}<br><small style="color:#fff;">${v.nome}</small></td><td>${new Date(v.chegada).toLocaleTimeString()}</td><td align="right"><button type="button" class="btn-padrao" onclick="liberarFinalFila('${v.id}')" title="Devolver para Fila Normal">LIBERAR</button>${btnPuxar}</td></tr>`;
                 }
