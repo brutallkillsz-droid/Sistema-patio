@@ -580,6 +580,7 @@
             let v = vt.find(x => x.id === id);
             if(v) { 
                 v.status = 'EM_ATENDIMENTO'; 
+                v.mesaResponsavel = lAtu; // <=== CORREÇÃO AQUI: Registra qual mesa do Final de Fila chamou
                 v.horaChamada = Date.now(); 
                 db.ref('veiculos').set(vt); 
                 db.ref('tvComando').set({ id: v.id, rota: v.rota, nome: v.nome, mesa: lAtu, hash: Math.random() }); 
